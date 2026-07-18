@@ -137,4 +137,26 @@ describe("IndividualEngine", () => {
       }),
     ).toThrow('Individual manifest field "identity.idealPhysicalForm.description" cannot be empty.');
   });
+
+  it("rejects artistic abilities outside a human-readable proficiency range", () => {
+    const manifest = createTemplateManifest();
+
+    expect(() =>
+      createTemplateIndividual({
+        manifest: {
+          ...manifest,
+          drawing: {
+            ...manifest.drawing,
+            ability: {
+              ...manifest.drawing.ability,
+              skill: {
+                ...manifest.drawing.ability.skill,
+                anatomicalCoherence: 1.4,
+              },
+            },
+          },
+        },
+      }),
+    ).toThrow('drawing.ability.skill.anatomicalCoherence" must be between 0 and 1.');
+  });
 });

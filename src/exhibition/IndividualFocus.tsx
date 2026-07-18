@@ -10,6 +10,15 @@ interface IndividualFocusProps {
   readonly tuningMap: PerceptionTuningMap;
 }
 
+const skillLabels = {
+  observationalAccuracy: "observation",
+  proportionAccuracy: "proportion",
+  anatomicalCoherence: "anatomy",
+  lineControl: "line control",
+  detailCapacity: "detail",
+  spatialCoherence: "space",
+} as const;
+
 export function IndividualFocus({
   individual,
   people,
@@ -88,9 +97,45 @@ export function IndividualFocus({
           </p>
           <p>
             <span>hand</span>
-            {individual.drawingConstraint}
+            {individual.artisticAbility.name}: {individual.drawingConstraint}
           </p>
         </div>
+
+        <section className="artistic-scope" aria-labelledby={`${individual.id}-artistic-scope`}>
+          <div className="artistic-scope__heading">
+            <p className="eyebrow">Artistic ability scope</p>
+            <h3 id={`${individual.id}-artistic-scope`}>{individual.artisticAbility.name}</h3>
+            <p>{individual.artisticAbility.description}</p>
+          </div>
+
+          <p className="artistic-scope__primitives">
+            <span>favored marks</span>
+            {individual.artisticAbility.primitives.join(" / ")}
+          </p>
+
+          <div className="artistic-scope__practice">
+            <p><span>mark behavior</span>{individual.artisticAbility.markBehavior}</p>
+            <p><span>composition</span>{individual.artisticAbility.compositionBehavior}</p>
+            <p><span>correction</span>{individual.artisticAbility.correctionBehavior}</p>
+          </div>
+
+          <div className="artistic-scope__skills" aria-label="Drawing proficiency">
+            {Object.entries(individual.artisticAbility.skill).map(([skill, value]) => (
+              <div className="artistic-skill" key={skill}>
+                <span>{skillLabels[skill as keyof typeof skillLabels]}</span>
+                <span className="artistic-skill__track" aria-hidden="true">
+                  <span style={{ width: `${Math.round(value * 100)}%` }} />
+                </span>
+                <output>{Math.round(value * 100)}</output>
+              </div>
+            ))}
+          </div>
+
+          <p className="artistic-scope__limits">
+            <span>limits</span>
+            {individual.artisticAbility.limitations.join(" ")}
+          </p>
+        </section>
       </div>
 
       <div className="social-portrait">
@@ -131,7 +176,7 @@ export function IndividualFocus({
               </div>
               <p>
                 <span>drawn by {peer.name}</span>
-                through {peer.pronoun === "they" ? "their" : peer.pronoun === "she" ? "her" : "his"} vision
+                {peer.perceptionModel.name} → {peer.artisticAbility.name}
               </p>
             </div>
           ))}

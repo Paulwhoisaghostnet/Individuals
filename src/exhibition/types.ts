@@ -43,12 +43,33 @@ export type PerceptionTuning = Readonly<Record<string, number>>;
 
 export type PerceptionTuningMap = Readonly<Record<string, PerceptionTuning>>;
 
+export interface ArtisticSkillProfile {
+  readonly observationalAccuracy: number;
+  readonly proportionAccuracy: number;
+  readonly anatomicalCoherence: number;
+  readonly lineControl: number;
+  readonly detailCapacity: number;
+  readonly spatialCoherence: number;
+}
+
+export interface ArtisticAbility {
+  readonly name: string;
+  readonly description: string;
+  readonly primitives: readonly string[];
+  readonly markBehavior: string;
+  readonly compositionBehavior: string;
+  readonly correctionBehavior: string;
+  readonly skill: ArtisticSkillProfile;
+  readonly limitations: readonly string[];
+}
+
 export interface ExhibitionIndividual {
   readonly id: string;
   readonly number: string;
   readonly name: string;
   readonly pronoun: string;
   readonly visualLanguage: VisualLanguage;
+  readonly artisticAbility: ArtisticAbility;
   readonly perceptionModel: PerceptionModel;
   readonly physicalIdentity: PhysicalIdentity;
   readonly statement: string;

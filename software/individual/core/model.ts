@@ -66,10 +66,31 @@ export interface PerceptionProfile extends CapabilityProfile {
 export interface DrawingProfile extends CapabilityProfile {
   readonly palette: readonly string[];
   readonly preferredFormats: readonly ArtworkFormat[];
+  readonly ability: ArtisticAbilityScope;
+}
+
+export interface DrawingSkillProfile {
+  readonly observationalAccuracy: number;
+  readonly proportionAccuracy: number;
+  readonly anatomicalCoherence: number;
+  readonly lineControl: number;
+  readonly detailCapacity: number;
+  readonly spatialCoherence: number;
+}
+
+export interface ArtisticAbilityScope {
+  readonly styleName: string;
+  readonly styleDescription: string;
+  readonly favoredPrimitives: readonly string[];
+  readonly markBehavior: string;
+  readonly compositionBehavior: string;
+  readonly correctionBehavior: string;
+  readonly skill: DrawingSkillProfile;
+  readonly limitations: readonly string[];
 }
 
 export interface IndividualManifest {
-  readonly schemaVersion: 3;
+  readonly schemaVersion: 4;
   readonly id: string;
   readonly displayName: string;
   readonly statement: string;

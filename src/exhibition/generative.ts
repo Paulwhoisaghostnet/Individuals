@@ -1,5 +1,6 @@
 import type { BodyPlan, PortraitMode, VisualLanguage } from "./types";
 import type { PerceptionEffect } from "./perception";
+import type { DrawingEffect } from "./drawing";
 
 const mulberry32 = (seed: number) => {
   let value = seed;
@@ -111,6 +112,7 @@ export interface GeneratedPortrait {
   readonly fragments: readonly GeneratedFragment[];
   readonly echoOffsets: readonly number[];
   readonly perceptionEffect?: PerceptionEffect;
+  readonly drawingEffect?: DrawingEffect;
 }
 
 const createBody = (
@@ -201,13 +203,26 @@ export const generatePortrait = (
   mode: PortraitMode,
   observerId = "self",
   perceptionEffect?: PerceptionEffect,
+  drawingEffect?: DrawingEffect,
 ): GeneratedPortrait => {
   const effectSignature = perceptionEffect
     ? Object.values(perceptionEffect).join(":")
     : "unfiltered";
-  const seed = hashSeed(language, bodyPlan, identityId, cycle, mode, observerId, effectSignature);
+  const drawingSignature = drawingEffect
+    ? `${drawingEffect.styleName}:${drawingEffect.geometryError}:${drawingEffect.lineInstability}`
+    : "unscoped";
+  const seed = hashSeed(
+    language,
+    bodyPlan,
+    identityId,
+    cycle,
+    mode,
+    observerId,
+    effectSignature,
+    drawingSignature,
+  );
   const random = mulberry32(seed);
-  const distortion = perceptionEffect
+  const perceivedDistortion = perceptionEffect
     ? 7 + perceptionEffect.geometryWarp * 34
     : mode === "social"
       ? 5
@@ -216,6 +231,10 @@ export const generatePortrait = (
           ? 24
           : 15
         : 11;
+  const distortion =
+    perceivedDistortion +
+    (drawingEffect?.geometryError ?? 0) * 34 +
+    (drawingEffect?.lineInstability ?? 0) * 9;
   const body = createBody(bodyPlan, distortion, random);
   const idealBody = createBody(bodyPlan, 0, () => 0.5);
   const fragmentCount = perceptionEffect
@@ -251,5 +270,6 @@ export const generatePortrait = (
           ? [-8, 8]
           : [-3, 4],
     perceptionEffect,
+    drawingEffect,
   };
 };

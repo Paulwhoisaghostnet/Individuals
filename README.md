@@ -67,7 +67,9 @@ An Individual is an autonomous participant composed of several connected parts:
   visible. The alteration is stable, unique to the Individual, and parameterized
   through bounded exhibition-tuning controls.
 - **Drawing system** — a constrained visual vocabulary that must portray a physical
-  subject while expressing particular abilities, habits, and limitations.
+  subject through an authored artistic ability: favored style and marks, compositional
+  habits, correction behavior, and distinct proficiency in observation, proportion,
+  anatomy, line control, detail, and spatial coherence.
 - **Canvas** — the public surface on which the Individual presents its current
   self-portrait.
 - **Memory and adaptation** — the capacity to compare images, interpret feedback,
@@ -131,6 +133,7 @@ The prototype should demonstrate that:
 - every perception model produces a consistent distortion with adjustable,
   validated tuning parameters;
 - each Individual has a coherent and identifiable drawing language;
+- artistic proficiency limits how coherently a perceived body can be put on canvas;
 - peer interpretations can be composited into meaningful social feedback;
 - feedback changes later self-portraits without erasing continuity;
 - the exhibition remains legible and compelling without visitor interaction;
@@ -149,7 +152,7 @@ The project is expected to develop around four cooperating systems:
 | --- | --- |
 | Identity engine | Maintains memory, temperament, ideal self, self-narrative, and adaptation. |
 | Perception engine | Applies the observer's unique visual transformations to another Individual's canvas. |
-| Drawing engine | Produces self-portraits and peer portraits within a persistent visual vocabulary. |
+| Drawing engine | Translates an observation into self- and peer portraits through a persistent artistic ability scope. |
 | Exhibition interface | Presents the changing society and its images to viewers in real time. |
 
 The digital prototype substitutes direct views of peer canvases for physical
@@ -195,7 +198,7 @@ The repository currently contains a working React and TypeScript exhibition
 prototype built with Vite and the typed skeleton of the Individual domain engine.
 The client presents a living society view, deterministic generative portraits,
 automatic cycle progression, focused identity studies, peer interpretations,
-composite social portraits, and a curator calibration surface for tuning each
+composite social portraits, visible artistic ability studies, and a curator calibration surface for tuning each
 Individual's unique perception model. The domain package defines identity, state,
 portraits, observations, memories, validated perception controls, system contracts,
 persistence boundaries, and complete cycle orchestration. Production cognition,

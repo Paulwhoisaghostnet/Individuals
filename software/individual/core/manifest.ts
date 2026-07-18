@@ -20,6 +20,12 @@ const assertNonEmptyList = (values: readonly string[], field: string): void => {
   values.forEach((value) => assertNonEmpty(value, `${field}[]`));
 };
 
+const assertUnitInterval = (value: number, field: string): void => {
+  if (!Number.isFinite(value) || value < 0 || value > 1) {
+    throw new Error(`Individual manifest field "${field}" must be between 0 and 1.`);
+  }
+};
+
 export const defineIndividualManifest = <T extends IndividualManifest>(manifest: T): T => {
   assertNonEmpty(manifest.id, "id");
   assertNonEmpty(manifest.displayName, "displayName");
@@ -77,6 +83,18 @@ export const defineIndividualManifest = <T extends IndividualManifest>(manifest:
     if (control.defaultValue < control.min || control.defaultValue > control.max) {
       throw new Error(`Perception control "${control.id}" defaultValue is outside its range.`);
     }
+  }
+
+  const ability = manifest.drawing.ability;
+  assertNonEmpty(ability.styleName, "drawing.ability.styleName");
+  assertNonEmpty(ability.styleDescription, "drawing.ability.styleDescription");
+  assertNonEmpty(ability.markBehavior, "drawing.ability.markBehavior");
+  assertNonEmpty(ability.compositionBehavior, "drawing.ability.compositionBehavior");
+  assertNonEmpty(ability.correctionBehavior, "drawing.ability.correctionBehavior");
+  assertNonEmptyList(ability.favoredPrimitives, "drawing.ability.favoredPrimitives");
+  assertNonEmptyList(ability.limitations, "drawing.ability.limitations");
+  for (const [name, value] of Object.entries(ability.skill)) {
+    assertUnitInterval(value, `drawing.ability.skill.${name}`);
   }
 
   return manifest;

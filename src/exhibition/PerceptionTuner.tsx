@@ -123,8 +123,8 @@ export function PerceptionTuner({
                 />
               </div>
               <figcaption>
-                <span>perceived body</span>
-                through {observer.perceptionModel.name}
+                <span>peer drawing</span>
+                {observer.perceptionModel.name} → {observer.artisticAbility.name}
               </figcaption>
             </figure>
           </div>
@@ -140,6 +140,12 @@ export function PerceptionTuner({
           <p className="tuner__invariant">
             <span>constant distortion</span>
             {observer.perceptionModel.invariant}
+          </p>
+
+          <p className="tuner__practice">
+            <span>fixed artistic practice</span>
+            What {observer.name} perceives is then drawn through {observer.artisticAbility.name}. Its mark
+            vocabulary and proficiency are part of identity and are not changed by these controls.
           </p>
 
           <div className="tuner__sliders">

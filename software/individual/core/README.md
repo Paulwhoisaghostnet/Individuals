@@ -38,7 +38,7 @@ An Individual is represented by two related structures:
 
 - `IndividualManifest` contains authored identity: name, origin, private
   narrative, traits, ideal self, mandatory ideal physical form, initial embodied
-  self-perception, perception limits, drawing limits, and cadence.
+  self-perception, perception limits, artistic ability scope, and cadence.
   It is configuration and should be version-controlled.
 - `IndividualState` contains lived identity: cycle number, current self-concept,
   evolving physical self-concept, latest self-portrait, latest social portrait,
@@ -178,7 +178,7 @@ When adding a capability to an Individual:
 1. Express the concept in the domain model or a narrow system contract.
 2. Keep provider-specific code behind that contract.
 3. Preserve portrait provenance and the distinction between artist and subject.
-4. Make perception and drawing limitations explicit in the manifest.
+4. Make perception and the complete artistic ability scope explicit in the manifest.
 5. Add a lifecycle test before connecting the capability to the exhibition.
 6. Avoid allowing UI state to become identity state.
 

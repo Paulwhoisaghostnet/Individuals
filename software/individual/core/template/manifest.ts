@@ -10,7 +10,7 @@ export const createTemplateManifest = (
   options: TemplateManifestOptions = {},
 ): IndividualManifest =>
   defineIndividualManifest({
-    schemaVersion: 3,
+    schemaVersion: 4,
     id: options.id ?? "template-individual",
     displayName: options.displayName ?? "Unformed",
     statement: "I am learning the distance between the image I make and the image returned to me.",
@@ -84,6 +84,26 @@ export const createTemplateManifest = (
       ],
       palette: ["#11110f", "#e9e7df", "#9e9b91"],
       preferredFormats: ["svg", "procedural"],
+      ability: {
+        styleName: "Measured contour",
+        styleDescription: "A restrained observational practice built from contour and sparse hatching.",
+        favoredPrimitives: ["continuous contour", "short hatch", "registration line"],
+        markBehavior: "Draw slowly from large bodily boundaries toward internal features.",
+        compositionBehavior: "Center one frontal body with a stable horizon and generous negative space.",
+        correctionBehavior: "Place a revised line beside an error instead of erasing it.",
+        skill: {
+          observationalAccuracy: 0.62,
+          proportionAccuracy: 0.58,
+          anatomicalCoherence: 0.56,
+          lineControl: 0.68,
+          detailCapacity: 0.42,
+          spatialCoherence: 0.65,
+        },
+        limitations: [
+          "Cannot produce photorealistic surface detail.",
+          "Complex overlaps are reduced to a single dominant contour.",
+        ],
+      },
     },
     cadence: {
       minimumCycleIntervalMs: 60_000,
