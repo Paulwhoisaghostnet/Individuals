@@ -103,7 +103,10 @@ export class TemplatePerceptionSystem implements PerceptionSystem {
       subjectId: input.portrait.subjectId,
       sourcePortrait: input.portrait,
       perceivedArtwork: input.portrait.artwork,
-      notes: ["Template perception preserved the source without distortion."],
+      notes: [
+        "Template perception preserved the source with its configured placeholder lens.",
+        ...Object.entries(input.tuning).map(([id, value]) => `${id}=${value}`),
+      ],
     };
   }
 }

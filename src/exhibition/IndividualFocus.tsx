@@ -1,5 +1,5 @@
 import { PortraitCanvas } from "./PortraitCanvas";
-import type { ExhibitionIndividual } from "./types";
+import type { ExhibitionIndividual, PerceptionTuningMap } from "./types";
 
 interface IndividualFocusProps {
   readonly individual: ExhibitionIndividual;
@@ -7,6 +7,7 @@ interface IndividualFocusProps {
   readonly cycle: number;
   readonly onClose: () => void;
   readonly onSelect: (individualId: string) => void;
+  readonly tuningMap: PerceptionTuningMap;
 }
 
 export function IndividualFocus({
@@ -15,6 +16,7 @@ export function IndividualFocus({
   cycle,
   onClose,
   onSelect,
+  tuningMap,
 }: IndividualFocusProps) {
   const peers = people.filter((peer) => peer.id !== individual.id);
 
@@ -82,7 +84,7 @@ export function IndividualFocus({
         <div className="focus__systems">
           <p>
             <span>vision</span>
-            {individual.perception}
+            {individual.perceptionModel.name}: {individual.perception}
           </p>
           <p>
             <span>hand</span>
@@ -97,7 +99,15 @@ export function IndividualFocus({
           <span>{peers.length} perceptions / ideal registered beneath</span>
         </div>
         <div className="social-portrait__art">
-          <PortraitCanvas individual={individual} cycle={cycle} mode="social" />
+          <PortraitCanvas
+            individual={individual}
+            cycle={cycle}
+            mode="social"
+            socialPerceptions={peers.map((peer) => ({
+              observer: peer,
+              tuning: tuningMap[peer.id],
+            }))}
+          />
         </div>
       </div>
 
@@ -113,6 +123,7 @@ export function IndividualFocus({
                 <PortraitCanvas
                   individual={individual}
                   observedBy={peer}
+                  perceptionTuning={tuningMap[peer.id]}
                   cycle={cycle}
                   mode="peer"
                   compact

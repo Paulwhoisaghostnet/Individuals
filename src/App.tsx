@@ -4,6 +4,8 @@ import { createCycleEvent } from "./exhibition/cycle";
 import { individuals } from "./exhibition/data";
 import { ExhibitionGallery } from "./exhibition/ExhibitionGallery";
 import { IndividualFocus } from "./exhibition/IndividualFocus";
+import { PerceptionTuner } from "./exhibition/PerceptionTuner";
+import { usePerceptionTuning } from "./exhibition/usePerceptionTuning";
 
 const CYCLE_DURATION_MS = 14_000;
 
@@ -12,28 +14,32 @@ function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isTunerOpen, setIsTunerOpen] = useState(false);
+  const { tuningMap, setControl, resetIndividual, resetAll } = usePerceptionTuning(individuals);
   const selected = individuals.find((individual) => individual.id === selectedId);
   const event = useMemo(() => createCycleEvent(individuals, cycle), [cycle]);
 
   useEffect(() => {
-    if (isPaused) return undefined;
+    if (isPaused || isTunerOpen) return undefined;
     const interval = window.setInterval(() => setCycle((value) => value + 1), CYCLE_DURATION_MS);
     return () => window.clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, isTunerOpen]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      if (isAboutOpen) setIsAboutOpen(false);
+      if (isTunerOpen) setIsTunerOpen(false);
+      else if (isAboutOpen) setIsAboutOpen(false);
       else if (selectedId) setSelectedId(null);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isAboutOpen, selectedId]);
+  }, [isAboutOpen, isTunerOpen, selectedId]);
 
   const returnToSociety = () => {
     setSelectedId(null);
     setIsAboutOpen(false);
+    setIsTunerOpen(false);
   };
 
   return (
@@ -44,7 +50,24 @@ function App() {
         </button>
         <p>A society learning how it is seen.</p>
         <div className="masthead__controls">
-          <button className="text-control" type="button" onClick={() => setIsAboutOpen(true)}>
+          <button
+            className="text-control"
+            type="button"
+            onClick={() => {
+              setIsTunerOpen(true);
+              setIsAboutOpen(false);
+            }}
+          >
+            tune
+          </button>
+          <button
+            className="text-control"
+            type="button"
+            onClick={() => {
+              setIsAboutOpen(true);
+              setIsTunerOpen(false);
+            }}
+          >
             about
           </button>
           <button className="text-control" type="button" onClick={() => setIsPaused((value) => !value)}>
@@ -61,6 +84,7 @@ function App() {
             cycle={cycle}
             onClose={() => setSelectedId(null)}
             onSelect={setSelectedId}
+            tuningMap={tuningMap}
           />
         ) : (
           <ExhibitionGallery people={individuals} cycle={cycle} onSelect={setSelectedId} />
@@ -88,6 +112,17 @@ function App() {
       </footer>
 
       {isAboutOpen && <About onClose={() => setIsAboutOpen(false)} />}
+      {isTunerOpen && (
+        <PerceptionTuner
+          people={individuals}
+          tuningMap={tuningMap}
+          cycle={cycle}
+          onChange={setControl}
+          onResetIndividual={resetIndividual}
+          onResetAll={resetAll}
+          onClose={() => setIsTunerOpen(false)}
+        />
+      )}
     </main>
   );
 }

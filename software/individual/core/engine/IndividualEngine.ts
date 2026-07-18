@@ -59,6 +59,7 @@ export class IndividualEngine {
 
     this.assertPeerPortraits(input.peerSelfPortraits);
     this.assertReceivedPortraits(input.receivedPeerPortraits);
+    const perceptionTuning = this.resolvePerceptionTuning(input.perceptionTuning);
 
     const cycle = snapshot.state.cycle + 1;
     const startedAt = this.dependencies.clock.now();
@@ -85,6 +86,7 @@ export class IndividualEngine {
           state: snapshot.state,
           portrait,
           cycle,
+          tuning: perceptionTuning,
         });
 
         return drawing.drawPeer({
@@ -182,5 +184,29 @@ export class IndividualEngine {
         );
       }
     }
+  }
+
+  private resolvePerceptionTuning(
+    overrides: CycleInput["perceptionTuning"],
+  ): Readonly<Record<string, number>> {
+    const controls = new Map(this.manifest.perception.controls.map((control) => [control.id, control]));
+    const tuning: Record<string, number> = Object.fromEntries(
+      this.manifest.perception.controls.map((control) => [control.id, control.defaultValue]),
+    );
+
+    for (const [id, value] of Object.entries(overrides ?? {})) {
+      const control = controls.get(id);
+      if (!control) {
+        throw new Error(`Unknown perception control "${id}" for "${this.manifest.id}".`);
+      }
+      if (!Number.isFinite(value) || value < control.min || value > control.max) {
+        throw new Error(
+          `Perception control "${id}" for "${this.manifest.id}" must be between ${control.min} and ${control.max}.`,
+        );
+      }
+      tuning[id] = value;
+    }
+
+    return tuning;
   }
 }

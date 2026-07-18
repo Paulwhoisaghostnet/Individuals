@@ -57,5 +57,27 @@ export const defineIndividualManifest = <T extends IndividualManifest>(manifest:
     throw new Error("minimumCycleIntervalMs cannot be negative.");
   }
 
+  assertNonEmpty(manifest.perception.modelId, "perception.modelId");
+  assertNonEmpty(manifest.perception.modelName, "perception.modelName");
+  if (manifest.perception.controls.length === 0) {
+    throw new Error('Individual manifest field "perception.controls" must define at least one control.');
+  }
+  const controlIds = new Set<string>();
+  for (const control of manifest.perception.controls) {
+    assertNonEmpty(control.id, "perception.controls[].id");
+    assertNonEmpty(control.label, "perception.controls[].label");
+    assertNonEmpty(control.description, "perception.controls[].description");
+    if (controlIds.has(control.id)) {
+      throw new Error(`Duplicate perception control id "${control.id}".`);
+    }
+    controlIds.add(control.id);
+    if (control.min >= control.max || control.step <= 0) {
+      throw new Error(`Perception control "${control.id}" has an invalid numeric range.`);
+    }
+    if (control.defaultValue < control.min || control.defaultValue > control.max) {
+      throw new Error(`Perception control "${control.id}" defaultValue is outside its range.`);
+    }
+  }
+
   return manifest;
 };

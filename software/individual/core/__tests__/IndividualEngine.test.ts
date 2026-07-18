@@ -31,6 +31,7 @@ describe("IndividualEngine", () => {
     const firstCycle = await individual.runCycle({
       peerSelfPortraits: [makePortrait()],
       receivedPeerPortraits: [],
+      perceptionTuning: { "distortion-strength": 0.8 },
     });
 
     expect(firstCycle.cycle).toBe(1);
@@ -39,6 +40,7 @@ describe("IndividualEngine", () => {
     expect(firstCycle.state.selfConcept.physicalSelf.perceivedSimilarity).toBeGreaterThan(0);
     expect(firstCycle.peerPortraits).toHaveLength(1);
     expect(firstCycle.peerPortraits[0].subjectId).toBe("peer-a");
+    expect(firstCycle.peerPortraits[0].statement).toContain("distortion-strength=0.8");
     expect(firstCycle.socialPortrait).toBeUndefined();
 
     const secondCycle = await individual.runCycle({
@@ -79,6 +81,26 @@ describe("IndividualEngine", () => {
         receivedPeerPortraits: [makePortrait()],
       }),
     ).rejects.toThrow('must be a peer portrait of "iris"');
+  });
+
+  it("rejects unknown or out-of-range perception tuning", async () => {
+    const individual = createTemplateIndividual();
+
+    await expect(
+      individual.runCycle({
+        peerSelfPortraits: [],
+        receivedPeerPortraits: [],
+        perceptionTuning: { unknown: 0.5 },
+      }),
+    ).rejects.toThrow('Unknown perception control "unknown"');
+
+    await expect(
+      individual.runCycle({
+        peerSelfPortraits: [],
+        receivedPeerPortraits: [],
+        perceptionTuning: { "distortion-strength": 2 },
+      }),
+    ).rejects.toThrow("must be between 0 and 1");
   });
 
   it("rejects invalid manifest trait ranges", () => {

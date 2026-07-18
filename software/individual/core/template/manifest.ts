@@ -10,7 +10,7 @@ export const createTemplateManifest = (
   options: TemplateManifestOptions = {},
 ): IndividualManifest =>
   defineIndividualManifest({
-    schemaVersion: 2,
+    schemaVersion: 3,
     id: options.id ?? "template-individual",
     displayName: options.displayName ?? "Unformed",
     statement: "I am learning the distance between the image I make and the image returned to me.",
@@ -57,10 +57,23 @@ export const createTemplateManifest = (
       },
     },
     perception: {
+      modelId: "template-lens",
+      modelName: "Undifferentiated lens",
       description: "A neutral placeholder perception awaiting a distinctive distortion.",
       constraints: [
         "Preserve the source dimensions.",
         "Record every transformation as an observation note.",
+      ],
+      controls: [
+        {
+          id: "distortion-strength",
+          label: "Distortion strength",
+          description: "Overall strength of the placeholder visual alteration.",
+          min: 0,
+          max: 1,
+          step: 0.01,
+          defaultValue: 0.25,
+        },
       ],
     },
     drawing: {

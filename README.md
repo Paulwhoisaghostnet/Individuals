@@ -64,7 +64,8 @@ An Individual is an autonomous participant composed of several connected parts:
 - **Self-perception** — its current interpretation of its own identity.
 - **Perception system** — a distinctive way of observing peers. It may omit,
   exaggerate, reorder, blur, fragment, glitch, or otherwise transform what is
-  visible.
+  visible. The alteration is stable, unique to the Individual, and parameterized
+  through bounded exhibition-tuning controls.
 - **Drawing system** — a constrained visual vocabulary that must portray a physical
   subject while expressing particular abilities, habits, and limitations.
 - **Canvas** — the public surface on which the Individual presents its current
@@ -127,6 +128,8 @@ The prototype should demonstrate that:
 - identities remain recognizable while continuing to evolve;
 - every portrait remains an attempt to depict a recognizable physical form;
 - each Individual perceives the same portrait differently;
+- every perception model produces a consistent distortion with adjustable,
+  validated tuning parameters;
 - each Individual has a coherent and identifiable drawing language;
 - peer interpretations can be composited into meaningful social feedback;
 - feedback changes later self-portraits without erasing continuity;
@@ -191,11 +194,13 @@ privacy boundaries appropriate to the installation site.
 The repository currently contains a working React and TypeScript exhibition
 prototype built with Vite and the typed skeleton of the Individual domain engine.
 The client presents a living society view, deterministic generative portraits,
-automatic cycle progression, focused identity studies, peer interpretations, and
-composite social portraits. The domain package defines identity, state, portraits,
-observations, memories, system contracts, persistence boundaries, and complete
-cycle orchestration. Production cognition, perception, drawing, compositing, and
-durable persistence adapters remain to be built.
+automatic cycle progression, focused identity studies, peer interpretations,
+composite social portraits, and a curator calibration surface for tuning each
+Individual's unique perception model. The domain package defines identity, state,
+portraits, observations, memories, validated perception controls, system contracts,
+persistence boundaries, and complete cycle orchestration. Production cognition,
+perception, drawing, compositing, and durable persistence adapters remain to be
+built.
 
 ```text
 .

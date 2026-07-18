@@ -14,6 +14,8 @@ To create an Individual:
    live private memory.
 4. Add owned visual material and its provenance under `assets/`.
 5. Define identity-specific perception and drawing policies.
+   The perception policy must have a unique model ID and bounded tuning controls;
+   defaults should express the intended exhibited character.
 6. Add tests proving recognizable continuity and intentional constraints.
 7. Assemble the package with production or simulated adapters in the runtime.
 

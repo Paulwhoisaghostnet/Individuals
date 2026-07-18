@@ -47,18 +47,34 @@ export interface CapabilityProfile {
   readonly constraints: readonly string[];
 }
 
+export interface PerceptionControlDefinition {
+  readonly id: string;
+  readonly label: string;
+  readonly description: string;
+  readonly min: number;
+  readonly max: number;
+  readonly step: number;
+  readonly defaultValue: number;
+}
+
+export interface PerceptionProfile extends CapabilityProfile {
+  readonly modelId: string;
+  readonly modelName: string;
+  readonly controls: readonly PerceptionControlDefinition[];
+}
+
 export interface DrawingProfile extends CapabilityProfile {
   readonly palette: readonly string[];
   readonly preferredFormats: readonly ArtworkFormat[];
 }
 
 export interface IndividualManifest {
-  readonly schemaVersion: 2;
+  readonly schemaVersion: 3;
   readonly id: string;
   readonly displayName: string;
   readonly statement: string;
   readonly identity: IdentityDefinition;
-  readonly perception: CapabilityProfile;
+  readonly perception: PerceptionProfile;
   readonly drawing: DrawingProfile;
   readonly cadence: {
     readonly minimumCycleIntervalMs: number;
@@ -149,6 +165,7 @@ export interface IndividualSnapshot {
 export interface CycleInput {
   readonly peerSelfPortraits: readonly Portrait[];
   readonly receivedPeerPortraits: readonly Portrait[];
+  readonly perceptionTuning?: Readonly<Record<string, number>>;
 }
 
 export interface CycleRecord {

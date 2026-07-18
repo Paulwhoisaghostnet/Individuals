@@ -33,6 +33,7 @@ export interface PerceptionSystem {
     state: IndividualState;
     portrait: Portrait;
     cycle: number;
+    tuning: Readonly<Record<string, number>>;
   }): Promise<Observation>;
 }
 

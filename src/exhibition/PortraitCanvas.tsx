@@ -1,6 +1,17 @@
 import { useMemo } from "react";
 import { generatePortrait, type GeneratedBody } from "./generative";
-import type { ExhibitionIndividual, PortraitMode, VisualLanguage } from "./types";
+import {
+  combinePerceptionEffects,
+  createDefaultTuning,
+  resolvePerceptionEffect,
+  type PerceptionEffect,
+} from "./perception";
+import type {
+  ExhibitionIndividual,
+  PerceptionTuning,
+  PortraitMode,
+  VisualLanguage,
+} from "./types";
 
 interface PortraitCanvasProps {
   readonly individual: ExhibitionIndividual;
@@ -8,6 +19,11 @@ interface PortraitCanvasProps {
   readonly mode?: PortraitMode;
   readonly observedBy?: ExhibitionIndividual;
   readonly compact?: boolean;
+  readonly perceptionTuning?: PerceptionTuning;
+  readonly socialPerceptions?: readonly {
+    readonly observer: ExhibitionIndividual;
+    readonly tuning: PerceptionTuning;
+  }[];
 }
 
 interface BodyFigureProps {
@@ -17,6 +33,7 @@ interface BodyFigureProps {
   readonly ghost?: boolean;
   readonly ideal?: boolean;
   readonly transform?: string;
+  readonly perceptionEffect?: PerceptionEffect;
 }
 
 const fingers = (body: GeneratedBody, side: "left" | "right") => {
@@ -41,11 +58,17 @@ function BodyFigure({
   ghost = false,
   ideal = false,
   transform,
+  perceptionEffect,
 }: BodyFigureProps) {
   const stroke = ideal ? palette[2] : palette[1];
   const limbFill = ideal ? "none" : ghost ? palette[1] : palette[3];
-  const opacity = ideal ? 0.48 : ghost ? 0.13 : 0.9;
+  const opacity = ideal
+    ? 0.48
+    : ghost
+      ? 0.13
+      : 0.38 + (perceptionEffect?.interiorVisibility ?? 0.95) * 0.57;
   const fill = ideal ? "none" : palette[3];
+  const outlineWidth = ideal ? 2 : 1.4 + (perceptionEffect?.edgeGain ?? 0.5) * 2.2;
 
   return (
     <g
@@ -71,7 +94,12 @@ function BodyFigure({
       />
       <path d={body.leftArmPath} stroke={limbFill} strokeWidth={body.limbWidth} />
       <path d={body.rightArmPath} stroke={limbFill} strokeWidth={body.limbWidth} />
-      <path d={body.torsoPath} fill={fill} fillOpacity={ideal ? 0 : 0.72} strokeWidth={ideal ? 2 : 2.4} />
+      <path
+        d={body.torsoPath}
+        fill={fill}
+        fillOpacity={ideal ? 0 : perceptionEffect?.interiorVisibility ?? 0.72}
+        strokeWidth={outlineWidth}
+      />
       <path d={body.neckPath} strokeWidth={ideal ? 2 : 5} />
       <ellipse
         cx={body.head.x}
@@ -81,7 +109,7 @@ function BodyFigure({
         transform={`rotate(${body.head.rotation} ${body.head.x} ${body.head.y})`}
         fill={fill}
         fillOpacity={ideal ? 0 : 0.86}
-        strokeWidth={ideal ? 2 : 2.4}
+        strokeWidth={outlineWidth}
       />
 
       {!ghost && !ideal && (
@@ -130,8 +158,26 @@ export function PortraitCanvas({
   cycle,
   mode = "self",
   observedBy,
+  perceptionTuning,
+  socialPerceptions,
 }: PortraitCanvasProps) {
   const visualLanguage = observedBy?.visualLanguage ?? individual.visualLanguage;
+  const perceptionEffect = useMemo(() => {
+    if (observedBy) {
+      return resolvePerceptionEffect(
+        observedBy.perceptionModel,
+        perceptionTuning ?? createDefaultTuning(observedBy.perceptionModel),
+      );
+    }
+    if (mode === "social" && socialPerceptions) {
+      return combinePerceptionEffects(
+        socialPerceptions.map(({ observer, tuning }) =>
+          resolvePerceptionEffect(observer.perceptionModel, tuning),
+        ),
+      );
+    }
+    return undefined;
+  }, [mode, observedBy, perceptionTuning, socialPerceptions]);
   const portrait = useMemo(
     () =>
       generatePortrait(
@@ -141,8 +187,17 @@ export function PortraitCanvas({
         cycle,
         mode,
         observedBy?.id,
+        perceptionEffect,
       ),
-    [cycle, individual.id, individual.physicalIdentity.bodyPlan, mode, observedBy?.id, visualLanguage],
+    [
+      cycle,
+      individual.id,
+      individual.physicalIdentity.bodyPlan,
+      mode,
+      observedBy?.id,
+      perceptionEffect,
+      visualLanguage,
+    ],
   );
   const palette = observedBy?.palette ?? individual.palette;
   const filterId = `distortion-${portrait.seed}`;
@@ -165,6 +220,9 @@ export function PortraitCanvas({
       <title id={`${filterId}-title`}>{title}</title>
       <desc id={`${filterId}-description`}>
         {individual.physicalIdentity.current} The ideal physical form is {individual.physicalIdentity.ideal}
+        {observedBy
+          ? ` ${observedBy.name} sees it through ${observedBy.perceptionModel.name}.`
+          : ""}
       </desc>
       <defs>
         <radialGradient id={grainId} cx="50%" cy="43%" r="68%">
@@ -183,7 +241,15 @@ export function PortraitCanvas({
           <feDisplacementMap
             in="SourceGraphic"
             in2="noise"
-            scale={mode === "peer" ? 10 : mode === "social" ? 4 : 6}
+            scale={
+              perceptionEffect
+                ? 3 + perceptionEffect.geometryWarp * 18
+                : mode === "peer"
+                  ? 10
+                  : mode === "social"
+                    ? 4
+                    : 6
+            }
             xChannelSelector="R"
             yChannelSelector="B"
           />
@@ -198,8 +264,9 @@ export function PortraitCanvas({
         <BodyFigure
           body={portrait.idealBody}
           palette={palette}
-          language={visualLanguage}
-          ideal
+            language={visualLanguage}
+            ideal
+            perceptionEffect={perceptionEffect}
         />
       )}
 
@@ -212,10 +279,16 @@ export function PortraitCanvas({
             language={visualLanguage}
             ghost
             transform={`translate(${offset} ${visualLanguage === "thread" ? offset * 0.18 : 0})`}
+            perceptionEffect={perceptionEffect}
           />
         ))}
 
-        <BodyFigure body={portrait.body} palette={palette} language={visualLanguage} />
+        <BodyFigure
+          body={portrait.body}
+          palette={palette}
+          language={visualLanguage}
+          perceptionEffect={perceptionEffect}
+        />
 
         {portrait.fragments.map((fragment, index) => (
           <rect
@@ -225,7 +298,13 @@ export function PortraitCanvas({
             y={fragment.y}
             width={fragment.width}
             height={fragment.height}
-            fill={index % 4 === 0 ? palette[2] : palette[1]}
+            fill={
+              perceptionEffect?.modelId.includes("morrow") && index % 3 === 0
+                ? palette[0]
+                : index % 4 === 0
+                  ? palette[2]
+                  : palette[1]
+            }
             opacity={fragment.opacity}
             transform={`rotate(${fragment.rotation} ${fragment.x + fragment.width / 2} ${fragment.y + fragment.height / 2})`}
             style={{ animationDelay: `${index * -0.37}s` }}

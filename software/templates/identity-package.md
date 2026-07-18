@@ -14,6 +14,8 @@
 ## Capabilities
 
 - [ ] Perception description and explicit constraints
+- [ ] Unique perception model ID, invariant, and bounded slider definitions
+- [ ] Default perception values produce a recognizable, repeatable distortion
 - [ ] Drawing description, palette, formats, and explicit constraints
 - [ ] Cognition instructions and structured outputs
 - [ ] Memory and adaptation policy

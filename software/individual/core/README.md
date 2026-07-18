@@ -151,6 +151,9 @@ The engine accepts two deliberately separate collections:
   observe and reinterpret.
 - `receivedPeerPortraits` are drawings made *by peers about this Individual* and
   will be composited into its social portrait.
+- `perceptionTuning` is an optional map of runtime values for controls declared by
+  this Individual's perception profile. Missing controls use manifest defaults;
+  unknown and out-of-range values are rejected.
 
 The engine rejects a self-portrait placed in social feedback, a peer portrait of
 the wrong subject, or the Individual's own canvas placed among its peers. These

@@ -1,4 +1,5 @@
 import type { BodyPlan, PortraitMode, VisualLanguage } from "./types";
+import type { PerceptionEffect } from "./perception";
 
 const mulberry32 = (seed: number) => {
   let value = seed;
@@ -109,6 +110,7 @@ export interface GeneratedPortrait {
   readonly idealBody: GeneratedBody;
   readonly fragments: readonly GeneratedFragment[];
   readonly echoOffsets: readonly number[];
+  readonly perceptionEffect?: PerceptionEffect;
 }
 
 const createBody = (
@@ -198,20 +200,36 @@ export const generatePortrait = (
   cycle: number,
   mode: PortraitMode,
   observerId = "self",
+  perceptionEffect?: PerceptionEffect,
 ): GeneratedPortrait => {
-  const seed = hashSeed(language, bodyPlan, identityId, cycle, mode, observerId);
+  const effectSignature = perceptionEffect
+    ? Object.values(perceptionEffect).join(":")
+    : "unfiltered";
+  const seed = hashSeed(language, bodyPlan, identityId, cycle, mode, observerId, effectSignature);
   const random = mulberry32(seed);
-  const distortion =
-    mode === "social" ? 5 : mode === "peer" ? (language === "fragment" ? 24 : 15) : 11;
+  const distortion = perceptionEffect
+    ? 7 + perceptionEffect.geometryWarp * 34
+    : mode === "social"
+      ? 5
+      : mode === "peer"
+        ? language === "fragment"
+          ? 24
+          : 15
+        : 11;
   const body = createBody(bodyPlan, distortion, random);
   const idealBody = createBody(bodyPlan, 0, () => 0.5);
-  const fragmentCount = language === "fragment" ? 17 : 5;
+  const fragmentCount = perceptionEffect
+    ? perceptionEffect.fragmentCount
+    : language === "fragment"
+      ? 17
+      : 5;
+  const fragmentScale = perceptionEffect?.fragmentScale ?? (language === "fragment" ? 0.62 : 0.2);
   const fragments = Array.from({ length: fragmentCount }, (_, index) => ({
     id: `${seed}-fragment-${index}`,
     x: body.centerX - 125 + random() * 250,
     y: 270 + random() * 330,
-    width: 28 + random() * (language === "fragment" ? 110 : 52),
-    height: 5 + random() * (language === "fragment" ? 45 : 15),
+    width: 20 + random() * (34 + fragmentScale * 132),
+    height: 4 + random() * (10 + fragmentScale * 52),
     rotation: -8 + random() * 16,
     opacity: 0.12 + random() * 0.46,
   }));
@@ -221,7 +239,17 @@ export const generatePortrait = (
     body,
     idealBody,
     fragments,
-    echoOffsets:
-      language === "thread" ? [-18, -10, 9, 17] : language === "contour" ? [-8, 8] : [-3, 4],
+    echoOffsets: perceptionEffect
+      ? Array.from(
+          { length: perceptionEffect.echoCount },
+          (_, index) =>
+            (index - (perceptionEffect.echoCount - 1) / 2) * perceptionEffect.echoSpacing,
+        ).filter((offset) => Math.abs(offset) > 0.01)
+      : language === "thread"
+        ? [-18, -10, 9, 17]
+        : language === "contour"
+          ? [-8, 8]
+          : [-3, 4],
+    perceptionEffect,
   };
 };
