@@ -175,14 +175,19 @@ privacy boundaries appropriate to the installation site.
 ## Current repository
 
 The repository currently contains a React and TypeScript exhibition shell built
-with Vite. It establishes the visual surface and an isolated container deployment
-but does not yet contain the identity, perception, drawing, or persistence engines.
+with Vite and the typed skeleton of the Individual domain engine. The domain
+package defines identity, state, portraits, observations, memories, system
+contracts, persistence boundaries, and the complete cycle orchestration. Its
+template systems are deterministic placeholders; production cognition,
+perception, drawing, compositing, and durable persistence adapters remain to be
+built.
 
 ```text
 .
 ├── deploy/
 │   └── nginx.conf             # Static production server configuration
 ├── src/
+│   ├── individual/            # Individual engine, identity model, and template
 │   ├── App.tsx                # Exhibition shell
 │   ├── main.tsx               # Browser entry point
 │   └── styles.css             # Global exhibition styles
@@ -216,7 +221,9 @@ The local exhibition is served at [http://localhost:4174](http://localhost:4174)
 | --- | --- |
 | `npm run dev` | Start the development server on port 4174. |
 | `npm run typecheck` | Validate the TypeScript project without emitting files. |
+| `npm run test` | Run the Individual domain test suite once. |
 | `npm run build` | Typecheck and create a production build in `dist/`. |
+| `npm run check` | Run typechecking, tests, and the production build. |
 | `npm run preview` | Preview the production build locally. |
 
 ## Production deployment
