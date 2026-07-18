@@ -174,13 +174,14 @@ privacy boundaries appropriate to the installation site.
 
 ## Current repository
 
-The repository currently contains a React and TypeScript exhibition shell built
-with Vite and the typed skeleton of the Individual domain engine. The domain
-package defines identity, state, portraits, observations, memories, system
-contracts, persistence boundaries, and the complete cycle orchestration. Its
-template systems are deterministic placeholders; production cognition,
-perception, drawing, compositing, and durable persistence adapters remain to be
-built.
+The repository currently contains a working React and TypeScript exhibition
+prototype built with Vite and the typed skeleton of the Individual domain engine.
+The client presents a living society view, deterministic generative portraits,
+automatic cycle progression, focused identity studies, peer interpretations, and
+composite social portraits. The domain package defines identity, state, portraits,
+observations, memories, system contracts, persistence boundaries, and complete
+cycle orchestration. Production cognition, perception, drawing, compositing, and
+durable persistence adapters remain to be built.
 
 ```text
 .
@@ -189,7 +190,8 @@ built.
 ├── hardware/                  # Physical installation requirements and templates
 ├── software/                  # Software installed on and packaged with Individuals
 ├── src/
-│   ├── App.tsx                # Exhibition shell
+│   ├── exhibition/            # Gallery model, generative art, and focused views
+│   ├── App.tsx                # Exhibition lifecycle and primary composition
 │   ├── main.tsx               # Browser entry point
 │   └── styles.css             # Global exhibition styles
 ├── compose.production.yml     # Isolated production service
@@ -222,7 +224,7 @@ The local exhibition is served at [http://localhost:4174](http://localhost:4174)
 | --- | --- |
 | `npm run dev` | Start the development server on port 4174. |
 | `npm run typecheck` | Validate the TypeScript project without emitting files. |
-| `npm run test` | Run the Individual domain test suite once. |
+| `npm run test` | Run the domain and exhibition-client test suites once. |
 | `npm run build` | Typecheck and create a production build in `dist/`. |
 | `npm run check` | Run typechecking, tests, and the production build. |
 | `npm run preview` | Preview the production build locally. |
