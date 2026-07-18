@@ -196,24 +196,6 @@ dd {
   letter-spacing: 0.16em;
 }
 
-.portrait-art__halo {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: halo-breathe 9s ease-in-out infinite alternate;
-}
-
-.portrait-art__mark {
-  stroke-dasharray: 5 8;
-  animation: mark-drift 13s linear infinite;
-}
-
-.portrait-art--contour .portrait-art__mark {
-  stroke-dasharray: none;
-  animation: contour-breathe 11s ease-in-out infinite alternate;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
 .portrait-art__fragment {
   animation: fragment-flicker 8s ease-in-out infinite alternate;
 }
@@ -455,6 +437,30 @@ dd {
   line-height: 1.45;
 }
 
+.embodied-register {
+  padding-top: 1.5rem;
+}
+
+.embodied-register p {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(235, 231, 220, 0.09);
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.embodied-register span {
+  color: var(--dim);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.61rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
 .focus__systems {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -464,6 +470,15 @@ dd {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 0.95rem;
   line-height: 1.5;
+}
+
+.body-figure--ghost {
+  animation: bodily-echo 11s ease-in-out infinite alternate;
+}
+
+.body-figure--ideal {
+  stroke-dasharray: 5 7;
+  animation: ideal-register 7s ease-in-out infinite alternate;
 }
 
 .focus__systems p {
@@ -495,13 +510,9 @@ dd {
 
 .social-portrait__art {
   position: relative;
-  grid-column: 3 / span 8;
-  aspect-ratio: 16 / 10;
+  grid-column: 4 / span 6;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
-}
-
-.social-portrait__art .portrait-art {
-  transform: scale(1.18);
 }
 
 .peer-readings {
@@ -521,12 +532,8 @@ dd {
 
 .peer-reading__art {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
-}
-
-.peer-reading__art .portrait-art {
-  transform: scale(1.18);
 }
 
 .peer-reading > p {
@@ -653,32 +660,6 @@ dd {
   }
 }
 
-@keyframes halo-breathe {
-  from {
-    opacity: 0.55;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-}
-
-@keyframes mark-drift {
-  to {
-    stroke-dashoffset: -52;
-  }
-}
-
-@keyframes contour-breathe {
-  from {
-    transform: scale(0.99) rotate(-0.15deg);
-  }
-  to {
-    transform: scale(1.01) rotate(0.15deg);
-  }
-}
-
 @keyframes fragment-flicker {
   from {
     filter: blur(0);
@@ -695,6 +676,26 @@ dd {
   }
   to {
     transform: translate(3px, -2px) rotate(0.2deg);
+  }
+}
+
+@keyframes bodily-echo {
+  from {
+    opacity: 0.08;
+  }
+  to {
+    opacity: 0.17;
+  }
+}
+
+@keyframes ideal-register {
+  from {
+    opacity: 0.34;
+    stroke-dashoffset: 0;
+  }
+  to {
+    opacity: 0.58;
+    stroke-dashoffset: -24;
   }
 }
 
@@ -791,6 +792,7 @@ dd {
   }
 
   .identity-axis > div,
+  .embodied-register p,
   .focus__systems,
   .focus__systems p {
     grid-template-columns: 1fr;

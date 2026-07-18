@@ -43,18 +43,41 @@ export function IndividualFocus({
 
         <dl className="identity-axis">
           <div>
-            <dt>Ideal self</dt>
-            <dd>{individual.idealSelf}</dd>
+            <dt>Ideal body</dt>
+            <dd>{individual.physicalIdentity.ideal}</dd>
           </div>
           <div>
-            <dt>Self view</dt>
-            <dd>{individual.selfView}</dd>
+            <dt>Body perceived</dt>
+            <dd>{individual.physicalIdentity.current}</dd>
           </div>
           <div>
-            <dt>The world returns</dt>
+            <dt>Peers return</dt>
             <dd>{individual.socialView}</dd>
           </div>
         </dl>
+
+        <div className="embodied-register" aria-label="Physical identity register">
+          <p>
+            <span>face</span>
+            {individual.physicalIdentity.face}
+          </p>
+          <p>
+            <span>surface</span>
+            {individual.physicalIdentity.surface}
+          </p>
+          <p>
+            <span>posture</span>
+            {individual.physicalIdentity.posture}
+          </p>
+          <p>
+            <span>recognition</span>
+            {individual.physicalIdentity.invariantFeatures.join(" / ")}
+          </p>
+          <p>
+            <span>distance</span>
+            {individual.physicalIdentity.currentDifferences.join(" / ")}
+          </p>
+        </div>
 
         <div className="focus__systems">
           <p>
@@ -70,8 +93,8 @@ export function IndividualFocus({
 
       <div className="social-portrait">
         <div className="section-label">
-          <span>how the world sees {individual.name}</span>
-          <span>{peers.length} perceptions / one image</span>
+          <span>the body the world returns to {individual.name}</span>
+          <span>{peers.length} perceptions / ideal registered beneath</span>
         </div>
         <div className="social-portrait__art">
           <PortraitCanvas individual={individual} cycle={cycle} mode="social" />

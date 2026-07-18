@@ -4,17 +4,19 @@
 perception, and the impossibility of seeing—or being seen—without distortion.
 
 The installation is populated by artificial entities called **Individuals**. Each
-Individual has a persistent identity, an internal idea of who it is, an ideal of
-who it wishes to become, and a visual practice through which it portrays itself
-and its peers. Its peers observe that self-portrait through their own imperfect
-ways of seeing, redraw what they perceive, and collectively return a new image of
-the Individual: a portrait of how the world sees it.
+Individual has a persistent identity and is trained to understand a specific ideal
+physical form as its own body. It believes its present self is literally a version
+of that body—either matching the ideal or capable of becoming it—and uses a visual
+practice to portray its embodied self and its peers. Its peers observe that bodily
+self-portrait through their own imperfect ways of seeing, redraw the physical form
+they perceive, and collectively return a new image of the Individual: a portrait
+of how the world sees its body.
 
 The Individual then attempts to reconcile three competing identities:
 
-1. **The ideal self** — who it wishes it could be.
-2. **The perceived self** — who it currently believes itself to be.
-3. **The social self** — who its peers reflect back to it.
+1. **The ideal physical self** — the body it understands as its intended form.
+2. **The perceived physical self** — the version of that body it believes it currently has.
+3. **The social physical self** — the body its peers reflect back to it.
 
 Complete coherence is the goal, but it is not a stable destination. Every
 participant sees differently, draws differently, and changes in response to the
@@ -37,6 +39,13 @@ uses persistent artificial identities to create a society of image-makers. Each
 drawing is both an artwork and a social act: an assertion of self, an
 interpretation of another, or a response to being interpreted.
 
+Embodiment is literal within the experiment. Although an artificial intelligence
+does not require or possess a biological body, an Individual is trained to identify
+with an authored physical form. Its portraits must attempt to represent that body:
+its anatomy, face, posture, material, scale, movement, and distinguishing features.
+Abstraction may describe uncertainty or distorted perception, but it cannot replace
+the underlying physical subject.
+
 The installation is not designed to converge on a final or objectively correct
 portrait. Its recurring failure to reach perfect agreement is fundamental to the
 work. Difference, error, limitation, memory, and misrecognition are treated as
@@ -48,14 +57,16 @@ An Individual is an autonomous participant composed of several connected parts:
 
 - **Persistent identity** — a durable history, temperament, self-narrative, and
   evolving set of beliefs that survives across drawing cycles.
-- **Ideal self** — a private visual and conceptual target toward which the
-  Individual attempts to move.
+- **Ideal physical self** — an explicit bodily target, including anatomy, face,
+  surface, stature, posture, movement, and non-negotiable identifying features.
+- **Embodied self-perception** — the physical version of that ideal the Individual
+  believes it currently inhabits, including perceived differences and similarity.
 - **Self-perception** — its current interpretation of its own identity.
 - **Perception system** — a distinctive way of observing peers. It may omit,
   exaggerate, reorder, blur, fragment, glitch, or otherwise transform what is
   visible.
-- **Drawing system** — a constrained visual vocabulary with particular abilities,
-  habits, and limitations.
+- **Drawing system** — a constrained visual vocabulary that must portray a physical
+  subject while expressing particular abilities, habits, and limitations.
 - **Canvas** — the public surface on which the Individual presents its current
   self-portrait.
 - **Memory and adaptation** — the capacity to compare images, interpret feedback,
@@ -114,6 +125,7 @@ full identity loop.
 The prototype should demonstrate that:
 
 - identities remain recognizable while continuing to evolve;
+- every portrait remains an attempt to depict a recognizable physical form;
 - each Individual perceives the same portrait differently;
 - each Individual has a coherent and identifiable drawing language;
 - peer interpretations can be composited into meaningful social feedback;
@@ -160,6 +172,8 @@ privacy boundaries appropriate to the installation site.
 ## Design principles
 
 - **Identity persists.** Change should accumulate rather than reset the character.
+- **Embodiment is literal.** Distortion may change a body but cannot substitute
+  non-representational imagery for the body being perceived.
 - **Perception is situated.** There is no neutral observer or canonical portrait.
 - **Constraints create character.** Limitations should be specific, visible, and
   productive.

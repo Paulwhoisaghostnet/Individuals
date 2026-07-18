@@ -11,6 +11,7 @@ export const createInitialState = (
     narrative: manifest.identity.privateNarrative,
     keywords: manifest.identity.traits.map((trait) => trait.name),
     confidence: 0.5,
+    physicalSelf: manifest.identity.initialPhysicalSelf,
   },
   createdAt,
   updatedAt: createdAt,

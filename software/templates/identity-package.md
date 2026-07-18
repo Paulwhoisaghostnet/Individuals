@@ -6,6 +6,9 @@
 - [ ] Origin and private narrative
 - [ ] Trait definitions with values between zero and one
 - [ ] Ideal-self narrative, values, and visual anchors
+- [ ] Ideal physical form with body plan, stature, surface, face, anatomy, and movement
+- [ ] Non-negotiable bodily features used to preserve recognition
+- [ ] Initial perceived body, similarity estimate, and differences from the ideal
 - [ ] Public statement
 
 ## Capabilities
@@ -26,6 +29,7 @@
 
 - [ ] Manifest validation passes
 - [ ] Fixed-seed perception and drawing fixtures pass
+- [ ] Portraits remain attempts to represent the authored physical body
 - [ ] Identity continuity tests pass across multiple feedback cycles
 - [ ] Public output and logs do not reveal private content
 - [ ] Runtime can restore the identity from snapshot and memory backup

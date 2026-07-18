@@ -35,6 +35,8 @@ describe("IndividualEngine", () => {
 
     expect(firstCycle.cycle).toBe(1);
     expect(firstCycle.selfPortrait.subjectId).toBe("iris");
+    expect(firstCycle.state.selfConcept.physicalSelf.description).toContain("bodily version");
+    expect(firstCycle.state.selfConcept.physicalSelf.perceivedSimilarity).toBeGreaterThan(0);
     expect(firstCycle.peerPortraits).toHaveLength(1);
     expect(firstCycle.peerPortraits[0].subjectId).toBe("peer-a");
     expect(firstCycle.socialPortrait).toBeUndefined();
@@ -55,6 +57,9 @@ describe("IndividualEngine", () => {
     expect(secondCycle.socialPortrait?.sourcePortraitIds).toEqual(["peer-a--1--peer--iris"]);
     expect(secondCycle.state.selfConcept.confidence).toBeGreaterThan(
       firstCycle.state.selfConcept.confidence,
+    );
+    expect(secondCycle.state.selfConcept.physicalSelf.perceivedSimilarity).toBeGreaterThan(
+      firstCycle.state.selfConcept.physicalSelf.perceivedSimilarity,
     );
 
     const saved = await repository.load("iris");
@@ -90,5 +95,24 @@ describe("IndividualEngine", () => {
         },
       }),
     ).toThrow('Trait "impossible" must have a value between 0 and 1.');
+  });
+
+  it("rejects identity manifests without an authored physical form", () => {
+    const manifest = createTemplateManifest();
+
+    expect(() =>
+      createTemplateIndividual({
+        manifest: {
+          ...manifest,
+          identity: {
+            ...manifest.identity,
+            idealPhysicalForm: {
+              ...manifest.identity.idealPhysicalForm,
+              description: "",
+            },
+          },
+        },
+      }),
+    ).toThrow('Individual manifest field "identity.idealPhysicalForm.description" cannot be empty.');
   });
 });

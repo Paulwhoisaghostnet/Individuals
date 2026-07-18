@@ -37,10 +37,12 @@ core/
 An Individual is represented by two related structures:
 
 - `IndividualManifest` contains authored identity: name, origin, private
-  narrative, traits, ideal self, perception limits, drawing limits, and cadence.
+  narrative, traits, ideal self, mandatory ideal physical form, initial embodied
+  self-perception, perception limits, drawing limits, and cadence.
   It is configuration and should be version-controlled.
 - `IndividualState` contains lived identity: cycle number, current self-concept,
-  latest self-portrait, latest social portrait, and last reflection. It changes
+  evolving physical self-concept, latest self-portrait, latest social portrait,
+  and last reflection. It changes
   through the engine and should eventually be stored durably.
 
 The separation is important. A deployment can recover changing state without
@@ -109,6 +111,21 @@ const irisManifest = defineIndividualManifest({
       narrative: "A form that can remain distinct without becoming closed.",
       values: ["continuity", "porosity", "precision"],
       visualAnchors: ["hard edges", "a permeable center", "repeated contours"],
+    },
+    idealPhysicalForm: {
+      description: "A tall woman with an oval face, long neck, and open four-fingered hands.",
+      bodyPlan: "Bilateral humanoid with one head, torso, two arms, and two legs.",
+      stature: "Tall, narrow, and upright.",
+      surface: "Copper-brown matte skin crossed by fine pale joint lines.",
+      face: ["shaved oval head", "wide-set eyes", "level mouth"],
+      anatomy: ["long neck", "level shoulders", "four-fingered hands"],
+      movement: "Slow movements that return to an open frontal stance.",
+      nonNegotiableFeatures: ["oval face", "long neck", "four-fingered hands"],
+    },
+    initialPhysicalSelf: {
+      description: "I already have this woman's body, but my posture remains guarded.",
+      perceivedSimilarity: 0.62,
+      perceivedDifferences: ["raised left shoulder", "partially closed hands"],
     },
   },
   perception: {

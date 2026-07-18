@@ -1,4 +1,4 @@
-import type { PortraitMode, VisualLanguage } from "./types";
+import type { BodyPlan, PortraitMode, VisualLanguage } from "./types";
 
 const mulberry32 = (seed: number) => {
   let value = seed;
@@ -21,11 +21,76 @@ export const hashSeed = (...parts: readonly (string | number)[]): number => {
   return hash >>> 0;
 };
 
-export interface GeneratedMark {
-  readonly id: string;
-  readonly path: string;
-  readonly width: number;
-  readonly opacity: number;
+interface BodyProfile {
+  readonly headRx: number;
+  readonly headRy: number;
+  readonly shoulderWidth: number;
+  readonly hipWidth: number;
+  readonly torsoBottom: number;
+  readonly limbWidth: number;
+  readonly handRadius: number;
+  readonly fingerCount: number;
+}
+
+const profiles: Record<BodyPlan, BodyProfile> = {
+  willow: {
+    headRx: 59,
+    headRy: 75,
+    shoulderWidth: 158,
+    hipWidth: 104,
+    torsoBottom: 545,
+    limbWidth: 27,
+    handRadius: 17,
+    fingerCount: 4,
+  },
+  compact: {
+    headRx: 69,
+    headRy: 67,
+    shoulderWidth: 208,
+    hipWidth: 166,
+    torsoBottom: 565,
+    limbWidth: 38,
+    handRadius: 20,
+    fingerCount: 5,
+  },
+  longline: {
+    headRx: 50,
+    headRy: 82,
+    shoulderWidth: 146,
+    hipWidth: 92,
+    torsoBottom: 550,
+    limbWidth: 23,
+    handRadius: 16,
+    fingerCount: 6,
+  },
+};
+
+export interface BodyPoint {
+  readonly x: number;
+  readonly y: number;
+}
+
+export interface GeneratedBody {
+  readonly centerX: number;
+  readonly head: BodyPoint & { readonly rx: number; readonly ry: number; readonly rotation: number };
+  readonly neckPath: string;
+  readonly torsoPath: string;
+  readonly spinePath: string;
+  readonly leftArmPath: string;
+  readonly rightArmPath: string;
+  readonly leftLegPath: string;
+  readonly rightLegPath: string;
+  readonly leftHand: BodyPoint;
+  readonly rightHand: BodyPoint;
+  readonly leftFoot: BodyPoint;
+  readonly rightFoot: BodyPoint;
+  readonly eyeY: number;
+  readonly eyeSpacing: number;
+  readonly nosePath: string;
+  readonly mouthPath: string;
+  readonly limbWidth: number;
+  readonly handRadius: number;
+  readonly fingerCount: number;
 }
 
 export interface GeneratedFragment {
@@ -40,68 +105,123 @@ export interface GeneratedFragment {
 
 export interface GeneratedPortrait {
   readonly seed: number;
-  readonly marks: readonly GeneratedMark[];
+  readonly body: GeneratedBody;
+  readonly idealBody: GeneratedBody;
   readonly fragments: readonly GeneratedFragment[];
-  readonly focusX: number;
-  readonly focusY: number;
+  readonly echoOffsets: readonly number[];
 }
 
-const contourPath = (random: () => number, index: number): string => {
-  const radiusX = 128 + index * 18;
-  const radiusY = 168 + index * 22;
-  const wobble = 18 + index * 2;
-  const points = Array.from({ length: 12 }, (_, point) => {
-    const angle = (Math.PI * 2 * point) / 12;
-    const variation = (random() - 0.5) * wobble;
-    const x = 400 + Math.cos(angle) * (radiusX + variation);
-    const y = 468 + Math.sin(angle) * (radiusY + variation);
-    return [x, y] as const;
-  });
-  return `${points.map(([x, y], point) => `${point === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ")} Z`;
-};
+const createBody = (
+  plan: BodyPlan,
+  distortion: number,
+  random: () => number,
+): GeneratedBody => {
+  const profile = profiles[plan];
+  const centerX = 400 + (random() - 0.5) * distortion * 0.8;
+  const lean = (random() - 0.5) * distortion;
+  const headTilt = (random() - 0.5) * distortion * 0.55;
+  const headY = plan === "compact" ? 168 : 160;
+  const shoulderY = plan === "compact" ? 302 : 286;
+  const leftShoulderY = shoulderY - lean * 0.45;
+  const rightShoulderY = shoulderY + lean * 0.45;
+  const leftShoulderX = centerX - profile.shoulderWidth / 2;
+  const rightShoulderX = centerX + profile.shoulderWidth / 2;
+  const leftHipX = centerX - profile.hipWidth / 2;
+  const rightHipX = centerX + profile.hipWidth / 2;
+  const waistY = 435;
+  const waistWidth = plan === "compact" ? profile.hipWidth * 0.84 : profile.hipWidth * 0.72;
+  const torsoPath = [
+    `M ${leftShoulderX} ${leftShoulderY}`,
+    `C ${leftShoulderX + 15} 350 ${centerX - waistWidth / 2} 390 ${centerX - waistWidth / 2} ${waistY}`,
+    `C ${centerX - waistWidth / 2} 485 ${leftHipX} 520 ${leftHipX} ${profile.torsoBottom}`,
+    `L ${rightHipX} ${profile.torsoBottom}`,
+    `C ${rightHipX} 520 ${centerX + waistWidth / 2} 485 ${centerX + waistWidth / 2} ${waistY}`,
+    `C ${centerX + waistWidth / 2} 390 ${rightShoulderX - 15} 350 ${rightShoulderX} ${rightShoulderY}`,
+    `Q ${centerX} ${shoulderY + 30} ${leftShoulderX} ${leftShoulderY} Z`,
+  ].join(" ");
 
-const threadPath = (random: () => number, index: number): string => {
-  const startY = 130 + index * 34;
-  const bend = (random() - 0.5) * 180;
-  const endY = 860 - index * 12 + (random() - 0.5) * 80;
-  return `M${80 + random() * 150} ${startY} C${270 + bend} ${260 + random() * 180}, ${530 - bend} ${610 + random() * 140}, ${570 + random() * 150} ${endY}`;
+  const armOutset = plan === "willow" ? 78 : plan === "compact" ? 48 : 62;
+  const handY = plan === "longline" ? 665 : plan === "compact" ? 615 : 635;
+  const leftHand = {
+    x: leftShoulderX - armOutset + lean * 0.4,
+    y: handY + (random() - 0.5) * distortion,
+  };
+  const rightHand = {
+    x: rightShoulderX + armOutset + lean * 0.4,
+    y: handY + (random() - 0.5) * distortion,
+  };
+  const leftArmPath = `M ${leftShoulderX + 5} ${leftShoulderY + 16} C ${leftShoulderX - 42} 375 ${leftHand.x + 28} 500 ${leftHand.x} ${leftHand.y}`;
+  const rightArmPath = `M ${rightShoulderX - 5} ${rightShoulderY + 16} C ${rightShoulderX + 42} 375 ${rightHand.x - 28} 500 ${rightHand.x} ${rightHand.y}`;
+
+  const stance = plan === "compact" ? 84 : plan === "longline" ? 56 : 68;
+  const leftFoot = { x: centerX - stance - lean * 0.25, y: 924 };
+  const rightFoot = { x: centerX + stance - lean * 0.25, y: 924 };
+  const leftLegPath = `M ${leftHipX + 13} ${profile.torsoBottom - 2} C ${leftHipX - 5} 675 ${leftFoot.x + 10} 800 ${leftFoot.x} ${leftFoot.y}`;
+  const rightLegPath = `M ${rightHipX - 13} ${profile.torsoBottom - 2} C ${rightHipX + 5} 675 ${rightFoot.x - 10} 800 ${rightFoot.x} ${rightFoot.y}`;
+  const faceCenterX = centerX + headTilt * 0.35;
+  const eyeY = headY - 8 + Math.abs(headTilt) * 0.05;
+
+  return {
+    centerX,
+    head: {
+      x: centerX + headTilt * 0.45,
+      y: headY,
+      rx: profile.headRx,
+      ry: profile.headRy,
+      rotation: headTilt,
+    },
+    neckPath: `M ${centerX - 23} ${headY + profile.headRy - 8} L ${centerX - 27} ${shoulderY + 8} M ${centerX + 23} ${headY + profile.headRy - 8} L ${centerX + 27} ${shoulderY + 8}`,
+    torsoPath,
+    spinePath: `M ${centerX + headTilt * 0.2} ${headY - profile.headRy + 5} C ${centerX - lean * 0.2} 330 ${centerX + lean * 0.65} 435 ${centerX - lean * 0.25} ${profile.torsoBottom}`,
+    leftArmPath,
+    rightArmPath,
+    leftLegPath,
+    rightLegPath,
+    leftHand,
+    rightHand,
+    leftFoot,
+    rightFoot,
+    eyeY,
+    eyeSpacing: profile.headRx * 0.42,
+    nosePath: `M ${faceCenterX} ${eyeY + 8} Q ${faceCenterX - 4} ${eyeY + 28} ${faceCenterX + 3} ${eyeY + 34}`,
+    mouthPath: `M ${faceCenterX - profile.headRx * 0.24} ${eyeY + 51} Q ${faceCenterX} ${eyeY + 55 + lean * 0.08} ${faceCenterX + profile.headRx * 0.24} ${eyeY + 50}`,
+    limbWidth: profile.limbWidth,
+    handRadius: profile.handRadius,
+    fingerCount: profile.fingerCount,
+  };
 };
 
 export const generatePortrait = (
   language: VisualLanguage,
+  bodyPlan: BodyPlan,
   identityId: string,
   cycle: number,
   mode: PortraitMode,
   observerId = "self",
 ): GeneratedPortrait => {
-  const seed = hashSeed(language, identityId, cycle, mode, observerId);
+  const seed = hashSeed(language, bodyPlan, identityId, cycle, mode, observerId);
   const random = mulberry32(seed);
-  const count = mode === "social" ? 18 : mode === "peer" ? 11 : 14;
-  const marks = Array.from({ length: count }, (_, index) => ({
-    id: `${seed}-mark-${index}`,
-    path:
-      language === "contour"
-        ? contourPath(random, index)
-        : threadPath(random, index),
-    width: language === "thread" ? 0.7 + random() * 1.8 : 0.6 + random() * 1.2,
-    opacity: 0.18 + random() * 0.66,
-  }));
-  const fragmentCount = language === "fragment" ? 28 : mode === "social" ? 10 : 5;
+  const distortion =
+    mode === "social" ? 5 : mode === "peer" ? (language === "fragment" ? 24 : 15) : 11;
+  const body = createBody(bodyPlan, distortion, random);
+  const idealBody = createBody(bodyPlan, 0, () => 0.5);
+  const fragmentCount = language === "fragment" ? 17 : 5;
   const fragments = Array.from({ length: fragmentCount }, (_, index) => ({
     id: `${seed}-fragment-${index}`,
-    x: 80 + random() * 570,
-    y: 80 + random() * 760,
-    width: 20 + random() * (language === "fragment" ? 180 : 80),
-    height: 4 + random() * (language === "fragment" ? 76 : 18),
-    rotation: -12 + random() * 24,
-    opacity: 0.12 + random() * 0.58,
+    x: body.centerX - 125 + random() * 250,
+    y: 270 + random() * 330,
+    width: 28 + random() * (language === "fragment" ? 110 : 52),
+    height: 5 + random() * (language === "fragment" ? 45 : 15),
+    rotation: -8 + random() * 16,
+    opacity: 0.12 + random() * 0.46,
   }));
 
   return {
     seed,
-    marks,
+    body,
+    idealBody,
     fragments,
-    focusX: 280 + random() * 240,
-    focusY: 340 + random() * 250,
+    echoOffsets:
+      language === "thread" ? [-18, -10, 9, 17] : language === "contour" ? [-8, 8] : [-3, 4],
   };
 };

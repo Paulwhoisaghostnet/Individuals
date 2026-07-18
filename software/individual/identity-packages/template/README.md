@@ -8,7 +8,8 @@ To create an Individual:
 
 1. Copy this directory using a lowercase, stable identity ID.
 2. Rewrite `manifest.ts`, especially origin, private narrative, traits, ideal self,
-   perception limits, drawing limits, and statement.
+   ideal physical form, initial embodied self-perception, perception limits,
+   drawing limits, and statement.
 3. Add cognition instructions under `prompts/` without including credentials or
    live private memory.
 4. Add owned visual material and its provenance under `assets/`.

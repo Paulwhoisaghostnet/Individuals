@@ -4,12 +4,26 @@ export type PortraitMode = "self" | "social" | "peer";
 
 export type VisualLanguage = "contour" | "fragment" | "thread";
 
+export type BodyPlan = "willow" | "compact" | "longline";
+
+export interface PhysicalIdentity {
+  readonly bodyPlan: BodyPlan;
+  readonly ideal: string;
+  readonly current: string;
+  readonly face: string;
+  readonly surface: string;
+  readonly posture: string;
+  readonly invariantFeatures: readonly string[];
+  readonly currentDifferences: readonly string[];
+}
+
 export interface ExhibitionIndividual {
   readonly id: string;
   readonly number: string;
   readonly name: string;
   readonly pronoun: string;
   readonly visualLanguage: VisualLanguage;
+  readonly physicalIdentity: PhysicalIdentity;
   readonly statement: string;
   readonly idealSelf: string;
   readonly selfView: string;

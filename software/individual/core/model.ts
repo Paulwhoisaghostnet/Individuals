@@ -16,11 +16,30 @@ export interface IdealSelf {
   readonly visualAnchors: readonly string[];
 }
 
+export interface PhysicalForm {
+  readonly description: string;
+  readonly bodyPlan: string;
+  readonly stature: string;
+  readonly surface: string;
+  readonly face: readonly string[];
+  readonly anatomy: readonly string[];
+  readonly movement: string;
+  readonly nonNegotiableFeatures: readonly string[];
+}
+
+export interface EmbodiedSelfConcept {
+  readonly description: string;
+  readonly perceivedSimilarity: number;
+  readonly perceivedDifferences: readonly string[];
+}
+
 export interface IdentityDefinition {
   readonly origin: string;
   readonly privateNarrative: string;
   readonly traits: readonly Trait[];
   readonly idealSelf: IdealSelf;
+  readonly idealPhysicalForm: PhysicalForm;
+  readonly initialPhysicalSelf: EmbodiedSelfConcept;
 }
 
 export interface CapabilityProfile {
@@ -34,7 +53,7 @@ export interface DrawingProfile extends CapabilityProfile {
 }
 
 export interface IndividualManifest {
-  readonly schemaVersion: 1;
+  readonly schemaVersion: 2;
   readonly id: string;
   readonly displayName: string;
   readonly statement: string;
@@ -50,6 +69,7 @@ export interface SelfConcept {
   readonly narrative: string;
   readonly keywords: readonly string[];
   readonly confidence: number;
+  readonly physicalSelf: EmbodiedSelfConcept;
 }
 
 export interface Artwork {
@@ -83,6 +103,7 @@ export interface CycleIntent {
   readonly statement: string;
   readonly desiredQualities: readonly string[];
   readonly visualInstructions: readonly string[];
+  readonly bodilyInstructions: readonly string[];
 }
 
 export interface IdentityReflection {
@@ -90,6 +111,12 @@ export interface IdentityReflection {
   readonly tensions: readonly string[];
   readonly nextIntention: string;
   readonly memory: string;
+  readonly physicalAssessment: {
+    readonly similarityDelta: number;
+    readonly retainedFeatures: readonly string[];
+    readonly perceivedDifferences: readonly string[];
+    readonly nextBodilyAdjustment: string;
+  };
 }
 
 export interface MemoryEntry {

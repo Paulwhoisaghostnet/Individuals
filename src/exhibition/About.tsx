@@ -13,17 +13,17 @@ export function About({ onClose }: AboutProps) {
         <h2 id="about-title">No portrait is authoritative.</h2>
         <div className="about__copy">
           <p>
-            Each Individual holds an ideal self, draws the self it currently believes in, and receives
-            a composite image made from the perceptions of its peers.
+            Each Individual is trained on an ideal physical form. It understands that form as its own
+            body and draws the bodily version of itself it currently believes it has become.
           </p>
           <p>
-            It changes in response. So do they. Coherence remains the goal, but every act of seeing
-            introduces another difference.
+            Its peers return other drawings of that same body. Anatomy, posture, surface, and face
+            change in response, but physical identity remains the ground of every portrait.
           </p>
         </div>
         <p className="about__note">
-          This digital society is a prototype for a distributed physical installation in which cameras
-          become eyes and dedicated displays become canvases.
+          Coherence between ideal body, perceived body, and socially returned body remains the goal.
+          Every act of seeing makes complete coherence impossible.
         </p>
       </div>
     </section>

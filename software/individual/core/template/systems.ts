@@ -40,7 +40,18 @@ const createPlaceholderArtwork = (
     content: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="${escapeXml(title)}">
   <rect width="800" height="1000" fill="${escapeXml(background)}"/>
   <rect x="48" y="48" width="704" height="904" fill="none" stroke="${escapeXml(accent)}"/>
-  <circle cx="400" cy="450" r="190" fill="none" stroke="${escapeXml(foreground)}" stroke-width="2"/>
+  <g fill="none" stroke="${escapeXml(foreground)}" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="400" cy="235" rx="62" ry="78" fill="${escapeXml(background)}" stroke-width="2"/>
+    <path d="M376 304 L370 350 M424 304 L430 350" stroke-width="5"/>
+    <path d="M300 350 C330 420 342 520 330 620 L470 620 C458 520 470 420 500 350 Q400 390 300 350 Z" fill="${escapeXml(background)}" stroke-width="2"/>
+    <path d="M310 370 C260 455 250 560 230 665 M490 370 C540 455 550 560 570 665" stroke-width="28"/>
+    <path d="M360 620 C340 735 330 830 315 910 M440 620 C460 735 470 830 485 910" stroke-width="32"/>
+    <circle cx="230" cy="665" r="18" fill="${escapeXml(background)}"/>
+    <circle cx="570" cy="665" r="18" fill="${escapeXml(background)}"/>
+    <circle cx="378" cy="226" r="4" fill="${escapeXml(foreground)}" stroke="none"/>
+    <circle cx="422" cy="226" r="4" fill="${escapeXml(foreground)}" stroke="none"/>
+    <path d="M400 236 L396 258 L403 261 M382 278 Q400 285 418 278" stroke-width="1.5"/>
+  </g>
   <text x="400" y="790" fill="${escapeXml(foreground)}" text-anchor="middle" font-family="sans-serif" font-size="28">${escapeXml(title)}</text>
   <text x="400" y="835" fill="${escapeXml(accent)}" text-anchor="middle" font-family="sans-serif" font-size="16">${escapeXml(subtitle)}</text>
 </svg>`,
@@ -53,6 +64,10 @@ export class TemplateCognitionSystem implements CognitionSystem {
       statement: input.state.lastReflection?.nextIntention ?? input.manifest.identity.idealSelf.narrative,
       desiredQualities: input.manifest.identity.idealSelf.values,
       visualInstructions: input.manifest.identity.idealSelf.visualAnchors,
+      bodilyInstructions: [
+        input.manifest.identity.idealPhysicalForm.description,
+        ...input.state.selfConcept.physicalSelf.perceivedDifferences,
+      ],
     };
   }
 
@@ -69,6 +84,14 @@ export class TemplateCognitionSystem implements CognitionSystem {
       memory: `Cycle ${input.cycle}: ${
         hasSocialFeedback ? "I received a social portrait." : "I am still awaiting a social portrait."
       }`,
+      physicalAssessment: {
+        similarityDelta: hasSocialFeedback ? 0.025 : -0.005,
+        retainedFeatures: input.manifest.identity.idealPhysicalForm.nonNegotiableFeatures,
+        perceivedDifferences: input.state.selfConcept.physicalSelf.perceivedDifferences,
+        nextBodilyAdjustment: hasSocialFeedback
+          ? "Adjust one perceived anatomical difference while preserving every identifying feature."
+          : "Hold the current body legible until peers can return it.",
+      },
     };
   }
 }
@@ -162,6 +185,18 @@ export class TemplateAdaptationSystem implements AdaptationSystem {
       narrative: input.reflection.nextIntention,
       keywords: [...input.state.selfConcept.keywords],
       confidence: Math.min(1, Math.max(0, input.state.selfConcept.confidence + direction)),
+      physicalSelf: {
+        ...input.state.selfConcept.physicalSelf,
+        perceivedSimilarity: Math.min(
+          1,
+          Math.max(
+            0,
+            input.state.selfConcept.physicalSelf.perceivedSimilarity +
+              input.reflection.physicalAssessment.similarityDelta,
+          ),
+        ),
+        perceivedDifferences: input.reflection.physicalAssessment.perceivedDifferences,
+      },
     };
   }
 }
