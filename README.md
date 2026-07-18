@@ -187,8 +187,8 @@ built.
 ├── deploy/
 │   └── nginx.conf             # Static production server configuration
 ├── hardware/                  # Physical installation requirements and templates
+├── software/                  # Software installed on and packaged with Individuals
 ├── src/
-│   ├── individual/            # Individual engine, identity model, and template
 │   ├── App.tsx                # Exhibition shell
 │   ├── main.tsx               # Browser entry point
 │   └── styles.css             # Global exhibition styles

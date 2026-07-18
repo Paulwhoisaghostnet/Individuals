@@ -28,4 +28,3 @@ export const defineIndividualManifest = <T extends IndividualManifest>(manifest:
 
   return manifest;
 };
-

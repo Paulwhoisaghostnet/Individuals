@@ -15,4 +15,3 @@ export const createInitialState = (
   createdAt,
   updatedAt: createdAt,
 });
-

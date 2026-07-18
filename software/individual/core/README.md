@@ -1,4 +1,4 @@
-# Individual domain package
+# Individual core domain package
 
 This directory is the canonical skeleton for an **Individual**. It contains the
 identity definition, evolving state, engine lifecycle, system boundaries,
@@ -12,7 +12,7 @@ adapters around an Individual; they are not its identity.
 ## Anatomy
 
 ```text
-individual/
+core/
 ├── __tests__/
 │   └── IndividualEngine.test.ts      # Domain lifecycle and invariant tests
 ├── engine/
@@ -92,7 +92,7 @@ import {
   createTemplateIndividual,
   createTemplateManifest,
   defineIndividualManifest,
-} from "./individual";
+} from "./software/individual/core";
 
 const foundation = createTemplateManifest({
   id: "iris",
@@ -164,4 +164,3 @@ When adding a capability to an Individual:
 
 These rules keep future Individuals genuinely distinct while allowing them to
 participate in the same society and identity-feedback protocol.
-

@@ -177,4 +177,3 @@ export class StableIdGenerator implements IdGenerator {
     return parts.map(String).join("--");
   }
 }
-

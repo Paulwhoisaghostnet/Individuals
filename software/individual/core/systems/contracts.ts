@@ -83,4 +83,3 @@ export interface Clock {
 export interface IdGenerator {
   create(parts: readonly (string | number)[]): string;
 }
-

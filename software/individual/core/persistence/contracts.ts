@@ -13,4 +13,3 @@ export interface MemoryStore {
 
   remember(entries: readonly MemoryEntry[]): Promise<void>;
 }
-

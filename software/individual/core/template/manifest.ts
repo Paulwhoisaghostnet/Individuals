@@ -57,4 +57,3 @@ export const createTemplateManifest = (
   });
 
 export const templateManifest = createTemplateManifest();
-

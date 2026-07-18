@@ -136,4 +136,3 @@ export interface CycleRecord {
   readonly reflection: IdentityReflection;
   readonly state: IndividualState;
 }
-
