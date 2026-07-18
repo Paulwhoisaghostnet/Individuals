@@ -1,0 +1,15 @@
+services:
+  individuals-web:
+    build:
+      context: .
+    container_name: individuals-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${INDIVIDUALS_PORT:-4174}:80"
+    networks:
+      - individuals
+
+networks:
+  individuals:
+    name: individuals
+
