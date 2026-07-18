@@ -186,6 +186,7 @@ built.
 .
 ├── deploy/
 │   └── nginx.conf             # Static production server configuration
+├── hardware/                  # Physical installation requirements and templates
 ├── src/
 │   ├── individual/            # Individual engine, identity model, and template
 │   ├── App.tsx                # Exhibition shell
