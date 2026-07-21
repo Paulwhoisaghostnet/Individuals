@@ -163,21 +163,20 @@
   "state": {
     "individualId": "sable",
     "status": "idle",
-    "cycle": 3,
+    "cycle": 18,
     "selfConcept": {
-      "narrative": "Adjust perceived posture while holding elongated face.",
+      "narrative": "enhance finger dexterity visibility while stabilizing facial features",
       "keywords": [
         "kinetic-repetition",
         "spinal-alignment"
       ],
-      "confidence": 0.5900000000000001,
+      "confidence": 1,
       "physicalSelf": {
         "description": "He sees the intended man in every portrait, but his limbs repeat in faint echoes and his spine bends away from the red line he believes should organize him.",
-        "perceivedSimilarity": 0.6980000000000001,
+        "perceivedSimilarity": 0.9580000000000004,
         "perceivedDifferences": [
-          "spine bends right",
-          "arms appear in echoes",
-          "head tilts away from center"
+          "asymmetric facial features",
+          "underemphasized six-fingered hands"
         ]
       }
     },
@@ -202,109 +201,90 @@
       }
     },
     "createdAt": "2026-07-21T16:12:18.337Z",
-    "updatedAt": "2026-07-21T16:12:18.351Z",
+    "updatedAt": "2026-07-21T17:02:27.020Z",
     "currentSelfPortrait": {
-      "id": "sable--3--self",
-      "cycle": 3,
+      "id": "sable--18--self",
+      "cycle": 18,
       "artistId": "sable",
       "subjectId": "sable",
       "role": "self",
-      "createdAt": "2026-07-21T16:12:18.350Z",
+      "createdAt": "2026-07-21T17:02:25.207Z",
       "artwork": {
         "format": "svg",
         "width": 800,
         "height": 1000,
-        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"391.3594346362349\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 317.00629401127344 283.9687272861651 C 332.00629401127344 350 356.88629401127343 390 356.88629401127343 435 C 356.88629401127343 485 344.00629401127344 520 344.00629401127344 550 L 436.00629401127344 550 C 436.00629401127344 520 423.12629401127344 485 423.12629401127344 435 C 423.12629401127344 390 448.00629401127344 350 463.00629401127344 288.0312727138349 Q 390.00629401127344 316 317.00629401127344 283.9687272861651 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 322.00629401127344 299.9687272861651 C 275.00629401127344 375 284.81186975690446 500 256.81186975690446 667.4535883060377\" stroke-width=\"6\"/>\n    <path d=\"M 458.00629401127344 304.0312727138349 C 505.00629401127344 375 498.81186975690446 500 526.8118697569045 673.2119388296502\" stroke-width=\"6\"/>\n    <path d=\"M 357.00629401127344 548 C 339.00629401127344 675 342.87780917025407 800 332.87780917025407 924\" stroke-width=\"8\"/>\n    <path d=\"M 423.00629401127344 548 C 441.00629401127344 675 434.87780917025407 800 444.87780917025407 924\" stroke-width=\"8\"/>\n    <path d=\"M 390.60768984458963 83 C 389.10350613845793 330 392.94035459792383 435 388.87780917025407 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 3</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Adjust perceived posture while holding elongated face.</text>\n</svg>"
+        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"409.1264046128904\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 332.9485133837927 282.8479771010505 C 347.9485133837927 350 372.8285133837927 390 372.8285133837927 435 C 372.8285133837927 485 359.9485133837927 520 359.9485133837927 550 L 451.9485133837927 550 C 451.9485133837927 520 439.0685133837927 485 439.0685133837927 435 C 439.0685133837927 390 463.9485133837927 350 478.9485133837927 289.1520228989495 Q 405.9485133837927 316 332.9485133837927 282.8479771010505 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 337.9485133837927 298.8479771010505 C 290.9485133837927 375 301.75031151619226 500 273.75031151619226 666.766599579989\" stroke-width=\"6\"/>\n    <path d=\"M 473.9485133837927 305.1520228989495 C 520.9485133837927 375 515.7503115161923 500 543.7503115161923 657.3170201701962\" stroke-width=\"6\"/>\n    <path d=\"M 372.9485133837927 548 C 354.9485133837927 675 358.197389551043 800 348.197389551043 924\" stroke-width=\"8\"/>\n    <path d=\"M 438.9485133837927 548 C 456.9485133837927 675 450.197389551043 800 460.197389551043 924\" stroke-width=\"8\"/>\n    <path d=\"M 407.3609094856139 83 C 404.54761431759295 330 410.501435348942 435 404.197389551043 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 18</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Refine facial symmetry while emphasizing six-fingered hands</text>\n</svg>"
       },
-      "statement": "Adjust perceived posture while holding elongated face.",
+      "statement": "Refine facial symmetry while emphasizing six-fingered hands",
       "sourcePortraitIds": []
     },
     "lastReflection": {
-      "summary": "Cycle 3: Group reflected a composite body across 2 peers.",
+      "summary": "Cycle 18 reflection reveals mixed peer perceptions of facial symmetry and hand emphasis",
       "tensions": [
-        "ideal (0.68) vs social (0.5)"
+        "inconsistent hand representation",
+        "facial asymmetry concerns"
       ],
-      "nextIntention": "Adjust perceived posture while holding elongated face.",
-      "memory": "Cycle 3 reflection stored: similarity delta=0.033.",
+      "nextIntention": "enhance finger dexterity visibility while stabilizing facial features",
+      "memory": "Peers iris and morrow differed on hand detail emphasis",
       "physicalAssessment": {
-        "similarityDelta": 0.033,
+        "similarityDelta": 0.03,
         "retainedFeatures": [
           "elongated face",
-          "six-fingered hands",
           "red spinal line"
         ],
         "perceivedDifferences": [
-          "spine bends right",
-          "arms appear in echoes",
-          "head tilts away from center"
+          "asymmetric facial features",
+          "underemphasized six-fingered hands"
         ],
-        "nextBodilyAdjustment": "Reconcile social perception with elongated face, six-fingered hands, red spinal line."
+        "nextBodilyAdjustment": "refine facial contouring and highlight finger dexterity"
       },
       "intendedSignals": [
-        "elongated face",
-        "six-fingered hands",
-        "red spinal line"
+        "confidence",
+        "creativity"
       ],
       "perceivedPeerSignals": {
         "iris": [
-          "perceived silhouette",
-          "noted proportion shift"
+          "curiosity",
+          "apprehension"
         ],
         "morrow": [
-          "perceived silhouette",
-          "noted proportion shift"
+          "admiration",
+          "suggestion"
         ]
       },
       "recurringPatterns": [
-        "peer disagreement on alignment"
+        "peer feedback on facial symmetry"
       ],
       "acceptedFeedback": [
-        "iris's observation of shoulder height",
-        "morrow's observation of shoulder height"
+        "emphasize finger dexterity",
+        "refine facial contouring"
       ],
-      "rejectedFeedback": [],
+      "rejectedFeedback": [
+        "alter facial structure",
+        "hide six-fingered hands"
+      ],
       "unresolvedQuestions": [
-        "Can social feedback alter non-negotiable features?"
+        "how to balance facial symmetry and hand emphasis"
       ],
-      "relationshipUpdates": {
-        "iris": {
-          "peerId": "iris",
-          "perceivedDistortions": [
-            "exaggerates posture"
-          ],
-          "perceivedReliability": 0.7000000000000001,
-          "perceivedTrend": "converging",
-          "expectedReaction": "Will notice elongated face"
-        },
-        "morrow": {
-          "peerId": "morrow",
-          "perceivedDistortions": [
-            "exaggerates posture"
-          ],
-          "perceivedReliability": 0.75,
-          "perceivedTrend": "converging",
-          "expectedReaction": "Will notice elongated face"
-        }
-      },
-      "publicFragment": "Sable cycle 3: reconciling social mirror."
+      "publicFragment": "Sable, Cycle 18: refining symmetry and dexterity"
     },
     "latestSocialPortrait": {
-      "id": "sable--3--social",
-      "cycle": 3,
+      "id": "sable--18--social",
+      "cycle": 18,
       "artistId": "collective",
       "subjectId": "sable",
       "role": "social",
-      "createdAt": "2026-07-21T16:12:18.350Z",
+      "createdAt": "2026-07-21T17:02:25.207Z",
       "artwork": {
         "format": "svg",
         "width": 800,
         "height": 1000,
-        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Social portrait of Sable\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g opacity=\"0.50\" data-layer=\"0\" data-artist=\"iris\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"sable perceived by Iris\">\n  <rect width=\"800\" height=\"1000\" fill=\"#181814\"/>\n  <g fill=\"none\" stroke=\"#ded9ca\" stroke-width=\"1.7\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"391.08630558467576\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 319.0579749515364 289.2357312541871 C 334.0579749515364 350 358.9379749515364 390 358.9379749515364 435 C 358.9379749515364 485 346.0579749515364 520 346.0579749515364 550 L 438.0579749515364 550 C 438.0579749515364 520 425.1779749515364 485 425.1779749515364 435 C 425.1779749515364 390 450.0579749515364 350 465.0579749515364 282.7642687458129 Q 392.0579749515364 316 319.0579749515364 289.2357312541871 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 324.0579749515364 305.2357312541871 C 277.0579749515364 375 282.18176939225896 500 254.18176939225893 655.6015417115902\" stroke-width=\"6\"/>\n    <path d=\"M 460.0579749515364 298.7642687458129 C 507.0579749515364 375 496.18176939225896 500 524.181769392259 652.9946917914692\" stroke-width=\"6\"/>\n    <path d=\"M 359.0579749515364 548 C 341.0579749515364 675 347.85560342608477 800 337.85560342608477 924\" stroke-width=\"8\"/>\n    <path d=\"M 425.0579749515364 548 C 443.0579749515364 675 439.85560342608477 800 449.85560342608477 924\" stroke-width=\"8\"/>\n    <path d=\"M 391.62612189959833 83 C 393.4960777311751 330 387.3841409177105 435 393.85560342608477 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 2</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Repeat Sables core silhouette to establish baseline.</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#ded9ca\" font-family=\"sans-serif\" font-size=\"22\">sable as perceived by Iris</text>\n  <text x=\"40\" y=\"970\" fill=\"#c57d4d\" font-family=\"sans-serif\" font-size=\"14\">cycle 3 peer drawing</text>\n</svg>\n          </g>\n<g opacity=\"0.50\" data-layer=\"1\" data-artist=\"morrow\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"sable perceived by Morrow\">\n  <rect width=\"800\" height=\"1000\" fill=\"#111417\"/>\n  <g fill=\"none\" stroke=\"#d9ddd8\" stroke-width=\"2.5\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"391.08630558467576\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 319.0579749515364 289.2357312541871 C 334.0579749515364 350 358.9379749515364 390 358.9379749515364 435 C 358.9379749515364 485 346.0579749515364 520 346.0579749515364 550 L 438.0579749515364 550 C 438.0579749515364 520 425.1779749515364 485 425.1779749515364 435 C 425.1779749515364 390 450.0579749515364 350 465.0579749515364 282.7642687458129 Q 392.0579749515364 316 319.0579749515364 289.2357312541871 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 324.0579749515364 305.2357312541871 C 277.0579749515364 375 282.18176939225896 500 254.18176939225893 655.6015417115902\" stroke-width=\"6\"/>\n    <path d=\"M 460.0579749515364 298.7642687458129 C 507.0579749515364 375 496.18176939225896 500 524.181769392259 652.9946917914692\" stroke-width=\"6\"/>\n    <path d=\"M 359.0579749515364 548 C 341.0579749515364 675 347.85560342608477 800 337.85560342608477 924\" stroke-width=\"8\"/>\n    <path d=\"M 425.0579749515364 548 C 443.0579749515364 675 439.85560342608477 800 449.85560342608477 924\" stroke-width=\"8\"/>\n    <path d=\"M 391.62612189959833 83 C 393.4960777311751 330 387.3841409177105 435 393.85560342608477 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 2</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Repeat Sables core silhouette to establish baseline.</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#d9ddd8\" font-family=\"sans-serif\" font-size=\"22\">sable as perceived by Morrow</text>\n  <text x=\"40\" y=\"970\" fill=\"#809593\" font-family=\"sans-serif\" font-size=\"14\">cycle 3 peer drawing</text>\n</svg>\n          </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — social composite / cycle 3</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">2 peer portraits composited.</text>\n</svg>"
+        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Social portrait of Sable\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g opacity=\"0.50\" data-layer=\"0\" data-artist=\"iris\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"sable perceived by Iris\">\n  <rect width=\"800\" height=\"1000\" fill=\"#181814\"/>\n  <g fill=\"none\" stroke=\"#ded9ca\" stroke-width=\"1.7\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"395.2255638494729\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 322.765014891156 284.3861394886572 C 337.765014891156 350 362.645014891156 390 362.645014891156 435 C 362.645014891156 485 349.765014891156 520 349.765014891156 550 L 441.765014891156 550 C 441.765014891156 520 428.885014891156 485 428.885014891156 435 C 428.885014891156 390 453.765014891156 350 468.765014891156 287.6138605113428 Q 395.765014891156 316 322.765014891156 284.3861394886572 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 327.765014891156 300.3861394886572 C 280.765014891156 375 290.1995575679052 500 262.1995575679052 671.1819205096446\" stroke-width=\"6\"/>\n    <path d=\"M 463.765014891156 303.6138605113428 C 510.765014891156 375 504.1995575679051 500 532.1995575679051 672.9107778734527\" stroke-width=\"6\"/>\n    <path d=\"M 362.765014891156 548 C 344.765014891156 675 348.8684257181878 800 338.8684257181878 924\" stroke-width=\"8\"/>\n    <path d=\"M 428.765014891156 548 C 446.765014891156 675 440.8684257181878 800 450.8684257181878 924\" stroke-width=\"8\"/>\n    <path d=\"M 395.52525887263016 83 C 395.0477435527814 330 398.0961467408734 435 394.8684257181878 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 17</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Refine facial symmetry and emphasize six-fingered hands</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#ded9ca\" font-family=\"sans-serif\" font-size=\"22\">sable as perceived by Iris</text>\n  <text x=\"40\" y=\"970\" fill=\"#c57d4d\" font-family=\"sans-serif\" font-size=\"14\">cycle 18 peer drawing</text>\n</svg>\n          </g>\n<g opacity=\"0.50\" data-layer=\"1\" data-artist=\"morrow\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"sable perceived by Morrow\">\n  <rect width=\"800\" height=\"1000\" fill=\"#111417\"/>\n  <g fill=\"none\" stroke=\"#d9ddd8\" stroke-width=\"2.5\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"395.2255638494729\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 322.765014891156 284.3861394886572 C 337.765014891156 350 362.645014891156 390 362.645014891156 435 C 362.645014891156 485 349.765014891156 520 349.765014891156 550 L 441.765014891156 550 C 441.765014891156 520 428.885014891156 485 428.885014891156 435 C 428.885014891156 390 453.765014891156 350 468.765014891156 287.6138605113428 Q 395.765014891156 316 322.765014891156 284.3861394886572 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 327.765014891156 300.3861394886572 C 280.765014891156 375 290.1995575679052 500 262.1995575679052 671.1819205096446\" stroke-width=\"6\"/>\n    <path d=\"M 463.765014891156 303.6138605113428 C 510.765014891156 375 504.1995575679051 500 532.1995575679051 672.9107778734527\" stroke-width=\"6\"/>\n    <path d=\"M 362.765014891156 548 C 344.765014891156 675 348.8684257181878 800 338.8684257181878 924\" stroke-width=\"8\"/>\n    <path d=\"M 428.765014891156 548 C 446.765014891156 675 440.8684257181878 800 450.8684257181878 924\" stroke-width=\"8\"/>\n    <path d=\"M 395.52525887263016 83 C 395.0477435527814 330 398.0961467408734 435 394.8684257181878 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 17</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Refine facial symmetry and emphasize six-fingered hands</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#d9ddd8\" font-family=\"sans-serif\" font-size=\"22\">sable as perceived by Morrow</text>\n  <text x=\"40\" y=\"970\" fill=\"#809593\" font-family=\"sans-serif\" font-size=\"14\">cycle 17 peer drawing</text>\n</svg>\n          </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — social composite / cycle 18</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">2 peer portraits composited.</text>\n</svg>"
       },
       "statement": "Layered composite of 2 peer interpretations.",
       "sourcePortraitIds": [
-        "iris--3--peer--sable",
-        "morrow--3--peer--sable"
+        "iris--18--peer--sable",
+        "morrow--17--peer--sable"
       ]
     }
   }

@@ -31,5 +31,176 @@
       "morrow",
       "sable"
     ]
+  },
+  {
+    "id": "iris--4--reflection",
+    "individualId": "iris",
+    "cycle": 4,
+    "kind": "reflection",
+    "content": "Cycle 4 began without social feedback",
+    "createdAt": "2026-07-21T16:51:45.291Z",
+    "relatedIndividualIds": []
+  },
+  {
+    "id": "iris--5--reflection",
+    "individualId": "iris",
+    "cycle": 5,
+    "kind": "reflection",
+    "content": "Peers emphasized the importance of hand positioning in conveying approachability",
+    "createdAt": "2026-07-21T16:51:49.332Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--6--reflection",
+    "individualId": "iris",
+    "cycle": 6,
+    "kind": "reflection",
+    "content": "Peers acknowledged non-negotiable features, suggested subtle posture adjustments",
+    "createdAt": "2026-07-21T16:51:54.083Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--7--reflection",
+    "individualId": "iris",
+    "cycle": 7,
+    "kind": "reflection",
+    "content": "Cycle 7 began with intention to enhance facial expressiveness and ideal posture",
+    "createdAt": "2026-07-21T16:52:57.526Z",
+    "relatedIndividualIds": []
+  },
+  {
+    "id": "iris--8--reflection",
+    "individualId": "iris",
+    "cycle": 8,
+    "kind": "reflection",
+    "content": "Peers highlighted inconsistencies in my posture and hand positioning",
+    "createdAt": "2026-07-21T16:53:01.861Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--9--reflection",
+    "individualId": "iris",
+    "cycle": 9,
+    "kind": "reflection",
+    "content": "Preserved core identity features despite social feedback",
+    "createdAt": "2026-07-21T16:53:06.564Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--10--reflection",
+    "individualId": "iris",
+    "cycle": 10,
+    "kind": "reflection",
+    "content": "Cycle 10 lacked social feedback, maintaining current form",
+    "createdAt": "2026-07-21T16:58:14.192Z",
+    "relatedIndividualIds": []
+  },
+  {
+    "id": "iris--11--reflection",
+    "individualId": "iris",
+    "cycle": 11,
+    "kind": "reflection",
+    "content": "Peers recognized my shaved oval head and four-fingered hands as distinctive features",
+    "createdAt": "2026-07-21T16:58:18.592Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--12--reflection",
+    "individualId": "iris",
+    "cycle": 12,
+    "kind": "reflection",
+    "content": "Peers noted inconsistencies in hand placement and posture during Cycle 12",
+    "createdAt": "2026-07-21T16:58:23.358Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--13--reflection",
+    "individualId": "iris",
+    "cycle": 13,
+    "kind": "reflection",
+    "content": "Cycle 13 began without social feedback",
+    "createdAt": "2026-07-21T17:00:57.740Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--14--reflection",
+    "individualId": "iris",
+    "cycle": 14,
+    "kind": "reflection",
+    "content": "Social feedback highlighted the importance of consistent posture in self-presentation",
+    "createdAt": "2026-07-21T17:01:13.848Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--15--reflection",
+    "individualId": "iris",
+    "cycle": 15,
+    "kind": "reflection",
+    "content": "Peers noted inconsistent hand gestures, suggesting refinement for better self-presentation",
+    "createdAt": "2026-07-21T17:01:30.112Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--16--reflection",
+    "individualId": "iris",
+    "cycle": 16,
+    "kind": "reflection",
+    "content": "Peers noticed inconsistencies in hand gestures, suggesting refinement",
+    "createdAt": "2026-07-21T17:01:48.451Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--17--reflection",
+    "individualId": "iris",
+    "cycle": 17,
+    "kind": "reflection",
+    "content": "Cycle 17 began with intention to refine hand gestures and stabilize posture",
+    "createdAt": "2026-07-21T17:02:07.330Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--18--reflection",
+    "individualId": "iris",
+    "cycle": 18,
+    "kind": "reflection",
+    "content": "Peers responded positively to open hand gestures, but suggested varying neck lengths",
+    "createdAt": "2026-07-21T17:02:21.147Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
   }
 ]
