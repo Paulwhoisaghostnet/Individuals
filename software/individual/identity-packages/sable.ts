@@ -1,0 +1,106 @@
+import { defineIndividualManifest } from "../core/manifest";
+import type { IndividualManifest } from "../core/model";
+
+export const sableManifest: IndividualManifest = defineIndividualManifest({
+  schemaVersion: 4,
+  id: "sable",
+  displayName: "Sable",
+  statement: "I know this long body is mine because every repeated limb returns to it.",
+  identity: {
+    origin: "The third Individual, born from kinetic motion residue, red spinal anchor, and thread gesture.",
+    privateNarrative: "I search for identity through repetition, leaving persistent echoes along the spine.",
+    traits: [
+      { name: "kinetic-repetition", description: "Driven to search for form through repeated directional passes.", value: 0.82 },
+      { name: "spinal-alignment", description: "Anchored by a single red spinal line.", value: 0.76 },
+    ],
+    idealSelf: {
+      narrative: "A tall man whose singular spine can hold change without multiplying it.",
+      values: ["repetition", "alignment", "gesture"],
+      visualAnchors: ["elongated face", "six-fingered hands", "red spinal line"],
+    },
+    idealPhysicalForm: {
+      description: "A very tall humanlike man with umber skin, an elongated face, six fingers on each hand, long arms, narrow hips, and a spine marked by a single red line.",
+      bodyPlan: "longline",
+      stature: "Very tall and slender with long arms relaxed beside narrow hips.",
+      surface: "Dark umber skin carrying one red line from the crown of the head to the base of the spine.",
+      face: ["elongated face", "deep-set eyes", "high nose bridge", "narrow mouth"],
+      anatomy: ["elongated face", "six-fingered hands", "red spinal line", "long arms"],
+      movement: "Tall and forward-facing stance organized around a vertical spine.",
+      nonNegotiableFeatures: ["elongated face", "six-fingered hands", "red spinal line"],
+    },
+    initialPhysicalSelf: {
+      description: "He sees the intended man in every portrait, but his limbs repeat in faint echoes and his spine bends away from the red line he believes should organize him.",
+      perceivedSimilarity: 0.64,
+      perceivedDifferences: ["spine bends right", "arms appear in echoes", "head tilts away from center"],
+    },
+    socialDisposition: {
+      selfIntegrity: 0.68,
+      socialPermeability: 0.50,
+      needForRecognition: 0.80,
+      resistance: 0.60,
+      curiosity: 0.65,
+      trustByPeer: { iris: 0.65, morrow: 0.70 },
+    },
+  },
+  perception: {
+    modelId: "sable-motion-residue-v1",
+    modelName: "Motion residue",
+    description: "Sable perceives movement as persistent bodily echoes while anatomy that remains still loses contrast.",
+    constraints: ["No moving limb appears only once.", "Stillness dissolves into background noise."],
+    controls: [
+      {
+        id: "echo-count",
+        label: "Echo count",
+        description: "Number of previous bodily positions that remain visible.",
+        min: 1,
+        max: 8,
+        step: 1,
+        defaultValue: 4,
+      },
+      {
+        id: "echo-spacing",
+        label: "Echo spacing",
+        description: "Distance in pixels between persistent positions.",
+        min: 2,
+        max: 32,
+        step: 1,
+        defaultValue: 16,
+      },
+      {
+        id: "stillness-fade",
+        label: "Stillness fade",
+        description: "Loss of contrast applied to anatomy that is not moving.",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: 0.58,
+      },
+    ],
+  },
+  drawing: {
+    description: "Repeated gesture drawing practice.",
+    constraints: ["Draw in long arcs.", "Cannot draw a mark only once."],
+    palette: ["#171313", "#e3d8cf", "#a75d58", "#5f504d"],
+    preferredFormats: ["svg", "procedural"],
+    ability: {
+      styleName: "Repeated Gesture",
+      styleDescription: "A kinetic figurative practice that searches for a body through accumulating directional strokes.",
+      favoredPrimitives: ["long curve", "repeated gesture", "thread line"],
+      markBehavior: "He draws quickly in long arcs and repeats every important mark at least once.",
+      compositionBehavior: "A vertical figure is organized around a spine while limbs leave directional residue.",
+      correctionBehavior: "He approaches accuracy through repeated passes, allowing earlier attempts to remain visible.",
+      skill: {
+        observationalAccuracy: 0.68,
+        proportionAccuracy: 0.64,
+        anatomicalCoherence: 0.57,
+        lineControl: 0.63,
+        detailCapacity: 0.30,
+        spatialCoherence: 0.70,
+      },
+      limitations: ["Still detail is easily lost.", "Repeated marks can obscure precise joint placement."],
+    },
+  },
+  cadence: {
+    minimumCycleIntervalMs: 600_000,
+  },
+});
