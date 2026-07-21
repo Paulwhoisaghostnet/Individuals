@@ -32,35 +32,23 @@ async function main() {
     console.log("[LLM Inactive] No LLM_API_KEY found; operating with Procedural Cognition Fallback.\n");
   }
 
-  const runtime = new SocietyRuntime({ dataDir: ".data/demo-individuals" });
-  console.log("Initializing SocietyRuntime for Iris, Morrow, and Sable...\n");
+  // Set 15-second cycle cadence interval override for continuous live exhibition demo
+  const runtime = new SocietyRuntime({
+    dataDir: ".data/demo-individuals",
+    cycleIntervalOverrideMs: 15_000,
+  });
 
-  const individuals = ["iris", "morrow", "sable"];
+  console.log("Starting continuous background runtime for Iris, Morrow, and Sable (15s cadence)...\n");
+  await runtime.start();
 
-  for (let c = 1; c <= 3; c++) {
-    console.log(`--- [ CYCLE ${c} ] ---`);
-    for (const id of individuals) {
-      process.stdout.write(`Executing cycle for ${id.toUpperCase()}... `);
-      await runtime.runSingleCycle(id);
-      const status = await runtime.getStatus(id);
-      console.log(`DONE (Cycle ${status?.snapshot.state.cycle}, Health: ${status?.health.state})`);
-      if (status?.snapshot.state.reflection) {
-        console.log(`  └─ Reflection: "${status.snapshot.state.reflection.perceivedSimilarityNote}"`);
-      }
+  // Keep process running and log background events live
+  setInterval(async () => {
+    const events = runtime.getHealthMonitor().getRecentEvents(3);
+    const lastEvent = events[events.length - 1];
+    if (lastEvent) {
+      console.log(`[${lastEvent.timestamp}] ${lastEvent.individualId.toUpperCase()} -> ${lastEvent.type} (cycle ${lastEvent.cycle ?? 0}, latency ${lastEvent.latencyMs ?? 0}ms)`);
     }
-    console.log();
-  }
-
-  console.log("=================================================");
-  console.log(" Telemetry & Health Event Log (Recent 6 Events): ");
-  console.log("=================================================");
-  const events = runtime.getHealthMonitor().getRecentEvents(6);
-  for (const event of events) {
-    console.log(`[${event.timestamp}] ${event.individualId} -> ${event.type} (latency: ${event.latencyMs ?? 0}ms)`);
-  }
-
-  console.log("\nPersistent snapshots saved to: .data/demo-individuals/snapshots/");
-  console.log("Persistent memories saved to:  .data/demo-individuals/memories/\n");
+  }, 5000);
 }
 
 main().catch(console.error);

@@ -20,6 +20,7 @@ export interface SocietyRuntimeOptions {
   readonly repository?: IndividualRepository;
   readonly memory?: MemoryStore;
   readonly dataDir?: string;
+  readonly cycleIntervalOverrideMs?: number;
 }
 
 export interface IndividualRuntimeStatus {
@@ -42,11 +43,13 @@ export class SocietyRuntime {
   private readonly memory: MemoryStore;
   private readonly healthMonitor: HealthMonitor;
 
+  private readonly options: SocietyRuntimeOptions;
   private latestSelfPortraits: Portrait[] = [];
   private latestPeerPortraitsBySubject = new Map<string, Portrait[]>();
   private isStarted = false;
 
   constructor(options: SocietyRuntimeOptions = {}) {
+    this.options = options;
     const dataDir = options.dataDir ?? ".data/individuals";
     this.repository = options.repository ?? new FileIndividualRepository(`${dataDir}/snapshots`);
     this.memory = options.memory ?? new FileMemoryStore(`${dataDir}/memories`);
@@ -196,7 +199,7 @@ export class SocietyRuntime {
     if (!this.isStarted || this.pausedSet.has(individualId)) return;
 
     const manifest = this.manifests.get(individualId)!;
-    const baseInterval = manifest.cadence.minimumCycleIntervalMs;
+    const baseInterval = this.options.cycleIntervalOverrideMs ?? manifest.cadence.minimumCycleIntervalMs;
     // Add ±20% jitter
     const jitter = (Math.random() - 0.5) * 0.4 * baseInterval;
     const delay = delayOverrideMs ?? Math.max(1000, Math.round(baseInterval + jitter));
