@@ -30,7 +30,7 @@ export function IndividualFocus({
   const peers = people.filter((peer) => peer.id !== individual.id);
 
   return (
-    <section className="focus" aria-label={`${individual.name}'s identity`}>
+    <section className="focus" role="dialog" aria-modal="true" aria-labelledby="focus-title">
       <div className="focus__portrait">
         <PortraitCanvas individual={individual} cycle={cycle} mode="self" />
         <div className="focus__portrait-label">
@@ -43,9 +43,15 @@ export function IndividualFocus({
         <div className="focus__heading">
           <div>
             <p className="eyebrow">Individual {individual.number}</p>
-            <h2>{individual.name}</h2>
+            <h2 id="focus-title">{individual.name}</h2>
           </div>
-          <button className="text-control focus__close" type="button" onClick={onClose}>
+          <button
+            className="text-control focus__close"
+            type="button"
+            onClick={onClose}
+            aria-label={`Close ${individual.name} focus view`}
+            autoFocus
+          >
             close <span aria-hidden="true">×</span>
           </button>
         </div>

@@ -8,16 +8,57 @@ import { PerceptionTuner } from "./exhibition/PerceptionTuner";
 import { usePerceptionTuning } from "./exhibition/usePerceptionTuning";
 
 const CYCLE_DURATION_MS = 14_000;
+const STORAGE_KEY_CYCLE = "individuals.cycle.v1";
+const STORAGE_KEY_PAUSED = "individuals.paused.v1";
+
+function getInitialCycle(): number {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_CYCLE);
+    if (saved) {
+      const parsed = parseInt(saved, 10);
+      if (Number.isFinite(parsed) && parsed > 0) return parsed;
+    }
+  } catch {
+    // Fallback to default if localStorage disabled
+  }
+  return 7;
+}
+
+function getInitialPaused(): boolean {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_PAUSED);
+    if (saved !== null) return saved === "true";
+  } catch {
+    // Fallback to default if localStorage disabled
+  }
+  return false;
+}
 
 function App() {
-  const [cycle, setCycle] = useState(7);
+  const [cycle, setCycle] = useState(getInitialCycle);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(getInitialPaused);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isTunerOpen, setIsTunerOpen] = useState(false);
   const { tuningMap, setControl, resetIndividual, resetAll } = usePerceptionTuning(individuals);
   const selected = individuals.find((individual) => individual.id === selectedId);
   const event = useMemo(() => createCycleEvent(individuals, cycle), [cycle]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_CYCLE, String(cycle));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [cycle]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_PAUSED, String(isPaused));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [isPaused]);
 
   useEffect(() => {
     if (isPaused || isTunerOpen) return undefined;
@@ -43,16 +84,17 @@ function App() {
   };
 
   return (
-    <main className={`exhibition ${selected ? "exhibition--focused" : ""}`}>
-      <header className="masthead">
-        <button className="wordmark" type="button" onClick={returnToSociety}>
+    <main className={`exhibition ${selected ? "exhibition--focused" : ""}`} role="main">
+      <header className="masthead" role="banner">
+        <button className="wordmark" type="button" onClick={returnToSociety} aria-label="Return to society view">
           Individuals
         </button>
         <p>A society learning how it is seen.</p>
-        <div className="masthead__controls">
+        <div className="masthead__controls" role="toolbar" aria-label="Exhibition controls">
           <button
             className="text-control"
             type="button"
+            aria-expanded={isTunerOpen}
             onClick={() => {
               setIsTunerOpen(true);
               setIsAboutOpen(false);
@@ -63,6 +105,7 @@ function App() {
           <button
             className="text-control"
             type="button"
+            aria-expanded={isAboutOpen}
             onClick={() => {
               setIsAboutOpen(true);
               setIsTunerOpen(false);
@@ -70,7 +113,12 @@ function App() {
           >
             about
           </button>
-          <button className="text-control" type="button" onClick={() => setIsPaused((value) => !value)}>
+          <button
+            className="text-control"
+            type="button"
+            aria-pressed={isPaused}
+            onClick={() => setIsPaused((value) => !value)}
+          >
             {isPaused ? "resume" : "pause"}
           </button>
         </div>

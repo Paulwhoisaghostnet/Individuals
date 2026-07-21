@@ -163,6 +163,11 @@ export function PerceptionTuner({
                     max={control.max}
                     step={control.step}
                     value={currentValue}
+                    aria-label={control.label}
+                    aria-valuemin={control.min}
+                    aria-valuemax={control.max}
+                    aria-valuenow={currentValue}
+                    aria-valuetext={formatValue(control, currentValue)}
                     onChange={(event) =>
                       onChange(observer.id, control.id, Number(event.currentTarget.value))
                     }
