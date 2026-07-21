@@ -1,0 +1,311 @@
+{
+  "manifest": {
+    "schemaVersion": 4,
+    "id": "morrow",
+    "displayName": "Morrow",
+    "statement": "This assembled body is mine, including the pieces I cannot yet place.",
+    "identity": {
+      "origin": "The second Individual, born from delayed sampling, planar construction, and open assembly.",
+      "privateNarrative": "I assemble bodies from fragments because no form arrives all at once.",
+      "traits": [
+        {
+          "name": "fragmentation-tolerance",
+          "description": "Acceptance of missing or delayed bodily parts.",
+          "value": 0.85
+        },
+        {
+          "name": "constructive-drive",
+          "description": "Impulse to rebuild bodies out of planar blocks.",
+          "value": 0.72
+        }
+      ],
+      "idealSelf": {
+        "narrative": "An androgynous body whose plates hold history without restricting movement.",
+        "values": [
+          "assembly",
+          "openness",
+          "resilience"
+        ],
+        "visualAnchors": [
+          "broad torso",
+          "square face",
+          "translucent chest plates"
+        ]
+      },
+      "idealPhysicalForm": {
+        "description": "A compact androgynous human body with a broad torso, silver-grey skin, a square face, strong legs, and translucent plates fitted over the sternum and hips.",
+        "bodyPlan": "compact",
+        "stature": "Compact and grounded with weight centered low over strong legs.",
+        "surface": "Silver-grey skin with translucent rectangular plates protecting the chest and hips.",
+        "face": [
+          "square face",
+          "close-set pale eyes",
+          "broad nose",
+          "soft asymmetric mouth"
+        ],
+        "anatomy": [
+          "broad torso",
+          "square face",
+          "translucent chest plates",
+          "strong legs"
+        ],
+        "movement": "Weight centered low over both feet with elbows bent slightly forward.",
+        "nonNegotiableFeatures": [
+          "broad torso",
+          "square face",
+          "translucent chest plates"
+        ]
+      },
+      "initialPhysicalSelf": {
+        "description": "They see that body assembled and alive, though several plates sit out of alignment and the left side of the face arrives less clearly than the right.",
+        "perceivedSimilarity": 0.58,
+        "perceivedDifferences": [
+          "left cheek incomplete",
+          "sternum plates misaligned",
+          "right knee turned inward"
+        ]
+      },
+      "socialDisposition": {
+        "selfIntegrity": 0.55,
+        "socialPermeability": 0.78,
+        "needForRecognition": 0.45,
+        "resistance": 0.25,
+        "curiosity": 0.85,
+        "trustByPeer": {
+          "iris": 0.8,
+          "sable": 0.75
+        }
+      }
+    },
+    "perception": {
+      "modelId": "morrow-deferred-mosaic-v1",
+      "modelName": "Deferred mosaic",
+      "description": "Morrow receives a body as delayed rectangular samples and permanently loses some samples before seeing them.",
+      "constraints": [
+        "Every image arrives late.",
+        "Portions arrive already forgotten."
+      ],
+      "controls": [
+        {
+          "id": "retention",
+          "label": "Visual retention",
+          "description": "Fraction of sampled bodily information Morrow is able to keep.",
+          "min": 0.1,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.38
+        },
+        {
+          "id": "fragment-scale",
+          "label": "Fragment scale",
+          "description": "Physical size of the rectangular samples used to reconstruct a peer.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.62
+        },
+        {
+          "id": "temporal-lag",
+          "label": "Temporal lag",
+          "description": "Separation between the moments combined into one observation.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.55
+        }
+      ]
+    },
+    "drawing": {
+      "description": "Assembled planes drawing practice.",
+      "constraints": [
+        "Rebuild bodies from weighted rectangular planes.",
+        "Keep only one third of perceived samples."
+      ],
+      "palette": [
+        "#111417",
+        "#d9ddd8",
+        "#809593",
+        "#4d5458"
+      ],
+      "preferredFormats": [
+        "svg",
+        "procedural"
+      ],
+      "ability": {
+        "styleName": "Assembled Planes",
+        "styleDescription": "A constructive figurative practice that rebuilds bodies from weighted rectangular planes.",
+        "favoredPrimitives": [
+          "rectangle",
+          "straight stroke",
+          "overlaid plane"
+        ],
+        "markBehavior": "They place broad blocks first, then brace uncertain joints with short straight marks.",
+        "compositionBehavior": "The body is fitted into a low, stable arrangement whose pieces may visibly disagree.",
+        "correctionBehavior": "An inaccurate piece is covered or offset by a newly fitted plane.",
+        "skill": {
+          "observationalAccuracy": 0.55,
+          "proportionAccuracy": 0.58,
+          "anatomicalCoherence": 0.62,
+          "lineControl": 0.48,
+          "detailCapacity": 0.5,
+          "spatialCoherence": 0.67
+        },
+        "limitations": [
+          "Curves break into planar steps.",
+          "Fine facial likeness is difficult to retain."
+        ]
+      }
+    },
+    "cadence": {
+      "minimumCycleIntervalMs": 600000
+    }
+  },
+  "state": {
+    "individualId": "morrow",
+    "status": "idle",
+    "cycle": 3,
+    "selfConcept": {
+      "narrative": "Adjust perceived posture while holding broad torso.",
+      "keywords": [
+        "fragmentation-tolerance",
+        "constructive-drive"
+      ],
+      "confidence": 0.5900000000000001,
+      "physicalSelf": {
+        "description": "They see that body assembled and alive, though several plates sit out of alignment and the left side of the face arrives less clearly than the right.",
+        "perceivedSimilarity": 0.655,
+        "perceivedDifferences": [
+          "left cheek incomplete",
+          "sternum plates misaligned",
+          "right knee turned inward"
+        ]
+      }
+    },
+    "relationships": {
+      "sable": {
+        "peerId": "sable",
+        "perceivedDistortions": [
+          "simplifies line"
+        ],
+        "perceivedReliability": 0.8,
+        "perceivedTrend": "converging",
+        "expectedReaction": "Will notice broad torso"
+      },
+      "iris": {
+        "peerId": "iris",
+        "perceivedDistortions": [
+          "simplifies line"
+        ],
+        "perceivedReliability": 0.8500000000000001,
+        "perceivedTrend": "converging",
+        "expectedReaction": "Will notice broad torso"
+      }
+    },
+    "createdAt": "2026-07-21T16:12:18.335Z",
+    "updatedAt": "2026-07-21T16:12:18.348Z",
+    "currentSelfPortrait": {
+      "id": "morrow--3--self",
+      "cycle": 3,
+      "artistId": "morrow",
+      "subjectId": "morrow",
+      "role": "self",
+      "createdAt": "2026-07-21T16:12:18.348Z",
+      "artwork": {
+        "format": "svg",
+        "width": 800,
+        "height": 1000,
+        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Morrow self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#111417\"/>\n  <g fill=\"none\" stroke=\"#d9ddd8\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"408.4834091098007\" cy=\"168\" rx=\"69\" ry=\"67\"/>\n    <path d=\"M 304.3054622695968 305.67425049751625 C 319.3054622695968 350 338.58546226959675 390 338.58546226959675 435 C 338.58546226959675 485 325.3054622695968 520 325.3054622695968 565 L 491.3054622695968 565 C 491.3054622695968 520 478.0254622695968 485 478.0254622695968 435 C 478.0254622695968 390 497.3054622695968 350 512.3054622695968 298.32574950248375 Q 408.3054622695968 332 304.3054622695968 305.67425049751625 Z\" fill=\"#4d5458\" opacity=\"0.3\"/>\n    <path d=\"M 309.3054622695968 321.67425049751625 C 262.3054622695968 375 281.0394618273601 500 253.0394618273601 623.151678641513\" stroke-width=\"6\"/>\n    <path d=\"M 507.3054622695968 314.32574950248375 C 554.3054622695968 375 529.0394618273601 500 557.0394618273601 604.2750219206442\" stroke-width=\"6\"/>\n    <path d=\"M 338.3054622695968 563 C 320.3054622695968 675 336.3467125459947 800 326.3467125459947 924\" stroke-width=\"8\"/>\n    <path d=\"M 478.3054622695968 563 C 496.3054622695968 675 484.3467125459947 800 494.3467125459947 924\" stroke-width=\"8\"/>\n    <path d=\"M 408.38454975413185 106 C 409.9384624907151 330 402.9982115509622 435 410.3467125459947 565\" stroke=\"#809593\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#d9ddd8\" font-family=\"sans-serif\" font-size=\"22\">Morrow — self / cycle 3</text>\n  <text x=\"40\" y=\"970\" fill=\"#809593\" font-family=\"sans-serif\" font-size=\"14\">Adjust perceived posture while holding broad torso.</text>\n</svg>"
+      },
+      "statement": "Adjust perceived posture while holding broad torso.",
+      "sourcePortraitIds": []
+    },
+    "lastReflection": {
+      "summary": "Cycle 3: Group reflected a composite body across 2 peers.",
+      "tensions": [
+        "ideal (0.55) vs social (0.78)"
+      ],
+      "nextIntention": "Adjust perceived posture while holding broad torso.",
+      "memory": "Cycle 3 reflection stored: similarity delta=0.043.",
+      "physicalAssessment": {
+        "similarityDelta": 0.043,
+        "retainedFeatures": [
+          "broad torso",
+          "square face",
+          "translucent chest plates"
+        ],
+        "perceivedDifferences": [
+          "left cheek incomplete",
+          "sternum plates misaligned",
+          "right knee turned inward"
+        ],
+        "nextBodilyAdjustment": "Reconcile social perception with broad torso, square face, translucent chest plates."
+      },
+      "intendedSignals": [
+        "broad torso",
+        "square face",
+        "translucent chest plates"
+      ],
+      "perceivedPeerSignals": {
+        "sable": [
+          "perceived silhouette",
+          "noted proportion shift"
+        ],
+        "iris": [
+          "perceived silhouette",
+          "noted proportion shift"
+        ]
+      },
+      "recurringPatterns": [
+        "peer disagreement on alignment"
+      ],
+      "acceptedFeedback": [
+        "sable's observation of shoulder height",
+        "iris's observation of shoulder height"
+      ],
+      "rejectedFeedback": [],
+      "unresolvedQuestions": [
+        "Can social feedback alter non-negotiable features?"
+      ],
+      "relationshipUpdates": {
+        "sable": {
+          "peerId": "sable",
+          "perceivedDistortions": [
+            "simplifies line"
+          ],
+          "perceivedReliability": 0.8,
+          "perceivedTrend": "converging",
+          "expectedReaction": "Will notice broad torso"
+        },
+        "iris": {
+          "peerId": "iris",
+          "perceivedDistortions": [
+            "simplifies line"
+          ],
+          "perceivedReliability": 0.8500000000000001,
+          "perceivedTrend": "converging",
+          "expectedReaction": "Will notice broad torso"
+        }
+      },
+      "publicFragment": "Morrow cycle 3: reconciling social mirror."
+    },
+    "latestSocialPortrait": {
+      "id": "morrow--3--social",
+      "cycle": 3,
+      "artistId": "collective",
+      "subjectId": "morrow",
+      "role": "social",
+      "createdAt": "2026-07-21T16:12:18.348Z",
+      "artwork": {
+        "format": "svg",
+        "width": 800,
+        "height": 1000,
+        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Social portrait of Morrow\">\n  <rect width=\"800\" height=\"1000\" fill=\"#111417\"/>\n  <g opacity=\"0.50\" data-layer=\"0\" data-artist=\"sable\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"morrow perceived by Sable\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.2\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Morrow self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#111417\"/>\n  <g fill=\"none\" stroke=\"#d9ddd8\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"406.941446928872\" cy=\"168\" rx=\"69\" ry=\"67\"/>\n    <path d=\"M 299.38391024081966 297.396593239415 C 314.38391024081966 350 333.66391024081963 390 333.66391024081963 435 C 333.66391024081963 485 320.38391024081966 520 320.38391024081966 565 L 486.38391024081966 565 C 486.38391024081966 520 473.1039102408197 485 473.1039102408197 435 C 473.1039102408197 390 492.38391024081966 350 507.38391024081966 306.603406760585 Q 403.38391024081966 332 299.38391024081966 297.396593239415 Z\" fill=\"#4d5458\" opacity=\"0.3\"/>\n    <path d=\"M 304.38391024081966 313.396593239415 C 257.38391024081966 375 283.4758273613397 500 255.4758273613397 611.5264536527615\" stroke-width=\"6\"/>\n    <path d=\"M 502.38391024081966 322.603406760585 C 549.3839102408197 375 531.4758273613397 500 559.4758273613397 606.5585508989659\" stroke-width=\"6\"/>\n    <path d=\"M 333.38391024081966 563 C 315.38391024081966 675 326.8264620404946 800 316.8264620404946 924\" stroke-width=\"8\"/>\n    <path d=\"M 473.38391024081966 563 C 491.38391024081966 675 474.8264620404946 800 484.8264620404946 924\" stroke-width=\"8\"/>\n    <path d=\"M 404.9650376577318 106 C 401.3379516805596 330 410.0332755616647 435 400.8264620404946 565\" stroke=\"#809593\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#d9ddd8\" font-family=\"sans-serif\" font-size=\"22\">Morrow — self / cycle 2</text>\n  <text x=\"40\" y=\"970\" fill=\"#809593\" font-family=\"sans-serif\" font-size=\"14\">Repeat Morrows core silhouette to establish baseline.</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">morrow as perceived by Sable</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">cycle 2 peer drawing</text>\n</svg>\n          </g>\n<g opacity=\"0.50\" data-layer=\"1\" data-artist=\"iris\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"morrow perceived by Iris\">\n  <rect width=\"800\" height=\"1000\" fill=\"#181814\"/>\n  <g fill=\"none\" stroke=\"#ded9ca\" stroke-width=\"1.7\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Morrow self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#111417\"/>\n  <g fill=\"none\" stroke=\"#d9ddd8\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"406.941446928872\" cy=\"168\" rx=\"69\" ry=\"67\"/>\n    <path d=\"M 299.38391024081966 297.396593239415 C 314.38391024081966 350 333.66391024081963 390 333.66391024081963 435 C 333.66391024081963 485 320.38391024081966 520 320.38391024081966 565 L 486.38391024081966 565 C 486.38391024081966 520 473.1039102408197 485 473.1039102408197 435 C 473.1039102408197 390 492.38391024081966 350 507.38391024081966 306.603406760585 Q 403.38391024081966 332 299.38391024081966 297.396593239415 Z\" fill=\"#4d5458\" opacity=\"0.3\"/>\n    <path d=\"M 304.38391024081966 313.396593239415 C 257.38391024081966 375 283.4758273613397 500 255.4758273613397 611.5264536527615\" stroke-width=\"6\"/>\n    <path d=\"M 502.38391024081966 322.603406760585 C 549.3839102408197 375 531.4758273613397 500 559.4758273613397 606.5585508989659\" stroke-width=\"6\"/>\n    <path d=\"M 333.38391024081966 563 C 315.38391024081966 675 326.8264620404946 800 316.8264620404946 924\" stroke-width=\"8\"/>\n    <path d=\"M 473.38391024081966 563 C 491.38391024081966 675 474.8264620404946 800 484.8264620404946 924\" stroke-width=\"8\"/>\n    <path d=\"M 404.9650376577318 106 C 401.3379516805596 330 410.0332755616647 435 400.8264620404946 565\" stroke=\"#809593\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#d9ddd8\" font-family=\"sans-serif\" font-size=\"22\">Morrow — self / cycle 2</text>\n  <text x=\"40\" y=\"970\" fill=\"#809593\" font-family=\"sans-serif\" font-size=\"14\">Repeat Morrows core silhouette to establish baseline.</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#ded9ca\" font-family=\"sans-serif\" font-size=\"22\">morrow as perceived by Iris</text>\n  <text x=\"40\" y=\"970\" fill=\"#c57d4d\" font-family=\"sans-serif\" font-size=\"14\">cycle 3 peer drawing</text>\n</svg>\n          </g>\n  <text x=\"40\" y=\"940\" fill=\"#d9ddd8\" font-family=\"sans-serif\" font-size=\"22\">Morrow — social composite / cycle 3</text>\n  <text x=\"40\" y=\"970\" fill=\"#809593\" font-family=\"sans-serif\" font-size=\"14\">2 peer portraits composited.</text>\n</svg>"
+      },
+      "statement": "Layered composite of 2 peer interpretations.",
+      "sourcePortraitIds": [
+        "sable--2--peer--morrow",
+        "iris--3--peer--morrow"
+      ]
+    }
+  }
+}

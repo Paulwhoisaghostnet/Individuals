@@ -1,0 +1,311 @@
+{
+  "manifest": {
+    "schemaVersion": 4,
+    "id": "sable",
+    "displayName": "Sable",
+    "statement": "I know this long body is mine because every repeated limb returns to it.",
+    "identity": {
+      "origin": "The third Individual, born from kinetic motion residue, red spinal anchor, and thread gesture.",
+      "privateNarrative": "I search for identity through repetition, leaving persistent echoes along the spine.",
+      "traits": [
+        {
+          "name": "kinetic-repetition",
+          "description": "Driven to search for form through repeated directional passes.",
+          "value": 0.82
+        },
+        {
+          "name": "spinal-alignment",
+          "description": "Anchored by a single red spinal line.",
+          "value": 0.76
+        }
+      ],
+      "idealSelf": {
+        "narrative": "A tall man whose singular spine can hold change without multiplying it.",
+        "values": [
+          "repetition",
+          "alignment",
+          "gesture"
+        ],
+        "visualAnchors": [
+          "elongated face",
+          "six-fingered hands",
+          "red spinal line"
+        ]
+      },
+      "idealPhysicalForm": {
+        "description": "A very tall humanlike man with umber skin, an elongated face, six fingers on each hand, long arms, narrow hips, and a spine marked by a single red line.",
+        "bodyPlan": "longline",
+        "stature": "Very tall and slender with long arms relaxed beside narrow hips.",
+        "surface": "Dark umber skin carrying one red line from the crown of the head to the base of the spine.",
+        "face": [
+          "elongated face",
+          "deep-set eyes",
+          "high nose bridge",
+          "narrow mouth"
+        ],
+        "anatomy": [
+          "elongated face",
+          "six-fingered hands",
+          "red spinal line",
+          "long arms"
+        ],
+        "movement": "Tall and forward-facing stance organized around a vertical spine.",
+        "nonNegotiableFeatures": [
+          "elongated face",
+          "six-fingered hands",
+          "red spinal line"
+        ]
+      },
+      "initialPhysicalSelf": {
+        "description": "He sees the intended man in every portrait, but his limbs repeat in faint echoes and his spine bends away from the red line he believes should organize him.",
+        "perceivedSimilarity": 0.64,
+        "perceivedDifferences": [
+          "spine bends right",
+          "arms appear in echoes",
+          "head tilts away from center"
+        ]
+      },
+      "socialDisposition": {
+        "selfIntegrity": 0.68,
+        "socialPermeability": 0.5,
+        "needForRecognition": 0.8,
+        "resistance": 0.6,
+        "curiosity": 0.65,
+        "trustByPeer": {
+          "iris": 0.65,
+          "morrow": 0.7
+        }
+      }
+    },
+    "perception": {
+      "modelId": "sable-motion-residue-v1",
+      "modelName": "Motion residue",
+      "description": "Sable perceives movement as persistent bodily echoes while anatomy that remains still loses contrast.",
+      "constraints": [
+        "No moving limb appears only once.",
+        "Stillness dissolves into background noise."
+      ],
+      "controls": [
+        {
+          "id": "echo-count",
+          "label": "Echo count",
+          "description": "Number of previous bodily positions that remain visible.",
+          "min": 1,
+          "max": 8,
+          "step": 1,
+          "defaultValue": 4
+        },
+        {
+          "id": "echo-spacing",
+          "label": "Echo spacing",
+          "description": "Distance in pixels between persistent positions.",
+          "min": 2,
+          "max": 32,
+          "step": 1,
+          "defaultValue": 16
+        },
+        {
+          "id": "stillness-fade",
+          "label": "Stillness fade",
+          "description": "Loss of contrast applied to anatomy that is not moving.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.58
+        }
+      ]
+    },
+    "drawing": {
+      "description": "Repeated gesture drawing practice.",
+      "constraints": [
+        "Draw in long arcs.",
+        "Cannot draw a mark only once."
+      ],
+      "palette": [
+        "#171313",
+        "#e3d8cf",
+        "#a75d58",
+        "#5f504d"
+      ],
+      "preferredFormats": [
+        "svg",
+        "procedural"
+      ],
+      "ability": {
+        "styleName": "Repeated Gesture",
+        "styleDescription": "A kinetic figurative practice that searches for a body through accumulating directional strokes.",
+        "favoredPrimitives": [
+          "long curve",
+          "repeated gesture",
+          "thread line"
+        ],
+        "markBehavior": "He draws quickly in long arcs and repeats every important mark at least once.",
+        "compositionBehavior": "A vertical figure is organized around a spine while limbs leave directional residue.",
+        "correctionBehavior": "He approaches accuracy through repeated passes, allowing earlier attempts to remain visible.",
+        "skill": {
+          "observationalAccuracy": 0.68,
+          "proportionAccuracy": 0.64,
+          "anatomicalCoherence": 0.57,
+          "lineControl": 0.63,
+          "detailCapacity": 0.3,
+          "spatialCoherence": 0.7
+        },
+        "limitations": [
+          "Still detail is easily lost.",
+          "Repeated marks can obscure precise joint placement."
+        ]
+      }
+    },
+    "cadence": {
+      "minimumCycleIntervalMs": 600000
+    }
+  },
+  "state": {
+    "individualId": "sable",
+    "status": "idle",
+    "cycle": 3,
+    "selfConcept": {
+      "narrative": "Adjust perceived posture while holding elongated face.",
+      "keywords": [
+        "kinetic-repetition",
+        "spinal-alignment"
+      ],
+      "confidence": 0.5900000000000001,
+      "physicalSelf": {
+        "description": "He sees the intended man in every portrait, but his limbs repeat in faint echoes and his spine bends away from the red line he believes should organize him.",
+        "perceivedSimilarity": 0.6980000000000001,
+        "perceivedDifferences": [
+          "spine bends right",
+          "arms appear in echoes",
+          "head tilts away from center"
+        ]
+      }
+    },
+    "relationships": {
+      "iris": {
+        "peerId": "iris",
+        "perceivedDistortions": [
+          "exaggerates posture"
+        ],
+        "perceivedReliability": 0.7000000000000001,
+        "perceivedTrend": "converging",
+        "expectedReaction": "Will notice elongated face"
+      },
+      "morrow": {
+        "peerId": "morrow",
+        "perceivedDistortions": [
+          "exaggerates posture"
+        ],
+        "perceivedReliability": 0.75,
+        "perceivedTrend": "converging",
+        "expectedReaction": "Will notice elongated face"
+      }
+    },
+    "createdAt": "2026-07-21T16:12:18.337Z",
+    "updatedAt": "2026-07-21T16:12:18.351Z",
+    "currentSelfPortrait": {
+      "id": "sable--3--self",
+      "cycle": 3,
+      "artistId": "sable",
+      "subjectId": "sable",
+      "role": "self",
+      "createdAt": "2026-07-21T16:12:18.350Z",
+      "artwork": {
+        "format": "svg",
+        "width": 800,
+        "height": 1000,
+        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"391.3594346362349\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 317.00629401127344 283.9687272861651 C 332.00629401127344 350 356.88629401127343 390 356.88629401127343 435 C 356.88629401127343 485 344.00629401127344 520 344.00629401127344 550 L 436.00629401127344 550 C 436.00629401127344 520 423.12629401127344 485 423.12629401127344 435 C 423.12629401127344 390 448.00629401127344 350 463.00629401127344 288.0312727138349 Q 390.00629401127344 316 317.00629401127344 283.9687272861651 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 322.00629401127344 299.9687272861651 C 275.00629401127344 375 284.81186975690446 500 256.81186975690446 667.4535883060377\" stroke-width=\"6\"/>\n    <path d=\"M 458.00629401127344 304.0312727138349 C 505.00629401127344 375 498.81186975690446 500 526.8118697569045 673.2119388296502\" stroke-width=\"6\"/>\n    <path d=\"M 357.00629401127344 548 C 339.00629401127344 675 342.87780917025407 800 332.87780917025407 924\" stroke-width=\"8\"/>\n    <path d=\"M 423.00629401127344 548 C 441.00629401127344 675 434.87780917025407 800 444.87780917025407 924\" stroke-width=\"8\"/>\n    <path d=\"M 390.60768984458963 83 C 389.10350613845793 330 392.94035459792383 435 388.87780917025407 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 3</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Adjust perceived posture while holding elongated face.</text>\n</svg>"
+      },
+      "statement": "Adjust perceived posture while holding elongated face.",
+      "sourcePortraitIds": []
+    },
+    "lastReflection": {
+      "summary": "Cycle 3: Group reflected a composite body across 2 peers.",
+      "tensions": [
+        "ideal (0.68) vs social (0.5)"
+      ],
+      "nextIntention": "Adjust perceived posture while holding elongated face.",
+      "memory": "Cycle 3 reflection stored: similarity delta=0.033.",
+      "physicalAssessment": {
+        "similarityDelta": 0.033,
+        "retainedFeatures": [
+          "elongated face",
+          "six-fingered hands",
+          "red spinal line"
+        ],
+        "perceivedDifferences": [
+          "spine bends right",
+          "arms appear in echoes",
+          "head tilts away from center"
+        ],
+        "nextBodilyAdjustment": "Reconcile social perception with elongated face, six-fingered hands, red spinal line."
+      },
+      "intendedSignals": [
+        "elongated face",
+        "six-fingered hands",
+        "red spinal line"
+      ],
+      "perceivedPeerSignals": {
+        "iris": [
+          "perceived silhouette",
+          "noted proportion shift"
+        ],
+        "morrow": [
+          "perceived silhouette",
+          "noted proportion shift"
+        ]
+      },
+      "recurringPatterns": [
+        "peer disagreement on alignment"
+      ],
+      "acceptedFeedback": [
+        "iris's observation of shoulder height",
+        "morrow's observation of shoulder height"
+      ],
+      "rejectedFeedback": [],
+      "unresolvedQuestions": [
+        "Can social feedback alter non-negotiable features?"
+      ],
+      "relationshipUpdates": {
+        "iris": {
+          "peerId": "iris",
+          "perceivedDistortions": [
+            "exaggerates posture"
+          ],
+          "perceivedReliability": 0.7000000000000001,
+          "perceivedTrend": "converging",
+          "expectedReaction": "Will notice elongated face"
+        },
+        "morrow": {
+          "peerId": "morrow",
+          "perceivedDistortions": [
+            "exaggerates posture"
+          ],
+          "perceivedReliability": 0.75,
+          "perceivedTrend": "converging",
+          "expectedReaction": "Will notice elongated face"
+        }
+      },
+      "publicFragment": "Sable cycle 3: reconciling social mirror."
+    },
+    "latestSocialPortrait": {
+      "id": "sable--3--social",
+      "cycle": 3,
+      "artistId": "collective",
+      "subjectId": "sable",
+      "role": "social",
+      "createdAt": "2026-07-21T16:12:18.350Z",
+      "artwork": {
+        "format": "svg",
+        "width": 800,
+        "height": 1000,
+        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Social portrait of Sable\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g opacity=\"0.50\" data-layer=\"0\" data-artist=\"iris\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"sable perceived by Iris\">\n  <rect width=\"800\" height=\"1000\" fill=\"#181814\"/>\n  <g fill=\"none\" stroke=\"#ded9ca\" stroke-width=\"1.7\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"391.08630558467576\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 319.0579749515364 289.2357312541871 C 334.0579749515364 350 358.9379749515364 390 358.9379749515364 435 C 358.9379749515364 485 346.0579749515364 520 346.0579749515364 550 L 438.0579749515364 550 C 438.0579749515364 520 425.1779749515364 485 425.1779749515364 435 C 425.1779749515364 390 450.0579749515364 350 465.0579749515364 282.7642687458129 Q 392.0579749515364 316 319.0579749515364 289.2357312541871 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 324.0579749515364 305.2357312541871 C 277.0579749515364 375 282.18176939225896 500 254.18176939225893 655.6015417115902\" stroke-width=\"6\"/>\n    <path d=\"M 460.0579749515364 298.7642687458129 C 507.0579749515364 375 496.18176939225896 500 524.181769392259 652.9946917914692\" stroke-width=\"6\"/>\n    <path d=\"M 359.0579749515364 548 C 341.0579749515364 675 347.85560342608477 800 337.85560342608477 924\" stroke-width=\"8\"/>\n    <path d=\"M 425.0579749515364 548 C 443.0579749515364 675 439.85560342608477 800 449.85560342608477 924\" stroke-width=\"8\"/>\n    <path d=\"M 391.62612189959833 83 C 393.4960777311751 330 387.3841409177105 435 393.85560342608477 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 2</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Repeat Sables core silhouette to establish baseline.</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#ded9ca\" font-family=\"sans-serif\" font-size=\"22\">sable as perceived by Iris</text>\n  <text x=\"40\" y=\"970\" fill=\"#c57d4d\" font-family=\"sans-serif\" font-size=\"14\">cycle 3 peer drawing</text>\n</svg>\n          </g>\n<g opacity=\"0.50\" data-layer=\"1\" data-artist=\"morrow\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"sable perceived by Morrow\">\n  <rect width=\"800\" height=\"1000\" fill=\"#111417\"/>\n  <g fill=\"none\" stroke=\"#d9ddd8\" stroke-width=\"2.5\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Sable self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"391.08630558467576\" cy=\"160\" rx=\"50\" ry=\"82\"/>\n    <path d=\"M 319.0579749515364 289.2357312541871 C 334.0579749515364 350 358.9379749515364 390 358.9379749515364 435 C 358.9379749515364 485 346.0579749515364 520 346.0579749515364 550 L 438.0579749515364 550 C 438.0579749515364 520 425.1779749515364 485 425.1779749515364 435 C 425.1779749515364 390 450.0579749515364 350 465.0579749515364 282.7642687458129 Q 392.0579749515364 316 319.0579749515364 289.2357312541871 Z\" fill=\"#5f504d\" opacity=\"0.3\"/>\n    <path d=\"M 324.0579749515364 305.2357312541871 C 277.0579749515364 375 282.18176939225896 500 254.18176939225893 655.6015417115902\" stroke-width=\"6\"/>\n    <path d=\"M 460.0579749515364 298.7642687458129 C 507.0579749515364 375 496.18176939225896 500 524.181769392259 652.9946917914692\" stroke-width=\"6\"/>\n    <path d=\"M 359.0579749515364 548 C 341.0579749515364 675 347.85560342608477 800 337.85560342608477 924\" stroke-width=\"8\"/>\n    <path d=\"M 425.0579749515364 548 C 443.0579749515364 675 439.85560342608477 800 449.85560342608477 924\" stroke-width=\"8\"/>\n    <path d=\"M 391.62612189959833 83 C 393.4960777311751 330 387.3841409177105 435 393.85560342608477 550\" stroke=\"#a75d58\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — self / cycle 2</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">Repeat Sables core silhouette to establish baseline.</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#d9ddd8\" font-family=\"sans-serif\" font-size=\"22\">sable as perceived by Morrow</text>\n  <text x=\"40\" y=\"970\" fill=\"#809593\" font-family=\"sans-serif\" font-size=\"14\">cycle 3 peer drawing</text>\n</svg>\n          </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">Sable — social composite / cycle 3</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">2 peer portraits composited.</text>\n</svg>"
+      },
+      "statement": "Layered composite of 2 peer interpretations.",
+      "sourcePortraitIds": [
+        "iris--3--peer--sable",
+        "morrow--3--peer--sable"
+      ]
+    }
+  }
+}

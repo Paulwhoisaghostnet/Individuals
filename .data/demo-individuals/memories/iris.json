@@ -1,0 +1,35 @@
+[
+  {
+    "id": "iris--1--reflection",
+    "individualId": "iris",
+    "cycle": 1,
+    "kind": "reflection",
+    "content": "Cycle 1 reflection stored: similarity delta=-0.007.",
+    "createdAt": "2026-07-21T16:12:18.333Z",
+    "relatedIndividualIds": []
+  },
+  {
+    "id": "iris--2--reflection",
+    "individualId": "iris",
+    "cycle": 2,
+    "kind": "reflection",
+    "content": "Cycle 2 reflection stored: similarity delta=0.028.",
+    "createdAt": "2026-07-21T16:12:18.339Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  },
+  {
+    "id": "iris--3--reflection",
+    "individualId": "iris",
+    "cycle": 3,
+    "kind": "reflection",
+    "content": "Cycle 3 reflection stored: similarity delta=0.028.",
+    "createdAt": "2026-07-21T16:12:18.346Z",
+    "relatedIndividualIds": [
+      "morrow",
+      "sable"
+    ]
+  }
+]

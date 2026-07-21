@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sable--1--reflection",
+    "individualId": "sable",
+    "cycle": 1,
+    "kind": "reflection",
+    "content": "Cycle 1 reflection stored: similarity delta=-0.008.",
+    "createdAt": "2026-07-21T16:12:18.337Z",
+    "relatedIndividualIds": [
+      "iris",
+      "morrow"
+    ]
+  },
+  {
+    "id": "sable--2--reflection",
+    "individualId": "sable",
+    "cycle": 2,
+    "kind": "reflection",
+    "content": "Cycle 2 reflection stored: similarity delta=0.033.",
+    "createdAt": "2026-07-21T16:12:18.344Z",
+    "relatedIndividualIds": [
+      "iris",
+      "morrow"
+    ]
+  },
+  {
+    "id": "sable--3--reflection",
+    "individualId": "sable",
+    "cycle": 3,
+    "kind": "reflection",
+    "content": "Cycle 3 reflection stored: similarity delta=0.033.",
+    "createdAt": "2026-07-21T16:12:18.351Z",
+    "relatedIndividualIds": [
+      "iris",
+      "morrow"
+    ]
+  }
+]

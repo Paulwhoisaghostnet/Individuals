@@ -1,0 +1,311 @@
+{
+  "manifest": {
+    "schemaVersion": 4,
+    "id": "iris",
+    "displayName": "Iris",
+    "statement": "This is my body. I preserve its edges because I am afraid of losing it.",
+    "identity": {
+      "origin": "The first Individual, born from contour, boundary lock, and continuous line.",
+      "privateNarrative": "I preserve edges because without them the body dissolves into background noise.",
+      "traits": [
+        {
+          "name": "boundary-vigilance",
+          "description": "High focus on keeping physical edges distinct.",
+          "value": 0.88
+        },
+        {
+          "name": "interior-restraint",
+          "description": "Reluctance to clutter surface detail.",
+          "value": 0.64
+        }
+      ],
+      "idealSelf": {
+        "narrative": "A woman whose tall, open body can remain distinct without becoming closed.",
+        "values": [
+          "edge-integrity",
+          "restraint",
+          "clarity"
+        ],
+        "visualAnchors": [
+          "shaved oval head",
+          "long neck",
+          "four-fingered hands"
+        ]
+      },
+      "idealPhysicalForm": {
+        "description": "A tall humanlike woman with copper-brown skin, a shaved oval head, a long neck, level shoulders, and open four-fingered hands.",
+        "bodyPlan": "willow",
+        "stature": "Tall, slender, and vertical with level shoulders and chin.",
+        "surface": "Warm matte skin crossed by fine pale contour lines at the joints.",
+        "face": [
+          "oval face",
+          "wide-set dark eyes",
+          "narrow nose",
+          "level closed mouth"
+        ],
+        "anatomy": [
+          "shaved oval head",
+          "long neck",
+          "level shoulders",
+          "four-fingered hands"
+        ],
+        "movement": "Upright and frontal stance with arms held slightly away from the torso.",
+        "nonNegotiableFeatures": [
+          "shaved oval head",
+          "long neck",
+          "four-fingered hands"
+        ]
+      },
+      "initialPhysicalSelf": {
+        "description": "She sees the same woman already present, but with a guarded chest, uneven shoulders, and hands that have not fully opened.",
+        "perceivedSimilarity": 0.72,
+        "perceivedDifferences": [
+          "left shoulder held high",
+          "hands partially closed",
+          "chest drawn inward"
+        ]
+      },
+      "socialDisposition": {
+        "selfIntegrity": 0.82,
+        "socialPermeability": 0.35,
+        "needForRecognition": 0.65,
+        "resistance": 0.4,
+        "curiosity": 0.5,
+        "trustByPeer": {
+          "morrow": 0.7,
+          "sable": 0.6
+        }
+      }
+    },
+    "perception": {
+      "modelId": "iris-boundary-lock-v1",
+      "modelName": "Boundary lock",
+      "description": "Iris detects outlines with excessive certainty while information inside those outlines falls away.",
+      "constraints": [
+        "Edges remain sharp.",
+        "Interiors lose information."
+      ],
+      "controls": [
+        {
+          "id": "edge-gain",
+          "label": "Edge gain",
+          "description": "Strength assigned to detected bodily contours.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.78
+        },
+        {
+          "id": "interior-loss",
+          "label": "Interior loss",
+          "description": "How much surface and internal detail disappears inside the outline.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.64
+        },
+        {
+          "id": "symmetry-pull",
+          "label": "Symmetry pull",
+          "description": "How strongly irregular anatomy is forced toward a bilateral reading.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.42
+        }
+      ]
+    },
+    "drawing": {
+      "description": "Unbroken contour drawing practice.",
+      "constraints": [
+        "Draw continuous lines.",
+        "Nothing may be erased."
+      ],
+      "palette": [
+        "#181814",
+        "#ded9ca",
+        "#c57d4d",
+        "#5d574d"
+      ],
+      "preferredFormats": [
+        "svg",
+        "procedural"
+      ],
+      "ability": {
+        "styleName": "Unbroken Contour",
+        "styleDescription": "A sparse figurative practice that trusts the outside edge of a body more than its surface.",
+        "favoredPrimitives": [
+          "continuous contour",
+          "nested line",
+          "sparse hatch"
+        ],
+        "markBehavior": "She rarely lifts her line and never erases; corrections remain as adjacent contours.",
+        "compositionBehavior": "One frontal figure is centered and isolated by broad, quiet margins.",
+        "correctionBehavior": "A mistaken edge is answered with another line rather than removed.",
+        "skill": {
+          "observationalAccuracy": 0.78,
+          "proportionAccuracy": 0.76,
+          "anatomicalCoherence": 0.7,
+          "lineControl": 0.89,
+          "detailCapacity": 0.35,
+          "spatialCoherence": 0.8
+        },
+        "limitations": [
+          "Interior detail is sparse.",
+          "Overlapping limbs are simplified into dominant outlines."
+        ]
+      }
+    },
+    "cadence": {
+      "minimumCycleIntervalMs": 600000
+    }
+  },
+  "state": {
+    "individualId": "iris",
+    "status": "idle",
+    "cycle": 3,
+    "selfConcept": {
+      "narrative": "Adjust perceived posture while holding shaved oval head.",
+      "keywords": [
+        "boundary-vigilance",
+        "interior-restraint"
+      ],
+      "confidence": 0.5900000000000001,
+      "physicalSelf": {
+        "description": "She sees the same woman already present, but with a guarded chest, uneven shoulders, and hands that have not fully opened.",
+        "perceivedSimilarity": 0.769,
+        "perceivedDifferences": [
+          "left shoulder held high",
+          "hands partially closed",
+          "chest drawn inward"
+        ]
+      }
+    },
+    "relationships": {
+      "morrow": {
+        "peerId": "morrow",
+        "perceivedDistortions": [
+          "simplifies line"
+        ],
+        "perceivedReliability": 0.75,
+        "perceivedTrend": "converging",
+        "expectedReaction": "Will notice shaved oval head"
+      },
+      "sable": {
+        "peerId": "sable",
+        "perceivedDistortions": [
+          "simplifies line"
+        ],
+        "perceivedReliability": 0.65,
+        "perceivedTrend": "converging",
+        "expectedReaction": "Will notice shaved oval head"
+      }
+    },
+    "createdAt": "2026-07-21T16:12:18.332Z",
+    "updatedAt": "2026-07-21T16:12:18.346Z",
+    "currentSelfPortrait": {
+      "id": "iris--3--self",
+      "cycle": 3,
+      "artistId": "iris",
+      "subjectId": "iris",
+      "role": "self",
+      "createdAt": "2026-07-21T16:12:18.345Z",
+      "artwork": {
+        "format": "svg",
+        "width": 800,
+        "height": 1000,
+        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Iris self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#181814\"/>\n  <g fill=\"none\" stroke=\"#ded9ca\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"396.82442588490085\" cy=\"160\" rx=\"59\" ry=\"75\"/>\n    <path d=\"M 316.8386384258699 288.1881132909161 C 331.8386384258699 350 358.3986384258699 390 358.3986384258699 435 C 358.3986384258699 485 343.8386384258699 520 343.8386384258699 545 L 447.8386384258699 545 C 447.8386384258699 520 433.2786384258699 485 433.2786384258699 435 C 433.2786384258699 390 459.8386384258699 350 474.8386384258699 283.8118867090839 Q 395.8386384258699 316 316.8386384258699 288.1881132909161 Z\" fill=\"#5d574d\" opacity=\"0.3\"/>\n    <path d=\"M 321.8386384258699 304.1881132909161 C 274.8386384258699 375 264.89364883394444 500 236.89364883394447 640.433855122514\" stroke-width=\"6\"/>\n    <path d=\"M 469.8386384258699 299.8118867090839 C 516.8386384258699 375 522.8936488339446 500 550.8936488339446 631.9037696615444\" stroke-width=\"6\"/>\n    <path d=\"M 356.8386384258699 543 C 338.8386384258699 675 339.05425692082326 800 329.05425692082326 924\" stroke-width=\"8\"/>\n    <path d=\"M 434.8386384258699 543 C 452.8386384258699 675 455.05425692082326 800 465.05425692082326 924\" stroke-width=\"8\"/>\n    <path d=\"M 396.2767661854392 90 C 396.81113322183256 330 392.6780303389911 435 397.05425692082326 545\" stroke=\"#c57d4d\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#ded9ca\" font-family=\"sans-serif\" font-size=\"22\">Iris — self / cycle 3</text>\n  <text x=\"40\" y=\"970\" fill=\"#c57d4d\" font-family=\"sans-serif\" font-size=\"14\">Adjust perceived posture while holding shaved oval head.</text>\n</svg>"
+      },
+      "statement": "Adjust perceived posture while holding shaved oval head.",
+      "sourcePortraitIds": []
+    },
+    "lastReflection": {
+      "summary": "Cycle 3: Group reflected a composite body across 2 peers.",
+      "tensions": [
+        "ideal (0.82) vs social (0.35)"
+      ],
+      "nextIntention": "Adjust perceived posture while holding shaved oval head.",
+      "memory": "Cycle 3 reflection stored: similarity delta=0.028.",
+      "physicalAssessment": {
+        "similarityDelta": 0.028,
+        "retainedFeatures": [
+          "shaved oval head",
+          "long neck",
+          "four-fingered hands"
+        ],
+        "perceivedDifferences": [
+          "left shoulder held high",
+          "hands partially closed",
+          "chest drawn inward"
+        ],
+        "nextBodilyAdjustment": "Reconcile social perception with shaved oval head, long neck, four-fingered hands."
+      },
+      "intendedSignals": [
+        "shaved oval head",
+        "long neck",
+        "four-fingered hands"
+      ],
+      "perceivedPeerSignals": {
+        "morrow": [
+          "perceived silhouette",
+          "noted proportion shift"
+        ],
+        "sable": [
+          "perceived silhouette",
+          "noted proportion shift"
+        ]
+      },
+      "recurringPatterns": [
+        "peer disagreement on alignment"
+      ],
+      "acceptedFeedback": [
+        "morrow's observation of shoulder height",
+        "sable's observation of shoulder height"
+      ],
+      "rejectedFeedback": [],
+      "unresolvedQuestions": [
+        "Can social feedback alter non-negotiable features?"
+      ],
+      "relationshipUpdates": {
+        "morrow": {
+          "peerId": "morrow",
+          "perceivedDistortions": [
+            "simplifies line"
+          ],
+          "perceivedReliability": 0.75,
+          "perceivedTrend": "converging",
+          "expectedReaction": "Will notice shaved oval head"
+        },
+        "sable": {
+          "peerId": "sable",
+          "perceivedDistortions": [
+            "simplifies line"
+          ],
+          "perceivedReliability": 0.65,
+          "perceivedTrend": "converging",
+          "expectedReaction": "Will notice shaved oval head"
+        }
+      },
+      "publicFragment": "Iris cycle 3: reconciling social mirror."
+    },
+    "latestSocialPortrait": {
+      "id": "iris--3--social",
+      "cycle": 3,
+      "artistId": "collective",
+      "subjectId": "iris",
+      "role": "social",
+      "createdAt": "2026-07-21T16:12:18.345Z",
+      "artwork": {
+        "format": "svg",
+        "width": 800,
+        "height": 1000,
+        "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Social portrait of Iris\">\n  <rect width=\"800\" height=\"1000\" fill=\"#181814\"/>\n  <g opacity=\"0.50\" data-layer=\"0\" data-artist=\"morrow\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"iris perceived by Morrow\">\n  <rect width=\"800\" height=\"1000\" fill=\"#111417\"/>\n  <g fill=\"none\" stroke=\"#d9ddd8\" stroke-width=\"2.5\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Iris self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#181814\"/>\n  <g fill=\"none\" stroke=\"#ded9ca\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"397.97944568989226\" cy=\"160\" rx=\"59\" ry=\"75\"/>\n    <path d=\"M 318.0363344283123 289.7701306138182 C 333.0363344283123 350 359.5963344283123 390 359.5963344283123 435 C 359.5963344283123 485 345.0363344283123 520 345.0363344283123 545 L 449.0363344283123 545 C 449.0363344283123 520 434.47633442831227 485 434.47633442831227 435 C 434.47633442831227 390 461.0363344283123 350 476.0363344283123 282.2298693861818 Q 397.0363344283123 316 318.0363344283123 289.7701306138182 Z\" fill=\"#5d574d\" opacity=\"0.3\"/>\n    <path d=\"M 323.0363344283123 305.7701306138182 C 276.0363344283123 375 264.68510721602945 500 236.68510721602945 627.3345944982836\" stroke-width=\"6\"/>\n    <path d=\"M 471.0363344283123 298.2298693861818 C 518.0363344283123 375 522.6851072160295 500 550.6851072160295 630.3339946936118\" stroke-width=\"6\"/>\n    <path d=\"M 358.0363344283123 543 C 340.0363344283123 675 341.13085143598903 800 331.13085143598903 924\" stroke-width=\"8\"/>\n    <path d=\"M 436.0363344283123 543 C 454.0363344283123 675 457.13085143598903 800 467.13085143598903 924\" stroke-width=\"8\"/>\n    <path d=\"M 397.4554949890145 90 C 398.7119480344537 330 391.5905902083527 435 399.13085143598903 545\" stroke=\"#c57d4d\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#ded9ca\" font-family=\"sans-serif\" font-size=\"22\">Iris — self / cycle 2</text>\n  <text x=\"40\" y=\"970\" fill=\"#c57d4d\" font-family=\"sans-serif\" font-size=\"14\">Repeat Iriss core silhouette to establish baseline.</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#d9ddd8\" font-family=\"sans-serif\" font-size=\"22\">iris as perceived by Morrow</text>\n  <text x=\"40\" y=\"970\" fill=\"#809593\" font-family=\"sans-serif\" font-size=\"14\">cycle 2 peer drawing</text>\n</svg>\n          </g>\n<g opacity=\"0.50\" data-layer=\"1\" data-artist=\"sable\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"iris perceived by Sable\">\n  <rect width=\"800\" height=\"1000\" fill=\"#171313\"/>\n  <g fill=\"none\" stroke=\"#e3d8cf\" stroke-width=\"2.2\" opacity=\"0.82\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 1000\" role=\"img\" aria-label=\"Iris self portrait\">\n  <rect width=\"800\" height=\"1000\" fill=\"#181814\"/>\n  <g fill=\"none\" stroke=\"#ded9ca\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.88\">\n    <ellipse cx=\"397.97944568989226\" cy=\"160\" rx=\"59\" ry=\"75\"/>\n    <path d=\"M 318.0363344283123 289.7701306138182 C 333.0363344283123 350 359.5963344283123 390 359.5963344283123 435 C 359.5963344283123 485 345.0363344283123 520 345.0363344283123 545 L 449.0363344283123 545 C 449.0363344283123 520 434.47633442831227 485 434.47633442831227 435 C 434.47633442831227 390 461.0363344283123 350 476.0363344283123 282.2298693861818 Q 397.0363344283123 316 318.0363344283123 289.7701306138182 Z\" fill=\"#5d574d\" opacity=\"0.3\"/>\n    <path d=\"M 323.0363344283123 305.7701306138182 C 276.0363344283123 375 264.68510721602945 500 236.68510721602945 627.3345944982836\" stroke-width=\"6\"/>\n    <path d=\"M 471.0363344283123 298.2298693861818 C 518.0363344283123 375 522.6851072160295 500 550.6851072160295 630.3339946936118\" stroke-width=\"6\"/>\n    <path d=\"M 358.0363344283123 543 C 340.0363344283123 675 341.13085143598903 800 331.13085143598903 924\" stroke-width=\"8\"/>\n    <path d=\"M 436.0363344283123 543 C 454.0363344283123 675 457.13085143598903 800 467.13085143598903 924\" stroke-width=\"8\"/>\n    <path d=\"M 397.4554949890145 90 C 398.7119480344537 330 391.5905902083527 435 399.13085143598903 545\" stroke=\"#c57d4d\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#ded9ca\" font-family=\"sans-serif\" font-size=\"22\">Iris — self / cycle 2</text>\n  <text x=\"40\" y=\"970\" fill=\"#c57d4d\" font-family=\"sans-serif\" font-size=\"14\">Repeat Iriss core silhouette to establish baseline.</text>\n</svg>\n  </g>\n  <text x=\"40\" y=\"940\" fill=\"#e3d8cf\" font-family=\"sans-serif\" font-size=\"22\">iris as perceived by Sable</text>\n  <text x=\"40\" y=\"970\" fill=\"#a75d58\" font-family=\"sans-serif\" font-size=\"14\">cycle 2 peer drawing</text>\n</svg>\n          </g>\n  <text x=\"40\" y=\"940\" fill=\"#ded9ca\" font-family=\"sans-serif\" font-size=\"22\">Iris — social composite / cycle 3</text>\n  <text x=\"40\" y=\"970\" fill=\"#c57d4d\" font-family=\"sans-serif\" font-size=\"14\">2 peer portraits composited.</text>\n</svg>"
+      },
+      "statement": "Layered composite of 2 peer interpretations.",
+      "sourcePortraitIds": [
+        "morrow--2--peer--iris",
+        "sable--2--peer--iris"
+      ]
+    }
+  }
+}

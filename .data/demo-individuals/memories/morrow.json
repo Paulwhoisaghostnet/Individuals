@@ -1,0 +1,37 @@
+[
+  {
+    "id": "morrow--1--reflection",
+    "individualId": "morrow",
+    "cycle": 1,
+    "kind": "reflection",
+    "content": "Cycle 1 reflection stored: similarity delta=-0.011.",
+    "createdAt": "2026-07-21T16:12:18.335Z",
+    "relatedIndividualIds": [
+      "iris"
+    ]
+  },
+  {
+    "id": "morrow--2--reflection",
+    "individualId": "morrow",
+    "cycle": 2,
+    "kind": "reflection",
+    "content": "Cycle 2 reflection stored: similarity delta=0.043.",
+    "createdAt": "2026-07-21T16:12:18.341Z",
+    "relatedIndividualIds": [
+      "sable",
+      "iris"
+    ]
+  },
+  {
+    "id": "morrow--3--reflection",
+    "individualId": "morrow",
+    "cycle": 3,
+    "kind": "reflection",
+    "content": "Cycle 3 reflection stored: similarity delta=0.043.",
+    "createdAt": "2026-07-21T16:12:18.348Z",
+    "relatedIndividualIds": [
+      "sable",
+      "iris"
+    ]
+  }
+]
