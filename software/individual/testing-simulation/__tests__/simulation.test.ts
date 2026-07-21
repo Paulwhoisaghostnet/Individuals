@@ -64,4 +64,51 @@ describe("SocietySimulation (Phase 2)", () => {
       "red spinal line",
     ]);
   });
+
+  it("keeps coherence tensioned across a long run instead of converging to one", async () => {
+    const sim = new SocietySimulation();
+    const results = await sim.run(18);
+
+    for (const id of ["iris", "morrow", "sable"] as const) {
+      const records = results.map((result) => result.records[id]);
+      const assessments = records
+        .slice(2)
+        .map((record) => record.reflection.physicalAssessment);
+      for (const assessment of assessments) {
+        expect(assessment.geometry).toBeDefined();
+        expect(assessment.similarityDelta).toBeCloseTo(
+          (assessment.geometry?.selfIdealDistance ?? 0) -
+            (assessment.geometry?.predictedIdealDistance ?? 0),
+          3,
+        );
+      }
+      const finalGeometry = assessments.at(-1)?.geometry;
+      // The internal body can approach its ideal, but peers' stable lenses keep
+      // the social return measurably elsewhere. That unresolved triangle—not a
+      // synthetic oscillation—is the installation's endless pressure.
+      expect(finalGeometry?.selfSocialDistance).toBeGreaterThan(0.01);
+      expect(finalGeometry?.socialIdealDistance).toBeGreaterThan(0.01);
+      expect(finalGeometry?.socialIdealDistance).toBeGreaterThan(
+        finalGeometry?.selfIdealDistance ?? 1,
+      );
+    }
+  });
+
+  it("makes reflected bodily adjustments visible in the next self portrait", async () => {
+    const sim = new SocietySimulation();
+    const results = await sim.run(5);
+
+    for (const id of ["iris", "morrow", "sable"] as const) {
+      const beforeReflection = results[2].records[id];
+      const afterReflection = results[3].records[id];
+      expect(beforeReflection.intent.statement).not.toEqual(afterReflection.intent.statement);
+      // Cycle N reflection becomes cycle N+1 intent and therefore body geometry.
+      expect(results[3].records[id].intent.statement).toBe(
+        results[2].records[id].reflection.nextIntention,
+      );
+      expect(results[3].records[id].selfPortrait.descriptor?.figure).not.toEqual(
+        results[2].records[id].selfPortrait.descriptor?.figure,
+      );
+    }
+  });
 });

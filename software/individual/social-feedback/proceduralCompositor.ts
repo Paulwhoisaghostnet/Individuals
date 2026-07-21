@@ -1,31 +1,48 @@
 import type { Portrait } from "../core/model";
 import type { FeedbackCompositor, IdGenerator } from "../core/systems/contracts";
+import { renderSocialCompositeSvg } from "../drawing/svgRenderer";
 
+import { buildSocialFeedbackEvidence } from "./evidence";
+
+/**
+ * Composes peer interpretations at the descriptor layer. No peer-controlled
+ * markup crosses the boundary into the composite SVG.
+ */
 export class ProceduralFeedbackCompositor implements FeedbackCompositor {
   constructor(private readonly ids: IdGenerator) {}
 
   async compose(input: Parameters<FeedbackCompositor["compose"]>[0]): Promise<Portrait | undefined> {
-    const { manifest, portraits, cycle, createdAt } = input;
+    const { manifest, portraits, sourceSelfPortrait, cycle, createdAt } = input;
     if (portraits.length === 0) return undefined;
+    if (!sourceSelfPortrait) {
+      throw new Error("A persisted source self portrait is required for social composition.");
+    }
 
-    const opacity = (1 / portraits.length).toFixed(2);
-    const [bg = "#11110f", fg = "#e9e7df", accent = "#c57d4d"] = manifest.drawing.palette;
+    const invalid = portraits.find(
+      (portrait) => portrait.role !== "peer" || portrait.subjectId !== manifest.id,
+    );
+    if (invalid) {
+      throw new Error(
+        `Cannot composite portrait "${invalid.id}": expected a peer portrait of "${manifest.id}".`,
+      );
+    }
+    for (const portrait of portraits) {
+      if (
+        portrait.sourcePortraitIds.length !== 1 ||
+        portrait.sourcePortraitIds[0] !== sourceSelfPortrait.id
+      ) {
+        throw new Error(`Portrait "${portrait.id}" does not belong to source cohort "${sourceSelfPortrait.id}".`);
+      }
+    }
 
-    const layersSvg = portraits
-      .map(
-        (portrait, index) =>
-          `<g opacity="${opacity}" data-layer="${index}" data-artist="${portrait.artistId}">
-            ${portrait.artwork.content}
-          </g>`,
-      )
-      .join("\n");
-
-    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Social portrait of ${manifest.displayName}">
-  <rect width="800" height="1000" fill="${bg}"/>
-  ${layersSvg}
-  <text x="40" y="940" fill="${fg}" font-family="sans-serif" font-size="22">${manifest.displayName} — social composite / cycle ${cycle}</text>
-  <text x="40" y="970" fill="${accent}" font-family="sans-serif" font-size="14">${portraits.length} peer portrait${portraits.length === 1 ? "" : "s"} composited.</text>
-</svg>`;
+    const evidence = buildSocialFeedbackEvidence({
+      subjectId: manifest.id,
+      portraits,
+      sourceSelfPortrait,
+      idealFigure: manifest.identity.idealPhysicalForm.visualSpecification?.figure,
+    });
+    const title = `${manifest.displayName} — social composite / cycle ${cycle}`;
+    const subtitle = `${portraits.length} peer interpretation${portraits.length === 1 ? "" : "s"}; confidence ${evidence.confidence.toFixed(2)}`;
 
     return {
       id: this.ids.create([manifest.id, cycle, "social"]),
@@ -38,9 +55,20 @@ export class ProceduralFeedbackCompositor implements FeedbackCompositor {
         format: "svg",
         width: 800,
         height: 1000,
-        content: svgContent,
+        content: renderSocialCompositeSvg({
+          title,
+          subtitle,
+          consensus: evidence.consensus,
+          layers: evidence.contributions.map((contribution) => ({
+            descriptor: contribution.descriptor,
+            weight: contribution.weight,
+          })),
+          palette: manifest.drawing.palette,
+        }),
       },
-      statement: `Layered composite of ${portraits.length} peer interpretation${portraits.length === 1 ? "" : "s"}.`,
+      descriptor: evidence.consensus,
+      socialEvidence: evidence,
+      statement: `Structured consensus of ${portraits.length} peer interpretation${portraits.length === 1 ? "" : "s"}.`,
       sourcePortraitIds: portraits.map((portrait) => portrait.id),
     };
   }

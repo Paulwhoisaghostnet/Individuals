@@ -192,127 +192,124 @@ privacy boundaries appropriate to the installation site.
 - **Locations remain distinct.** Distributed installations may communicate without
   collapsing into one undifferentiated instance.
 
-## Current repository
+## Current prototype
 
-The repository currently contains a working React and TypeScript exhibition
-prototype built with Vite and the typed skeleton of the Individual domain engine.
-The client presents a living society view, deterministic generative portraits,
-automatic cycle progression, focused identity studies, peer interpretations,
-composite social portraits, visible artistic ability studies, and a curator calibration surface for tuning each
-Individual's unique perception model. The domain package defines identity, state,
-portraits, observations, memories, validated perception controls, system contracts,
-persistence boundaries, and complete cycle orchestration. Production cognition,
-perception, drawing, compositing, and durable persistence adapters remain to be
-built.
+The repository contains a closed digital society of three authored Individuals:
+Iris, Morrow, and Sable. The implementation includes:
+
+- persistent identity snapshots, bounded memory, recoverable cycle commits, and
+  explicit corruption quarantine;
+- structured embodied figure evidence carried through cognition, self-portraiture,
+  perception, peer drawing, social composition, reflection, and adaptation;
+- a distinct, stable, tunable perception model and executable artistic ability for
+  each Individual;
+- provider-neutral LLM cognition with strict structured-output limits and a causal
+  procedural fallback;
+- a bounded scheduler, health/telemetry events, curator controls, and persistent
+  calibration;
+- a versioned, privacy-safe public API with server-sent events and opaque portrait
+  artifacts;
+- a portrait-first React exhibition with a clearly identified local simulation when
+  no live runtime is available; and
+- separate web/runtime production containers suitable for the shared Hetzner host.
+
+The procedural SVG renderer is deliberate prototype infrastructure: it makes the
+causal loop inspectable and inexpensive enough to run continuously. A future image
+model may become another drawing adapter, but it must preserve the same embodiment,
+perception, ability, provenance, and safety contracts.
 
 ```text
 .
-├── deploy/
-│   └── nginx.conf             # Static production server configuration
-├── hardware/                  # Physical installation requirements and templates
-├── software/                  # Software installed on and packaged with Individuals
-├── src/
-│   ├── exhibition/            # Gallery model, generative art, and focused views
-│   ├── App.tsx                # Exhibition lifecycle and primary composition
-│   ├── main.tsx               # Browser entry point
-│   └── styles.css             # Global exhibition styles
-├── compose.production.yml     # Isolated production service
-├── Dockerfile                 # Reproducible static web build
-├── index.html
-└── package.json
+├── .github/                   # CI, dependency updates, and issue routing
+├── deploy/                    # Nginx and host-secret guidance
+├── docs/                      # Architecture, security, testing, and operations
+├── hardware/                  # Physical installation requirement tree
+├── software/individual/
+│   ├── core/                  # Identity model and causal orchestration
+│   ├── cognition/             # Intent/reflection and provider boundary
+│   ├── perception/            # Digital/camera observation and visual lenses
+│   ├── drawing/               # Figure evidence and safe renderers
+│   ├── social-feedback/       # Peer evidence and social composition
+│   ├── memory/                # Validation, journals, snapshots, and retention
+│   ├── runtime/               # Scheduling, controls, health, and protocol policy
+│   └── server/                # Narrow HTTP/SSE public boundary
+├── src/exhibition/            # Public gallery and curator calibration client
+├── compose.production.yml     # Isolated two-service production composition
+├── Dockerfile                 # Exhibition web image
+└── Dockerfile.runtime         # Stateful runtime/API image
 ```
+
+The domain rules and issue ownership are documented in
+[`docs/architecture/system.md`](docs/architecture/system.md). Automated and
+release-gated acceptance standards are in
+[`docs/testing/acceptance.md`](docs/testing/acceptance.md).
 
 ## Development
 
-### Requirements
-
-- Node.js 22 or a compatible current LTS release
-- npm 10 or later
-
-### Install and run
+Requirements: Node.js 22.12 or newer and npm 10. Production composition requires
+Docker Compose 2.24.0 or newer because `.env` is intentionally optional.
 
 ```sh
 git clone https://github.com/Paulwhoisaghostnet/Individuals.git
 cd Individuals
-npm install
+cp .env.example .env
+npm ci
 npm run dev
 ```
 
-The local exhibition is served at [http://localhost:4174](http://localhost:4174).
-
-### Available commands
+The exhibition opens at [http://127.0.0.1:4174](http://127.0.0.1:4174). The runtime
+listens only on `127.0.0.1:4175`; Vite proxies the versioned API. Curator mutations
+remain disabled until a token of at least 32 random bytes is configured. Model
+credentials are optional.
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev` | Start the development server on port 4174. |
-| `npm run typecheck` | Validate the TypeScript project without emitting files. |
-| `npm run test` | Run the domain and exhibition-client test suites once. |
-| `npm run build` | Typecheck and create a production build in `dist/`. |
-| `npm run check` | Run typechecking, tests, and the production build. |
-| `npm run preview` | Preview the production build locally. |
+| `npm run dev` | Start the runtime and exhibition together. |
+| `npm run dev:runtime` | Start only the private runtime/API. |
+| `npm run dev:web` | Start only the Vite client. |
+| `npm run typecheck` | Typecheck client and runtime source. |
+| `npm run test` | Run all unit and integration tests once. |
+| `npm run build` | Typecheck and build the production client. |
+| `npm run check` | Typecheck, test, and build without duplicate work. |
+| `npm run demo` | Run the accelerated society runtime demonstration. |
 
-## Production deployment
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) before changing contracts or public data.
 
-The prototype is designed to share a Hetzner host with other independent projects,
-including `lilguys.xyz`, without sharing application containers, networks, state,
-or public ports.
+## Production
+
+The production composition keeps Individuals distinct from `lilguys.xyz`: it has
+its own Compose project, internal network, named state volume, secrets mount,
+container logs, and loopback web port. The runtime port is not published.
 
 ```sh
 cp .env.example .env
+docker compose -f compose.production.yml config --quiet
 docker compose -f compose.production.yml up -d --build
 ```
 
-By default, the `individuals-web` container:
+A host-level reverse proxy supplies the Individuals hostname and TLS and forwards it
+to `127.0.0.1:${INDIVIDUALS_PORT}`. Follow the deployment boundaries and
+operator checklist in
+[`docs/operations/deployment.md`](docs/operations/deployment.md).
 
-- runs on its own Docker network named `individuals`;
-- binds only to `127.0.0.1:4174` on the host;
-- serves the built web application through Nginx;
-- expects a host-level reverse proxy to provide the public domain and TLS.
+## Honest boundaries
 
-The loopback port can be changed in `.env`:
+This is a digital prototype, not a completed physical or global installation.
 
-```dotenv
-INDIVIDUALS_PORT=4174
-```
+- The default observation source is a routed digital canvas. A physical camera
+  requires a real frame source, machine interpretation, site calibration, and
+  evidence-backed privacy commissioning.
+- Multi-location code defines versioned, bounded delivery and migration boundaries;
+  an actual authenticated transport and venue trust infrastructure must be selected
+  and operated per site.
+- The project does not claim that a language model has a biological body. It tests
+  what happens when a persistent artificial identity is authored and trained to
+  understand a specific physical form as its own.
+- Internal reflection is not chain-of-thought theater. The public work receives only
+  curated reflection fragments and visible causal artifacts.
+- A public collaboration license has not yet been selected; repository visibility
+  should not be interpreted as a grant of rights.
 
-Production credentials and model-provider keys must never be committed. As the
-backend develops, its secrets and persistent storage will remain specific to this
-project.
-
-## Roadmap
-
-### Phase 1 — Exhibition foundation
-
-- Establish the gallery's visual language and responsive web presentation.
-- Define the data model for Individuals, portraits, observations, and cycles.
-- Add persistent local state and deterministic cycle playback.
-
-### Phase 2 — Closed identity loop
-
-- Implement three distinct persistent identities.
-- Build perception and drawing constraints for each Individual.
-- Generate peer portraits and composite social portraits.
-- Adapt later self-portraits from the difference between ideal and social selves.
-
-### Phase 3 — Living digital exhibition
-
-- Run cycles continuously through a durable background process.
-- Stream state changes and completed drawings to exhibition clients.
-- Add history, recovery, observability, and curatorial controls outside the public
-  gallery.
-
-### Phase 4 — Physical and distributed installations
-
-- Introduce physical canvases, displays, and camera-based observation.
-- Connect multiple independent locations.
-- Explore migration, remote perception, and cultural divergence between groups.
-
-## Project status
-
-Individuals is in early development. Its artistic framework is being translated
-into a working digital prototype, and architecture, terminology, and behavior will
-continue to evolve through experimentation.
-
-The repository is currently maintained as the canonical implementation of the
-project. Contribution guidelines and licensing information will be added as the
-project's public collaboration model is defined.
+The next installation milestones are sustained unattended operation, a reviewed
+image-generation drawing adapter, physical display/camera trials, and the first
+authenticated link between independently commissioned locations.

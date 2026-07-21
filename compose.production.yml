@@ -1,15 +1,79 @@
+name: individuals
+
 services:
+  individuals-runtime:
+    build:
+      context: .
+      dockerfile: Dockerfile.runtime
+    restart: unless-stopped
+    init: true
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      INDIVIDUALS_API_HOST: 0.0.0.0
+      INDIVIDUALS_API_PORT: 4175
+      INDIVIDUALS_DATA_DIR: /var/lib/individuals
+    expose:
+      - "4175"
+    volumes:
+      - individuals-data:/var/lib/individuals
+      - ./deploy/secrets:/run/secrets:ro
+    group_add:
+      - "${INDIVIDUALS_SECRET_GID:-991}"
+    networks:
+      - private
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    cpus: "${INDIVIDUALS_RUNTIME_CPUS:-1.50}"
+    mem_limit: "${INDIVIDUALS_RUNTIME_MEMORY_LIMIT:-1g}"
+    mem_reservation: "${INDIVIDUALS_RUNTIME_MEMORY_RESERVATION:-256m}"
+    stop_grace_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
   individuals-web:
     build:
       context: .
-    container_name: individuals-web
+      dockerfile: Dockerfile
     restart: unless-stopped
+    depends_on:
+      individuals-runtime:
+        condition: service_healthy
     ports:
-      - "127.0.0.1:${INDIVIDUALS_PORT:-4174}:80"
+      - "127.0.0.1:${INDIVIDUALS_PORT:-4174}:8080"
     networks:
-      - individuals
+      - private
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+    cpus: "${INDIVIDUALS_WEB_CPUS:-0.25}"
+    mem_limit: "${INDIVIDUALS_WEB_MEMORY_LIMIT:-128m}"
+    mem_reservation: "${INDIVIDUALS_WEB_MEMORY_RESERVATION:-32m}"
+    stop_grace_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  individuals-data:
 
 networks:
-  individuals:
-    name: individuals
-
+  private:
+    driver: bridge

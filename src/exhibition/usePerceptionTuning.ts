@@ -8,17 +8,25 @@ export function usePerceptionTuning(people: readonly ExhibitionIndividual[]) {
   const [tuningMap, setTuningMap] = useState<PerceptionTuningMap>(() => {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
-      return sanitizeTuningMap(people, saved ? JSON.parse(saved) : undefined);
+      if (!saved || saved.length > 100_000) return createDefaultTuningMap(people);
+      return sanitizeTuningMap(people, JSON.parse(saved) as unknown);
     } catch {
       return createDefaultTuningMap(people);
     }
   });
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tuningMap));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tuningMap));
+    } catch {
+      // Persistence is optional; the in-memory calibration remains usable.
+    }
   }, [tuningMap]);
 
   const setControl = (individualId: string, controlId: string, value: number) => {
+    const individual = people.find(({ id }) => id === individualId);
+    const control = individual?.perceptionModel.controls.find(({ id }) => id === controlId);
+    if (!control || !Number.isFinite(value) || value < control.min || value > control.max) return;
     setTuningMap((current) => ({
       ...current,
       [individualId]: {

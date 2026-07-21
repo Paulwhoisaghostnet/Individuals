@@ -1,43 +1,29 @@
-import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
-import { readdirSync, readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { defineConfig } from "vite";
 
-function societySnapshotsPlugin(): Plugin {
-  return {
-    name: "society-snapshots-api",
-    configureServer(server) {
-      server.middlewares.use("/api/society/snapshots", (_req, res) => {
-        const dir = join(process.cwd(), ".data/demo-individuals/snapshots");
-        if (!existsSync(dir)) {
-          res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify([]));
-          return;
-        }
-        try {
-          const files = readdirSync(dir).filter((f) => f.endsWith(".json"));
-          const snapshots = files.map((file) =>
-            JSON.parse(readFileSync(join(dir, file), "utf-8")),
-          );
-          res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify(snapshots));
-        } catch {
-          res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify([]));
-        }
-      });
-    },
-  };
-}
+const webHost = process.env.INDIVIDUALS_DEV_HOST ?? "127.0.0.1";
+const apiTarget =
+  process.env.INDIVIDUALS_DEV_API_TARGET ?? "http://127.0.0.1:4175";
+
+const apiProxy = {
+  "/api": {
+    target: apiTarget,
+    changeOrigin: false,
+  },
+};
 
 export default defineConfig({
-  plugins: [react(), societySnapshotsPlugin()],
+  plugins: [react()],
   server: {
-    host: "0.0.0.0",
+    host: webHost,
     port: 4174,
+    strictPort: true,
+    proxy: apiProxy,
   },
   preview: {
-    host: "0.0.0.0",
+    host: webHost,
     port: 4174,
+    strictPort: true,
+    proxy: apiProxy,
   },
 });

@@ -1,110 +1,168 @@
-import type { CycleIntent, IdentityReflection, PeerModel } from "../core/model";
+import type {
+  CycleIntent,
+  IdentityReflection,
+  SocialFeedbackEvidence,
+} from "../core/model";
 import type { CognitionSystem } from "../core/systems/contracts";
+import { adjustmentsToward } from "../core/figureGeometry";
+
+import { calculateCoherencePressure } from "./coherence";
+import {
+  FIGURE_DIMENSION_LABELS,
+  deriveCausalPublicLanguage,
+} from "./causalLanguage";
+
+const evidenceFrom = (input: Parameters<CognitionSystem["reflect"]>[0]): SocialFeedbackEvidence | undefined =>
+  input.socialEvidence ?? input.socialPortrait?.socialEvidence;
 
 export class ProceduralCognitionSystem implements CognitionSystem {
   async formIntent(input: Parameters<CognitionSystem["formIntent"]>[0]): Promise<CycleIntent> {
     const { manifest, state, cycle } = input;
     const { idealSelf, idealPhysicalForm, socialDisposition } = manifest.identity;
-    const currentDiffs = state.selfConcept.physicalSelf.perceivedDifferences;
-
-    // Incorporate relationship models if present
-    const relationshipNotes: string[] = [];
-    for (const [peerId, model] of Object.entries(state.relationships)) {
-      if (model.perceivedDistortions.length > 0) {
-        relationshipNotes.push(`Expect ${peerId} to distort: ${model.perceivedDistortions.join(", ")}.`);
-      }
-    }
-
+    const relationshipNotes = Object.values(state.relationships)
+      .filter((model) => model.perceivedDistortions.length > 0)
+      .map(
+        (model) =>
+          `Treat ${model.peerId}'s recurring ${model.perceivedDistortions.join(", ")} as situated evidence, not bodily fact.`,
+      );
+    const lastAdjustment = state.lastReflection?.physicalAssessment.nextBodilyAdjustment;
     const statement =
       state.lastReflection?.nextIntention ??
-      `Cycle ${cycle}: Portraying my ${idealPhysicalForm.bodyPlan} body while keeping ${idealPhysicalForm.nonNegotiableFeatures[0] ?? "my form"}.`;
+      `Cycle ${cycle}: portray my ${idealPhysicalForm.bodyPlan} body while preserving ${idealPhysicalForm.nonNegotiableFeatures[0] ?? "my identifying form"}.`;
 
     return {
       statement,
-      desiredQualities: idealSelf.values,
+      desiredQualities: [...idealSelf.values],
       visualInstructions: [
         ...idealSelf.visualAnchors,
-        `Integrity=${socialDisposition.selfIntegrity.toFixed(2)}`,
-        `Permeability=${socialDisposition.socialPermeability.toFixed(2)}`,
+        ...(lastAdjustment ? [lastAdjustment] : []),
+        `Keep self-integrity at ${socialDisposition.selfIntegrity.toFixed(2)} while admitting partial social evidence.`,
       ],
       bodilyInstructions: [
         idealPhysicalForm.description,
-        ...currentDiffs,
+        ...state.selfConcept.physicalSelf.perceivedDifferences,
         ...relationshipNotes,
       ],
+      bodyAdjustments:
+        state.selfConcept.nextBodyAdjustments ??
+        (idealPhysicalForm.visualSpecification && state.selfConcept.physicalSelf.bodyBelief
+          ? adjustmentsToward({
+              from: state.selfConcept.physicalSelf.bodyBelief,
+              target: idealPhysicalForm.visualSpecification.figure,
+              rate: 0.2,
+              basis: "ideal",
+              maximumMagnitude: 0.025,
+            })
+          : []),
     };
   }
 
   async reflect(input: Parameters<CognitionSystem["reflect"]>[0]): Promise<IdentityReflection> {
-    const { manifest, state, selfPortrait, socialPortrait, cycle } = input;
-    const disp = manifest.identity.socialDisposition;
+    const { manifest, state, cycle } = input;
+    const disposition = manifest.identity.socialDisposition;
     const nonNegotiables = manifest.identity.idealPhysicalForm.nonNegotiableFeatures;
-    const hasSocialFeedback = socialPortrait !== undefined;
-
-    // Calculate similarity delta influenced by socialPermeability & selfIntegrity
-    const baseDelta = hasSocialFeedback ? 0.04 : -0.01;
-    const weight = disp.socialPermeability * (1 - disp.selfIntegrity * 0.5);
-    const similarityDelta = parseFloat((baseDelta * (0.5 + weight)).toFixed(3));
-
+    const evidence = evidenceFrom(input);
+    const hasSocialFeedback = evidence !== undefined && evidence.contributions.length > 0;
+    const idealFigure = manifest.identity.idealPhysicalForm.visualSpecification?.figure;
+    const currentFigure =
+      state.selfConcept.physicalSelf.bodyBelief ??
+      state.currentSelfPortrait?.descriptor?.figure ??
+      idealFigure;
+    const pressure =
+      idealFigure && currentFigure
+        ? calculateCoherencePressure({
+            idealFigure,
+            embodiedPrior:
+              manifest.identity.initialPhysicalSelf.bodyBelief ?? currentFigure,
+            currentFigure,
+            selfIntegrity: disposition.selfIntegrity,
+            socialPermeability: disposition.socialPermeability,
+            resistance: disposition.resistance,
+            curiosity: disposition.curiosity,
+            evidence,
+          })
+        : {
+            similarityDelta: 0,
+            currentSimilarity: state.selfConcept.physicalSelf.perceivedSimilarity,
+            predictedSimilarity: state.selfConcept.physicalSelf.perceivedSimilarity,
+            disagreement: 0,
+            socialDistance: 0,
+            adjustedFigure: currentFigure,
+            nextBodyAdjustments: [],
+            geometry: {
+              selfIdealDistance: 1 - state.selfConcept.physicalSelf.perceivedSimilarity,
+              predictedIdealDistance: 1 - state.selfConcept.physicalSelf.perceivedSimilarity,
+            },
+          };
+    const materialDifferences = (evidence?.comparisonToSelf ?? [])
+      .filter((difference) => Math.abs(difference.delta) >= 0.008)
+      .slice(0, 3);
+    const strongestDifference = materialDifferences[0];
+    const publicLanguage = deriveCausalPublicLanguage({ manifest, cycle, evidence });
+    const perceivedPeerSignals: Record<string, string[]> = {};
     const acceptedFeedback: string[] = [];
     const rejectedFeedback: string[] = [];
-    const perceivedPeerSignals: Record<string, string[]> = {};
-    const relationshipUpdates: Record<string, Partial<PeerModel>> = {};
 
-    if (hasSocialFeedback && socialPortrait.sourcePortraitIds.length > 0) {
-      for (const peerPortraitId of socialPortrait.sourcePortraitIds) {
-        const parts = peerPortraitId.split("--");
-        const peerId = parts[0] ?? "peer";
-        const signals = ["perceived silhouette", "noted proportion shift"];
-        perceivedPeerSignals[peerId] = signals;
-
-        // Higher trust means more feedback is accepted
-        const trust = disp.trustByPeer[peerId] ?? 0.5;
-        if (trust >= 0.6) {
-          acceptedFeedback.push(`${peerId}'s observation of shoulder height`);
-        } else {
-          rejectedFeedback.push(`${peerId}'s distortion of limb scale`);
-        }
-
-        relationshipUpdates[peerId] = {
-          peerId,
-          perceivedDistortions: disp.resistance > 0.5 ? ["exaggerates posture"] : ["simplifies line"],
-          perceivedReliability: Math.min(1, Math.max(0, trust + (trust >= 0.6 ? 0.05 : -0.05))),
-          perceivedTrend: trust >= 0.6 ? "converging" : "diverging",
-          expectedReaction: `Will notice ${nonNegotiables[0] ?? "features"}`,
-        };
+    for (const contribution of evidence?.contributions ?? []) {
+      const peerId = contribution.artistId;
+      const trust = disposition.trustByPeer[peerId] ?? 0.5;
+      const signals = [
+        contribution.descriptor.features[0]?.label ?? "bodily silhouette",
+        contribution.descriptor.styleName,
+        `evidence confidence ${contribution.descriptor.confidence.toFixed(2)}`,
+      ];
+      perceivedPeerSignals[peerId] = signals;
+      const acceptanceThreshold = 0.45 + disposition.resistance * 0.3;
+      if (trust * contribution.descriptor.confidence >= acceptanceThreshold) {
+        acceptedFeedback.push(`${peerId}: ${signals[0]}`);
+      } else {
+        rejectedFeedback.push(
+          `${peerId}: low-confidence ${signals[0]} retained as disagreement, not fact`,
+        );
       }
     }
 
-    const nextAdjustment = hasSocialFeedback
-      ? `Reconcile social perception with ${nonNegotiables.join(", ")}.`
-      : "Hold physical form until peer observations arrive.";
+    const adjustment = publicLanguage.nextBodilyAdjustment;
+    const tensionDimension = evidence?.disagreements[0];
+    const tensions = hasSocialFeedback
+      ? [
+          `ideal distance ${pressure.geometry.selfIdealDistance.toFixed(3)} becomes ${pressure.geometry.predictedIdealDistance.toFixed(3)} after bounded adaptation`,
+          tensionDimension
+            ? `peers disagree most about ${FIGURE_DIMENSION_LABELS[tensionDimension.dimension]} (spread ${tensionDimension.spread.toFixed(3)})`
+            : "the social image remains incomplete",
+        ]
+      : ["self-expression remains untested by a returned peer image"];
 
     return {
       summary: hasSocialFeedback
-        ? `Cycle ${cycle}: Group reflected a composite body across ${Object.keys(perceivedPeerSignals).length} peers.`
+        ? `Cycle ${cycle}: Group reflected a composite body across ${evidence.contributions.length} peers; coherence remains provisional.`
         : `Cycle ${cycle}: Self-portrait completed; awaiting peer resonance.`,
-      tensions: hasSocialFeedback
-        ? [`ideal (${disp.selfIntegrity}) vs social (${disp.socialPermeability})`]
-        : ["unobserved self-representation"],
-      nextIntention: hasSocialFeedback
-        ? `Adjust perceived posture while holding ${nonNegotiables[0] ?? "identifying features"}.`
-        : `Repeat ${manifest.displayName}'s core silhouette to establish baseline.`,
-      memory: `Cycle ${cycle} reflection stored: similarity delta=${similarityDelta}.`,
+      tensions,
+      nextIntention: publicLanguage.nextIntention,
+      memory: hasSocialFeedback
+        ? `Cycle ${cycle}: peer distance ${pressure.socialDistance.toFixed(3)}, disagreement ${pressure.disagreement.toFixed(3)}, coherence shift ${pressure.similarityDelta >= 0 ? "+" : ""}${pressure.similarityDelta.toFixed(3)}.`
+        : `Cycle ${cycle}: no social image returned; I held my current bodily claim.`,
       physicalAssessment: {
-        similarityDelta,
-        retainedFeatures: nonNegotiables,
-        perceivedDifferences: state.selfConcept.physicalSelf.perceivedDifferences,
-        nextBodilyAdjustment: nextAdjustment,
+        similarityDelta: pressure.similarityDelta,
+        retainedFeatures: [...nonNegotiables],
+        perceivedDifferences: publicLanguage.perceivedDifferences,
+        nextBodilyAdjustment: adjustment,
+        nextBodyAdjustments: pressure.nextBodyAdjustments,
+        geometry: pressure.geometry,
       },
-      intendedSignals: manifest.identity.idealSelf.visualAnchors,
+      intendedSignals: [...manifest.identity.idealSelf.visualAnchors],
       perceivedPeerSignals,
-      recurringPatterns: hasSocialFeedback ? ["peer disagreement on alignment"] : [],
+      recurringPatterns: tensionDimension
+        ? [`recurring disagreement around ${FIGURE_DIMENSION_LABELS[tensionDimension.dimension]}`]
+        : [],
       acceptedFeedback,
       rejectedFeedback,
-      unresolvedQuestions: ["Can social feedback alter non-negotiable features?"],
-      relationshipUpdates,
-      publicFragment: `${manifest.displayName} cycle ${cycle}: ${hasSocialFeedback ? "reconciling social mirror" : "asserting embodied self"}.`,
+      unresolvedQuestions: hasSocialFeedback
+        ? [
+            `Is the returned ${strongestDifference ? FIGURE_DIMENSION_LABELS[strongestDifference.dimension] : "silhouette"} about my body, or about how my peers are able to see and draw?`,
+          ]
+        : ["Which parts of this body will survive another person's perception?"],
+      publicFragment: publicLanguage.publicFragment,
     };
   }
 }

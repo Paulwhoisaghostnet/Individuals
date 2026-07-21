@@ -1,0 +1,143 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, test, and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.1
+          cache: npm
+
+      - name: Install exact dependencies
+        run: npm ci
+
+      - name: Verify source and production client
+        run: npm run check
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+  containers:
+    name: Build production images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate production composition
+        run: docker compose --file compose.production.yml config --quiet
+
+      - name: Build exhibition image
+        run: docker build --tag individuals-web:test .
+
+      - name: Build runtime image
+        run: docker build --file Dockerfile.runtime --tag individuals-runtime:test .
+
+      - name: Validate inner and shared-host Nginx configuration
+        run: |
+          docker run --rm individuals-web:test nginx -t
+          docker run --rm \
+            --mount "type=bind,source=${PWD}/deploy/host-nginx.example.conf,target=/etc/nginx/individuals-host-test.conf,readonly" \
+            --mount "type=bind,source=${PWD}/deploy/host-nginx,target=/etc/nginx/individuals,readonly" \
+            individuals-web:test \
+            nginx -t -c /etc/nginx/individuals-host-test.conf
+
+      - name: Start isolated production topology
+        run: |
+          docker network create individuals-ci
+          docker volume create individuals-ci-data
+          mkdir --parents "${RUNNER_TEMP}/individuals-ci-secrets"
+          docker run --detach \
+            --name individuals-runtime \
+            --network individuals-ci \
+            --init \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+            --cap-drop ALL \
+            --security-opt no-new-privileges=true \
+            --pids-limit 128 \
+            --cpus 1.50 \
+            --memory 1g \
+            --memory-reservation 256m \
+            --group-add 991 \
+            --mount type=volume,source=individuals-ci-data,target=/var/lib/individuals \
+            --mount "type=bind,source=${RUNNER_TEMP}/individuals-ci-secrets,target=/run/secrets,readonly" \
+            --log-driver json-file \
+            --log-opt max-size=10m \
+            --log-opt max-file=3 \
+            --stop-timeout 60 \
+            individuals-runtime:test
+          runtime_healthy=false
+          for attempt in {1..60}; do
+            if docker inspect --format '{{.State.Health.Status}}' individuals-runtime | grep --quiet '^healthy$'; then
+              runtime_healthy=true
+              break
+            fi
+            sleep 1
+          done
+          test "${runtime_healthy}" = true
+          docker run --detach \
+            --name individuals-web \
+            --network individuals-ci \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=16m \
+            --cap-drop ALL \
+            --security-opt no-new-privileges=true \
+            --pids-limit 64 \
+            --cpus 0.25 \
+            --memory 128m \
+            --memory-reservation 32m \
+            --log-driver json-file \
+            --log-opt max-size=10m \
+            --log-opt max-file=3 \
+            --stop-timeout 10 \
+            --publish 127.0.0.1:4174:8080 \
+            individuals-web:test
+
+      - name: Smoke-test health and public API through the web boundary
+        run: |
+          curl --fail --silent --show-error --retry 30 --retry-delay 1 --retry-connrefused http://127.0.0.1:4174/healthz
+          curl --fail --silent --show-error http://127.0.0.1:4174/api/v1/society --output /tmp/individuals-society.json
+          node --input-type=module --eval '
+            import { readFileSync } from "node:fs";
+            const value = JSON.parse(readFileSync("/tmp/individuals-society.json", "utf8"));
+            if (value.apiVersion !== "1" || value.runtime?.mode !== "live") process.exit(1);
+            if (!Array.isArray(value.individuals) || value.individuals.length !== 3) process.exit(1);
+          '
+
+      - name: Show production logs after a smoke-test failure
+        if: failure()
+        run: |
+          docker logs individuals-runtime || true
+          docker logs individuals-web || true
+
+      - name: Stop smoke-test containers
+        if: always()
+        run: |
+          docker rm --force individuals-web individuals-runtime || true
+          docker network rm individuals-ci || true
+          docker volume rm individuals-ci-data || true
+          rmdir "${RUNNER_TEMP}/individuals-ci-secrets" || true

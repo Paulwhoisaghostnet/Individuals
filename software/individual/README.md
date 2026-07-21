@@ -24,9 +24,9 @@ flowchart LR
     O["Observability"] -. health only .-> R
 ```
 
-The implemented orchestration and shared domain language live in `core/`. Other
-branches define the production adapters that will satisfy those contracts. The
-core must not import a model vendor SDK, camera driver, database client, or web UI.
+The orchestration and shared domain language live in `core/`; narrow adapters in
+the neighboring domains satisfy those contracts. The core does not import a model
+vendor SDK, camera driver, database client, HTTP server, or web UI.
 
 ## What every Individual receives
 

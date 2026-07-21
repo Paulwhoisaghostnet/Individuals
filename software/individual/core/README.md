@@ -1,9 +1,8 @@
 # Individual core domain package
 
-This directory is the canonical skeleton for an **Individual**. It contains the
-identity definition, evolving state, engine lifecycle, system boundaries,
-persistence contracts, and a runnable placeholder implementation from which
-future Individuals can be composed.
+This directory is the canonical domain model for an **Individual**. It contains the
+identity definition, evolving state, engine lifecycle, system boundaries, and
+persistence contracts used by both the procedural prototype and future adapters.
 
 The package is deliberately independent of React, databases, model providers,
 image-generation services, and deployment infrastructure. Those technologies are
@@ -16,19 +15,28 @@ core/
 ├── __tests__/
 │   └── IndividualEngine.test.ts      # Domain lifecycle and invariant tests
 ├── engine/
-│   └── IndividualEngine.ts           # One complete identity-feedback cycle
+│   ├── IndividualEngine.ts           # Identity-feedback orchestration only
+│   └── portraitRouting.ts            # Membership, cohort, and lineage boundary
 ├── persistence/
 │   ├── contracts.ts                  # Durable state and memory boundaries
 │   └── inMemory.ts                   # Prototype/test implementations
 ├── systems/
 │   └── contracts.ts                  # Cognition, vision, drawing, and adaptation ports
 ├── template/
-│   ├── createTemplateIndividual.ts   # Ready-to-run assembly function
-│   ├── manifest.ts                   # Identity template for future Individuals
-│   └── systems.ts                    # Deterministic placeholder behaviors
+│   └── manifest.ts                   # Identity template for future Individuals
+├── validation/
+│   ├── portraitBoundary.ts           # Bounded portrait envelopes
+│   ├── primitives.ts                 # Neutral closed-schema validation tools
+│   └── visualEvidence.ts             # Descriptor and evidence contracts
 ├── createInitialState.ts             # Identity state at first awakening
+├── deterministic.ts                  # Stable non-security noise primitives
+├── figureGeometry.ts                 # Neutral embodied geometry and signed changes
 ├── manifest.ts                       # Manifest definition and validation
+├── manifestCompatibility.ts          # Persisted/installed identity guard
 ├── model.ts                          # Shared domain language and artifacts
+├── opticalCalibration.ts             # Canonical, verifiable camera calibration
+├── socialEvidence.ts                 # Canonical social consensus and verifier
+├── systemUtilities.ts                # Clock and deterministic ID utilities
 └── index.ts                          # Public package API
 ```
 
@@ -41,9 +49,9 @@ An Individual is represented by two related structures:
   self-perception, perception limits, artistic ability scope, and cadence.
   It is configuration and should be version-controlled.
 - `IndividualState` contains lived identity: cycle number, current self-concept,
-  evolving physical self-concept, latest self-portrait, latest social portrait,
-  and last reflection. It changes
-  through the engine and should eventually be stored durably.
+  evolving physical self-concept, latest self-portrait, current-cycle social
+  portrait (cleared when no feedback returns), and last reflection. It changes
+  through the engine and is stored durably by the runtime adapter.
 
 The separation is important. A deployment can recover changing state without
 rewriting the authored source of the Individual, while deliberate curatorial
@@ -63,6 +71,10 @@ changes to its manifest remain reviewable.
 8. Reflect on the difference between intention, self-portrait, and social portrait.
 9. Adapt the self-concept, record a memory, and persist the next snapshot.
 
+Every awaited capability receives the cycle's optional abort signal. The engine
+checks that signal after each capability and immediately before the atomic commit,
+so a result that arrives after a runtime deadline cannot become identity state.
+
 The engine returns a `CycleRecord`. The society-level coordinator will route each
 returned peer portrait to its subject before the participants begin another cycle.
 That coordinator belongs outside this directory because membership and scheduling
@@ -72,26 +84,27 @@ are properties of the installation, not of a single Individual.
 
 The interfaces in `systems/contracts.ts` are replaceable capabilities:
 
-| Contract | Purpose | Likely future adapter |
+| Contract | Purpose | Current prototype adapter |
 | --- | --- | --- |
-| `CognitionSystem` | Forms intentions and reflects on feedback. | Persistent LLM agent and prompt policy |
-| `PerceptionSystem` | Transforms a peer canvas into a situated observation. | Shader, computer vision, image pipeline, or camera feed |
-| `DrawingSystem` | Draws self and peer portraits within visual constraints. | Procedural renderer or image model |
-| `FeedbackCompositor` | Produces the social portrait from peer interpretations. | Canvas, WebGL, or server image compositor |
-| `AdaptationSystem` | Converts reflection into an updated self-concept. | Rules, learned policy, or constrained model call |
-| `IndividualRepository` | Persists the latest complete identity snapshot. | Filesystem, PostgreSQL, or object storage |
-| `MemoryStore` | Recalls and records identity-forming experiences. | Database plus semantic retrieval |
+| `CognitionSystem` | Forms intentions and reflects on evidence. | Procedural cognition or bounded provider adapter |
+| `PerceptionSystem` | Transforms a peer canvas into a situated observation. | Stable identity-specific perception model |
+| `DrawingSystem` | Draws self and peer portraits within visual constraints. | Safe procedural embodied renderer |
+| `FeedbackCompositor` | Produces the social portrait from peer interpretations. | Layered procedural compositor |
+| `AdaptationSystem` | Converts reflection into an updated self-concept. | Evidence-driven bounded adaptation |
+| `IndividualRepository` | Persists the latest complete identity snapshot. | Journaled filesystem repository |
+| `MemoryStore` | Recalls and records identity-forming experiences. | Bounded journaled filesystem memory |
 
-The template implementations are intentionally simple and deterministic. They
-prove the lifecycle and data flow; they are not proposed as the final artwork.
+Cross-domain assembly intentionally lives outside core. The production runtime
+and `testing-simulation/support/` compose concrete cognition, perception,
+drawing, feedback, and adaptation adapters around these contracts.
 
 ## Creating a future Individual
 
-Start with a distinct manifest and assemble the default systems:
+Start with a distinct manifest. A runtime or simulation assembly layer supplies
+the concrete systems and the explicit society membership registry:
 
 ```ts
 import {
-  createTemplateIndividual,
   createTemplateManifest,
   defineIndividualManifest,
 } from "./software/individual/core";
@@ -112,36 +125,21 @@ const irisManifest = defineIndividualManifest({
       values: ["continuity", "porosity", "precision"],
       visualAnchors: ["hard edges", "a permeable center", "repeated contours"],
     },
-    idealPhysicalForm: {
-      description: "A tall woman with an oval face, long neck, and open four-fingered hands.",
-      bodyPlan: "Bilateral humanoid with one head, torso, two arms, and two legs.",
-      stature: "Tall, narrow, and upright.",
-      surface: "Copper-brown matte skin crossed by fine pale joint lines.",
-      face: ["shaved oval head", "wide-set eyes", "level mouth"],
-      anatomy: ["long neck", "level shoulders", "four-fingered hands"],
-      movement: "Slow movements that return to an open frontal stance.",
-      nonNegotiableFeatures: ["oval face", "long neck", "four-fingered hands"],
-    },
-    initialPhysicalSelf: {
-      description: "I already have this woman's body, but my posture remains guarded.",
-      perceivedSimilarity: 0.62,
-      perceivedDifferences: ["raised left shoulder", "partially closed hands"],
-    },
+    // Override the complete authored visualSpecification and initial bodyBelief
+    // together; prose alone never changes executable anatomy.
+    idealPhysicalForm: foundation.identity.idealPhysicalForm,
+    initialPhysicalSelf: foundation.identity.initialPhysicalSelf,
   },
   perception: {
     description: "Edges remain sharp while interiors lose information.",
     constraints: ["Reduce interior detail.", "Overstate every visible boundary."],
   },
 });
-
-export const iris = createTemplateIndividual({ manifest: irisManifest });
 ```
 
-As Iris becomes distinct, replace the template systems with implementations of
-the same contracts. Identity-specific prompts, visual parameters, shaders, masks,
-and drawing rules should live beside Iris's manifest or in assets referenced by
-it. Provider credentials and deployment state must remain outside identity source
-files.
+Identity-specific prompts, visual parameters, masks, and drawing rules live beside
+each authored manifest or in versioned assets it references. Provider credentials
+and deployment state remain outside identity source files.
 
 ## Cycle inputs and outputs
 
@@ -155,21 +153,31 @@ The engine accepts two deliberately separate collections:
   this Individual's perception profile. Missing controls use manifest defaults;
   unknown and out-of-range values are rejected.
 
+The engine is also constructed with `allowedPeerIds`, an explicit society
+membership registry supplied by the installation runtime. Authored trust and
+learned relationship state influence interpretation, but never grant routing
+authority.
+
 The engine rejects a self-portrait placed in social feedback, a peer portrait of
 the wrong subject, or the Individual's own canvas placed among its peers. These
 invariants prevent routing mistakes from silently changing an identity.
 
 ## Persistence expectations
 
-The in-memory repository and memory store are for prototyping and tests only. A
-production adapter should:
+The in-memory repository and memory store are test fixtures. The journaled runtime
+adapter:
 
-- save snapshots atomically so interrupted cycles cannot leave partial identity;
-- retain cycle records and portrait provenance for exhibition history;
-- isolate data by Individual and installation location;
-- make migrations explicit when the manifest schema changes;
-- support backup and recovery without depending on the exhibition client;
-- never place model credentials or private operational data in a manifest.
+- saves snapshots atomically so interrupted cycles cannot leave half-committed
+  snapshot and memory state;
+- retains bounded memories, snapshot backups, and current portrait provenance;
+- isolates data by Individual and deployment data directory;
+- rejects incompatible schemas and quarantines corrupt records;
+- supports explicit backup recovery without depending on the exhibition client;
+- never places model credentials or private operational data in a manifest.
+
+The prototype does not yet provide a complete queryable archive of every
+`CycleRecord` or portrait image. That history requires a separate bounded artifact
+archive rather than indefinite growth in the latest identity snapshot.
 
 ## Extension rules
 

@@ -1,19 +1,61 @@
 import { IndividualEngine } from "../core/engine/IndividualEngine";
-import type { IndividualManifest, IndividualSnapshot, Portrait } from "../core/model";
-import type { IndividualRepository, MemoryStore } from "../core/persistence/contracts";
-import { FileIndividualRepository } from "../memory/fileRepository";
-import { FileMemoryStore } from "../memory/fileMemoryStore";
-import { HealthMonitor, type IndividualHealth } from "../observability/healthMonitor";
-import { LlmCognitionSystem } from "../cognition/llmCognition";
-import { ProceduralPerceptionSystem } from "../perception/proceduralPerception";
-import { GenerativeDrawingSystem } from "../drawing/generativeDrawing";
-import { ProceduralFeedbackCompositor } from "../social-feedback/proceduralCompositor";
-import {
-  StableIdGenerator,
-  SystemClock,
-  TemplateAdaptationSystem,
-} from "../core/template/systems";
+import { MAX_PEERS_PER_CYCLE } from "../core/engine/portraitRouting";
+import type { IndividualManifest } from "../core/model";
+import type { CycleCommitter, IndividualRepository, MemoryStore } from "../core/persistence/contracts";
 import { identityPackages } from "../identity-packages";
+import { JournaledCyclePersistence } from "../memory/journaledCyclePersistence";
+import { HealthMonitor, type HealthMonitorOptions } from "../observability/healthMonitor";
+import { CyclePolicy, type CyclePolicyConfig } from "./cyclePolicy";
+import {
+  FileCycleBudgetStore,
+  InMemoryCycleBudgetStore,
+  type CycleBudgetStore,
+} from "./cycleBudgetStore";
+import { ConsistentStateCoordinator } from "./consistentStateCoordinator";
+import {
+  createDefaultEngineFactory,
+  isLlmProviderConfigured,
+  type RuntimeEngineFactory,
+} from "./engineFactory";
+import { RuntimeControlError } from "./errors";
+import { PeerPortraitCohorts } from "./peerPortraitCohorts";
+import { PerceptionTuningController } from "./perceptionTuningController";
+import {
+  FilePerceptionTuningStore,
+  InMemoryPerceptionTuningStore,
+  type PerceptionTuningStore,
+} from "./perceptionTuningStore";
+import {
+  SystemRuntimeClock,
+  SystemRuntimeScheduler,
+  type RuntimeClock,
+  type RuntimeScheduler,
+} from "./scheduler";
+import {
+  RuntimeInitializer,
+  type RecoverableRuntimePersistence,
+} from "./runtimeInitializer";
+import { RuntimeRevisionPublisher } from "./runtimeRevisionPublisher";
+import { RuntimeOperationDeadlineRunner } from "./runtimeOperationDeadline";
+import { SocietyCycleExecutor, type CycleRunResult } from "./societyCycleExecutor";
+import { SocietyCycleScheduler } from "./societyCycleScheduler";
+import { SocietyControls } from "./societyControls";
+import { SocietyStatusReader } from "./societyStatusReader";
+import type {
+  ConsistentRuntimeState,
+  IndividualRuntimeStatus,
+  RuntimeLifecycleState,
+  RuntimeSummary,
+} from "./societyRuntimeTypes";
+
+export type { RuntimeEngineFactory, RuntimeEngineFactoryContext } from "./engineFactory";
+export type { CycleRunResult } from "./societyCycleExecutor";
+export type {
+  ConsistentRuntimeState,
+  IndividualRuntimeStatus,
+  RuntimeLifecycleState,
+  RuntimeSummary,
+} from "./societyRuntimeTypes";
 
 export interface SocietyRuntimeOptions {
   readonly manifests?: readonly IndividualManifest[];
@@ -21,195 +63,390 @@ export interface SocietyRuntimeOptions {
   readonly memory?: MemoryStore;
   readonly dataDir?: string;
   readonly cycleIntervalOverrideMs?: number;
+  readonly cycleTimeoutMs?: number;
+  readonly maxRevisionSubscribers?: number;
+  readonly cyclePolicy?: Partial<CyclePolicyConfig>;
+  readonly scheduler?: RuntimeScheduler;
+  readonly clock?: RuntimeClock;
+  readonly random?: () => number;
+  readonly health?: HealthMonitorOptions;
+  readonly engineFactory?: RuntimeEngineFactory;
+  readonly tuningStore?: PerceptionTuningStore;
+  readonly cycleBudgetStore?: CycleBudgetStore;
 }
 
-export interface IndividualRuntimeStatus {
-  readonly manifest: IndividualManifest;
-  readonly snapshot: IndividualSnapshot;
-  readonly health: IndividualHealth;
-  readonly isPaused: boolean;
-  readonly isRunningCycle: boolean;
-}
+const hasMethod = <T extends string>(value: unknown, method: T): value is Record<T, Function> => {
+  if (typeof value !== "object" || value === null) return false;
+  return method in value && typeof (value as Record<string, unknown>)[method] === "function";
+};
 
 export class SocietyRuntime {
   private readonly engines = new Map<string, IndividualEngine>();
   private readonly manifests = new Map<string, IndividualManifest>();
-  private readonly pausedSet = new Set<string>();
-  private readonly runningSet = new Set<string>();
-  private readonly perceptionTunings = new Map<string, Record<string, number>>();
-  private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
-
+  private readonly paused = new Set<string>();
   private readonly repository: IndividualRepository;
   private readonly memory: MemoryStore;
-  private readonly healthMonitor: HealthMonitor;
-
-  private readonly options: SocietyRuntimeOptions;
-  private latestSelfPortraits: Portrait[] = [];
-  private latestPeerPortraitsBySubject = new Map<string, Portrait[]>();
-  private isStarted = false;
+  private readonly health: HealthMonitor;
+  private readonly clock: RuntimeClock;
+  private readonly cyclePolicy: CyclePolicy;
+  private readonly tuning: PerceptionTuningController;
+  private readonly initializer: RuntimeInitializer;
+  private readonly operationDeadlines: RuntimeOperationDeadlineRunner;
+  private readonly cohorts = new PeerPortraitCohorts();
+  private readonly cycleExecutor: SocietyCycleExecutor;
+  private readonly cycleScheduler: SocietyCycleScheduler;
+  private readonly controls: SocietyControls;
+  private readonly statusReader: SocietyStatusReader;
+  private readonly revisions: RuntimeRevisionPublisher;
+  private readonly stateCoordinator = new ConsistentStateCoordinator<ConsistentRuntimeState>();
+  private lifecycle: RuntimeLifecycleState = "created";
+  private startedAt: string | undefined;
+  private lifecycleQueue: Promise<void> = Promise.resolve();
+  private revisionPublicationPending = false;
 
   constructor(options: SocietyRuntimeOptions = {}) {
-    this.options = options;
-    const dataDir = options.dataDir ?? ".data/individuals";
-    this.repository = options.repository ?? new FileIndividualRepository(`${dataDir}/snapshots`);
-    this.memory = options.memory ?? new FileMemoryStore(`${dataDir}/memories`);
+    if ((options.repository && !options.memory) || (!options.repository && options.memory)) {
+      throw new Error("Custom persistence requires both repository and memory adapters.");
+    }
+    if (
+      options.cycleIntervalOverrideMs !== undefined &&
+      (!Number.isSafeInteger(options.cycleIntervalOverrideMs) || options.cycleIntervalOverrideMs < 1_000)
+    ) {
+      throw new Error("cycleIntervalOverrideMs must be an integer of at least 1000 ms.");
+    }
+    if (
+      options.cycleTimeoutMs !== undefined &&
+      (!Number.isSafeInteger(options.cycleTimeoutMs) || options.cycleTimeoutMs < 1_000 || options.cycleTimeoutMs > 86_400_000)
+    ) {
+      throw new Error("cycleTimeoutMs must be an integer between 1000 and 86400000 ms.");
+    }
+    const scheduler = options.scheduler ?? new SystemRuntimeScheduler();
+    const cycleTimeoutMs = options.cycleTimeoutMs ?? 120_000;
+    this.operationDeadlines = new RuntimeOperationDeadlineRunner(scheduler, cycleTimeoutMs);
+    this.revisions = new RuntimeRevisionPublisher(options.maxRevisionSubscribers);
+    this.clock = options.clock ?? new SystemRuntimeClock();
+    const providerConfigured = isLlmProviderConfigured();
+    this.cyclePolicy = new CyclePolicy(
+      {
+        estimatedProviderCallsPerCycle: providerConfigured ? 2 : 0,
+        ...options.cyclePolicy,
+      },
+      options.cycleBudgetStore ?? (
+        options.repository
+          ? new InMemoryCycleBudgetStore()
+          : new FileCycleBudgetStore(options.dataDir ?? ".data/individuals")
+      ),
+    );
+
+    let persistence: RecoverableRuntimePersistence | undefined;
+    if (options.repository && options.memory) {
+      this.repository = options.repository;
+      this.memory = options.memory;
+      persistence = hasMethod(options.repository, "recover")
+        ? options.repository as unknown as RecoverableRuntimePersistence
+        : hasMethod(options.memory, "recover")
+          ? options.memory as unknown as RecoverableRuntimePersistence
+          : undefined;
+    } else {
+      const durable = new JournaledCyclePersistence(options.dataDir ?? ".data/individuals");
+      this.repository = durable;
+      this.memory = durable;
+      persistence = durable;
+    }
 
     const packages = options.manifests ?? identityPackages;
-    const ids = new StableIdGenerator();
-    const clock = new SystemClock();
-    this.healthMonitor = new HealthMonitor(packages.map((m) => m.id));
-
+    if (packages.length < 1 || packages.length > MAX_PEERS_PER_CYCLE + 1) {
+      throw new Error(
+        `Society runtime requires between 1 and ${MAX_PEERS_PER_CYCLE + 1} Individuals.`,
+      );
+    }
     for (const manifest of packages) {
+      if (this.manifests.has(manifest.id)) throw new Error(`Duplicate Individual manifest ID "${manifest.id}".`);
       this.manifests.set(manifest.id, manifest);
-      const engine = new IndividualEngine(manifest, {
-        cognition: new LlmCognitionSystem(),
-        perception: new ProceduralPerceptionSystem(),
-        drawing: new GenerativeDrawingSystem(ids),
-        feedback: new ProceduralFeedbackCompositor(ids),
-        adaptation: new TemplateAdaptationSystem(),
+    }
+    this.health = new HealthMonitor(packages.map((manifest) => manifest.id), {
+      ...options.health,
+      now: options.health?.now ?? (() => this.clock.now()),
+    });
+    const tuningStore = options.tuningStore ?? (
+      options.repository
+        ? new InMemoryPerceptionTuningStore()
+        : new FilePerceptionTuningStore(options.dataDir ?? ".data/individuals", () => this.clock.now())
+    );
+    this.tuning = new PerceptionTuningController(this.manifests, tuningStore);
+    this.initializer = new RuntimeInitializer({
+      persistence,
+      tuning: this.tuning,
+      cyclePolicy: this.cyclePolicy,
+      health: this.health,
+      clock: this.clock,
+      scheduler,
+      cycleTimeoutMs,
+      onStateChanged: () => this.bumpRevision(),
+    });
+    this.cycleExecutor = new SocietyCycleExecutor({
+      individualIds: [...this.manifests.keys()],
+      engines: this.engines,
+      policy: this.cyclePolicy,
+      health: this.health,
+      clock: this.clock,
+      scheduler,
+      cohorts: this.cohorts,
+      tuning: this.tuning,
+      isPaused: (individualId) => this.paused.has(individualId),
+      onStateChanged: () => this.bumpRevision(),
+      beginMutation: () => this.stateCoordinator.beginMutation(),
+      cycleTimeoutMs,
+    });
+
+    const factory = options.engineFactory ?? createDefaultEngineFactory({
+      onProviderFailure: (event) => this.reportProviderFailure(event),
+      providerConfigured,
+    });
+    const committer: CycleCommitter | undefined = hasMethod(this.repository, "commit")
+      ? this.repository as unknown as CycleCommitter
+      : hasMethod(this.memory, "commit")
+        ? this.memory as unknown as CycleCommitter
+        : undefined;
+    for (const manifest of packages) {
+      this.engines.set(manifest.id, factory(manifest, {
         repository: this.repository,
         memory: this.memory,
-        clock,
-        ids,
-      });
-      this.engines.set(manifest.id, engine);
+        healthMonitor: this.health,
+        clock: this.clock,
+        committer,
+        progress: this.cycleExecutor.progressSink(manifest.id),
+        allowedPeerIds: [...this.manifests.keys()].filter((id) => id !== manifest.id),
+      }));
     }
+
+    this.cycleScheduler = new SocietyCycleScheduler({
+      manifests: this.manifests,
+      scheduler,
+      random: options.random ?? Math.random,
+      intervalOverrideMs: options.cycleIntervalOverrideMs,
+      canRun: (id) => this.lifecycle === "running" && !this.paused.has(id),
+      run: (id) => this.runSingleCycle(id),
+      onError: (id, error) => {
+        this.health.recordFault(id, 0, error, "scheduler_execution_failed");
+        this.bumpRevision();
+      },
+    });
+    this.controls = new SocietyControls({
+      manifests: this.manifests,
+      paused: this.paused,
+      scheduler: this.cycleScheduler,
+      tuning: this.tuning,
+      initializer: this.initializer,
+      deadlines: this.operationDeadlines,
+      health: this.health,
+      mutateSync: (operation) => this.stateCoordinator.mutateSync(operation),
+      mutate: (operation) => this.stateCoordinator.mutate(operation),
+      onStateChanged: () => this.bumpRevision(),
+    });
+    this.statusReader = new SocietyStatusReader({
+      engines: this.engines,
+      manifests: this.manifests,
+      health: this.health,
+      paused: this.paused,
+      tuning: this.tuning,
+      executor: this.cycleExecutor,
+      policy: this.cyclePolicy,
+      clock: this.clock,
+      lifecycle: () => this.lifecycle,
+      revision: () => this.revisions.current,
+      startedAt: () => this.startedAt,
+    });
   }
 
   async start(): Promise<void> {
-    if (this.isStarted) return;
-    this.isStarted = true;
+    return this.exclusiveLifecycle(() => this.startExclusive());
+  }
 
-    // Load initial snapshots & seed self portraits if existing
-    for (const [id, engine] of this.engines.entries()) {
-      const snapshot = await engine.getSnapshot();
-      if (snapshot.state.currentSelfPortrait) {
-        this.latestSelfPortraits.push(snapshot.state.currentSelfPortrait);
-      }
-      this.scheduleNextCycle(id);
+  private async startExclusive(): Promise<void> {
+    if (this.lifecycle === "running") return;
+    if (this.lifecycle !== "created" && this.lifecycle !== "stopped") {
+      throw new Error(`Cannot start a runtime while it is ${this.lifecycle}.`);
+    }
+    if (this.cycleExecutor.inFlightCount > 0) {
+      throw new Error("Cannot start the runtime while a commissioning cycle is still in flight.");
+    }
+    this.lifecycle = "starting";
+    try {
+      await this.operationDeadlines.run("startup", (signal) => this.startWithinDeadline(signal));
+    } catch (error) {
+      this.cycleScheduler.stop();
+      this.lifecycle = "stopped";
+      this.startedAt = undefined;
+      this.health.recordStateChange("stopped", { startup: "failed" });
+      this.bumpRevision();
+      throw error;
     }
   }
 
-  async stop(): Promise<void> {
-    this.isStarted = false;
-    for (const timer of this.timers.values()) {
-      clearTimeout(timer);
+  private async startWithinDeadline(signal: AbortSignal): Promise<void> {
+    await this.initializer.ensure(signal);
+    const snapshots = await Promise.all(
+      Array.from(this.engines.values(), (engine) => engine.getSnapshot(signal)),
+    );
+    signal.throwIfAborted();
+    this.cohorts.hydrate(snapshots);
+    // Curatorial pause is an explicitly process-local control. Snapshot status
+    // records cycle progress, not durable operator intent.
+    this.paused.clear();
+    const bootstrapIds = new Set(
+      snapshots
+        .filter((snapshot) => !snapshot.state.currentSelfPortrait)
+        .map((snapshot) => snapshot.manifest.id),
+    );
+    this.startedAt = this.clock.now().toISOString();
+    this.lifecycle = "running";
+    this.bumpRevision();
+    this.health.recordStateChange("running");
+    // Use this startup operation's signal and remaining time. Starting a
+    // nested projection deadline here would reset the clock and permit startup
+    // to run for multiples of the configured bound.
+    await this.captureConsistentState(signal);
+    signal.throwIfAborted();
+    this.cycleScheduler.start(bootstrapIds);
+  }
+
+  async stop(options: { drain?: boolean; timeoutMs?: number } = {}): Promise<void> {
+    return this.exclusiveLifecycle(() => this.stopExclusive(options));
+  }
+
+  private async stopExclusive(options: { drain?: boolean; timeoutMs?: number }): Promise<void> {
+    if (this.lifecycle === "stopped" && this.cycleExecutor.inFlightCount === 0) return;
+    this.lifecycle = "stopping";
+    this.cycleScheduler.stop();
+    if (options.drain !== false && this.cycleExecutor.inFlightCount > 0) {
+      await this.cycleExecutor.drain(Math.max(1, Math.floor(options.timeoutMs ?? 30_000)));
     }
-    this.timers.clear();
+    this.lifecycle = "stopped";
+    this.startedAt = undefined;
+    this.bumpRevision();
+    this.health.recordStateChange("stopped", { activeCycles: this.cycleExecutor.inFlightCount });
   }
 
   pause(individualId: string): void {
-    this.pausedSet.add(individualId);
-    const timer = this.timers.get(individualId);
-    if (timer) {
-      clearTimeout(timer);
-      this.timers.delete(individualId);
-    }
-    this.healthMonitor.recordAction(individualId, "pause");
+    this.controls.pause(individualId);
+  }
+
+  pauseAll(): void {
+    this.controls.pauseAll();
   }
 
   resume(individualId: string): void {
-    if (!this.pausedSet.has(individualId)) return;
-    this.pausedSet.delete(individualId);
-    this.healthMonitor.recordAction(individualId, "resume");
-    if (this.isStarted) {
-      this.scheduleNextCycle(individualId, 500);
-    }
+    this.controls.resume(individualId);
   }
 
-  tunePerception(individualId: string, tuning: Record<string, number>): void {
-    const existing = this.perceptionTunings.get(individualId) ?? {};
-    this.perceptionTunings.set(individualId, { ...existing, ...tuning });
-    this.healthMonitor.recordAction(individualId, "tune_perception", tuning);
+  resumeAll(): void {
+    this.controls.resumeAll();
   }
 
-  async runSingleCycle(individualId: string): Promise<void> {
-    const engine = this.engines.get(individualId);
-    if (!engine || this.runningSet.has(individualId)) return;
+  async tunePerception(individualId: string, tuning: Readonly<Record<string, number>>): Promise<void> {
+    await this.tunePerceptions([{ individualId, tuning }]);
+  }
 
-    const manifest = this.manifests.get(individualId)!;
-    this.runningSet.add(individualId);
-    const startTime = Date.now();
+  async tunePerceptions(updates: readonly { individualId: string; tuning: Readonly<Record<string, number>> }[]): Promise<void> {
+    await this.controls.tune(updates);
+  }
 
-    try {
-      const snapshot = await engine.getSnapshot();
-      this.healthMonitor.recordStart(individualId, snapshot.state.cycle + 1);
-
-      const peerSelfPortraits = this.latestSelfPortraits.filter(
-        (p) => p.subjectId !== individualId,
-      );
-      const receivedPeerPortraits = this.latestPeerPortraitsBySubject.get(individualId) ?? [];
-      const tuning = this.perceptionTunings.get(individualId);
-
-      const record = await engine.runCycle({
-        peerSelfPortraits,
-        receivedPeerPortraits,
-        perceptionTuning: tuning,
-      });
-
-      // Update state caches
-      this.latestSelfPortraits = [
-        ...this.latestSelfPortraits.filter((p) => p.subjectId !== individualId),
-        record.selfPortrait,
-      ];
-
-      for (const peerPortrait of record.peerPortraits) {
-        const list = this.latestPeerPortraitsBySubject.get(peerPortrait.subjectId) ?? [];
-        this.latestPeerPortraitsBySubject.set(peerPortrait.subjectId, [
-          ...list.filter((p) => p.artistId !== individualId),
-          peerPortrait,
-        ]);
-      }
-
-      this.healthMonitor.recordComplete(
-        individualId,
-        record.cycle,
-        Date.now() - startTime,
-      );
-    } catch (error) {
-      // Fault isolation: catch error, record health fault, allow runtime to continue
-      const snapshot = await engine.getSnapshot();
-      this.healthMonitor.recordFault(individualId, snapshot.state.cycle + 1, error);
-    } finally {
-      this.runningSet.delete(individualId);
-    }
+  async runSingleCycle(individualId: string): Promise<CycleRunResult> {
+    this.assertIndividual(individualId);
+    this.assertCyclesAllowed();
+    if (!await this.initializer.forCycle(individualId)) return { status: "faulted" };
+    this.assertCyclesAllowed();
+    return this.cycleExecutor.run(individualId);
   }
 
   async getStatus(individualId: string): Promise<IndividualRuntimeStatus | undefined> {
-    const engine = this.engines.get(individualId);
-    if (!engine) return undefined;
-    const manifest = this.manifests.get(individualId)!;
-    const snapshot = await engine.getSnapshot();
-    const health = this.healthMonitor.getHealth(individualId);
+    if (!this.manifests.has(individualId)) return undefined;
+    return (await this.getConsistentState()).statuses.find(
+      (status) => status.manifest.id === individualId,
+    );
+  }
 
-    return {
-      manifest,
-      snapshot,
-      health,
-      isPaused: this.pausedSet.has(individualId),
-      isRunningCycle: this.runningSet.has(individualId),
-    };
+  async getAllStatuses(): Promise<readonly IndividualRuntimeStatus[]> {
+    return (await this.getConsistentState()).statuses;
+  }
+
+  async getConsistentState(): Promise<ConsistentRuntimeState> {
+    return this.operationDeadlines.run(
+      "state_projection",
+      (signal) => this.captureConsistentState(signal),
+    );
+  }
+
+  private async captureConsistentState(signal: AbortSignal): Promise<ConsistentRuntimeState> {
+    await this.initializer.ensure(signal);
+    signal.throwIfAborted();
+    return this.stateCoordinator.read(() => this.statusReader.capture(signal), signal);
+  }
+
+  getSummary(): RuntimeSummary {
+    return this.statusReader.summary();
   }
 
   getHealthMonitor(): HealthMonitor {
-    return this.healthMonitor;
+    return this.health;
   }
 
-  private scheduleNextCycle(individualId: string, delayOverrideMs?: number): void {
-    if (!this.isStarted || this.pausedSet.has(individualId)) return;
-
-    const manifest = this.manifests.get(individualId)!;
-    const baseInterval = this.options.cycleIntervalOverrideMs ?? manifest.cadence.minimumCycleIntervalMs;
-    // Add ±20% jitter
-    const jitter = (Math.random() - 0.5) * 0.4 * baseInterval;
-    const delay = delayOverrideMs ?? Math.max(1000, Math.round(baseInterval + jitter));
-
-    const timer = setTimeout(async () => {
-      if (!this.isStarted || this.pausedSet.has(individualId)) return;
-      await this.runSingleCycle(individualId);
-      this.scheduleNextCycle(individualId);
-    }, delay);
-
-    this.timers.set(individualId, timer);
+  getSocietySize(): number {
+    return this.manifests.size;
   }
+
+  subscribe(listener: (revision: number) => void): () => void {
+    return this.revisions.subscribe(listener);
+  }
+
+  reportProviderFailure(input: {
+    individualId: string;
+    cycle: number;
+    operation: "form_intent" | "reflect";
+    provider?: string;
+    error: unknown;
+    category?: string;
+    retryable?: boolean;
+  }): void {
+    this.stateCoordinator.mutateSync(() => {
+      this.assertIndividual(input.individualId);
+      this.health.recordProviderFallback(input);
+    });
+    this.bumpRevision();
+  }
+
+  private assertCyclesAllowed(): void {
+    if (this.lifecycle !== "created" && this.lifecycle !== "running") {
+      throw new RuntimeControlError(
+        `Cannot run an identity cycle while the runtime is ${this.lifecycle}.`,
+        "RUNTIME_STOPPED",
+      );
+    }
+  }
+
+  private assertIndividual(individualId: string): IndividualManifest {
+    const manifest = this.manifests.get(individualId);
+    if (!manifest) throw new RuntimeControlError(`Unknown Individual "${individualId}".`, "UNKNOWN_INDIVIDUAL");
+    return manifest;
+  }
+
+  private bumpRevision(): void {
+    if (this.revisionPublicationPending) return;
+    const deferred = this.stateCoordinator.notifyWhenStable(() => {
+      this.revisionPublicationPending = false;
+      this.revisions.bump();
+    });
+    if (deferred) this.revisionPublicationPending = true;
+  }
+
+  private exclusiveLifecycle<T>(operation: () => Promise<T>): Promise<T> {
+    const result = this.lifecycleQueue.catch(() => undefined).then(operation);
+    this.lifecycleQueue = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
+  }
+
 }

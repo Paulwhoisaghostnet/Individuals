@@ -2,16 +2,14 @@ import { IndividualEngine } from "../core/engine/IndividualEngine";
 import type { CycleRecord, IndividualManifest, Portrait } from "../core/model";
 import type { IndividualRepository, MemoryStore } from "../core/persistence/contracts";
 import { InMemoryIndividualRepository, InMemoryMemoryStore } from "../core/persistence/inMemory";
-import {
-  StableIdGenerator,
-  SystemClock,
-  TemplateAdaptationSystem,
-} from "../core/template/systems";
+import { StableIdGenerator, SystemClock } from "../core/systemUtilities";
+import { EvidenceBodyAdaptationSystem } from "../cognition/bodyAdaptation";
 import { identityPackages } from "../identity-packages";
 import { ProceduralCognitionSystem } from "../cognition/proceduralCognition";
 import { ProceduralPerceptionSystem } from "../perception/proceduralPerception";
 import { GenerativeDrawingSystem } from "../drawing/generativeDrawing";
 import { ProceduralFeedbackCompositor } from "../social-feedback/proceduralCompositor";
+import { DeterministicRelationshipAdaptationSystem } from "../social-feedback/relationshipAdaptation";
 
 export interface SocietyStepResult {
   readonly cycle: number;
@@ -46,11 +44,15 @@ export class SocietySimulation {
         perception: new ProceduralPerceptionSystem(),
         drawing: new GenerativeDrawingSystem(ids),
         feedback: new ProceduralFeedbackCompositor(ids),
-        adaptation: new TemplateAdaptationSystem(),
+        adaptation: new EvidenceBodyAdaptationSystem(),
+        relationships: new DeterministicRelationshipAdaptationSystem(),
         repository: this.repository,
         memory: this.memory,
         clock,
         ids,
+        allowedPeerIds: manifests
+          .filter((candidate) => candidate.id !== manifest.id)
+          .map((candidate) => candidate.id),
       });
       this.engines.set(manifest.id, engine);
     }

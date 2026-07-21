@@ -7,6 +7,8 @@ import type {
   Observation,
   Portrait,
   SelfConcept,
+  SocialFeedbackEvidence,
+  PeerModel,
 } from "../model";
 
 export interface CognitionSystem {
@@ -15,6 +17,7 @@ export interface CognitionSystem {
     state: IndividualState;
     memories: readonly MemoryEntry[];
     cycle: number;
+    signal?: AbortSignal;
   }): Promise<CycleIntent>;
 
   reflect(input: {
@@ -23,7 +26,9 @@ export interface CognitionSystem {
     intent: CycleIntent;
     selfPortrait: Portrait;
     socialPortrait?: Portrait;
+    socialEvidence?: SocialFeedbackEvidence;
     cycle: number;
+    signal?: AbortSignal;
   }): Promise<IdentityReflection>;
 }
 
@@ -34,6 +39,7 @@ export interface PerceptionSystem {
     portrait: Portrait;
     cycle: number;
     tuning: Readonly<Record<string, number>>;
+    signal?: AbortSignal;
   }): Promise<Observation>;
 }
 
@@ -44,6 +50,7 @@ export interface DrawingSystem {
     intent: CycleIntent;
     cycle: number;
     createdAt: string;
+    signal?: AbortSignal;
   }): Promise<Portrait>;
 
   drawPeer(input: {
@@ -53,6 +60,7 @@ export interface DrawingSystem {
     observation: Observation;
     cycle: number;
     createdAt: string;
+    signal?: AbortSignal;
   }): Promise<Portrait>;
 }
 
@@ -61,8 +69,11 @@ export interface FeedbackCompositor {
     manifest: IndividualManifest;
     state: IndividualState;
     portraits: readonly Portrait[];
+    /** Persisted self portrait that every peer contribution actually observed. */
+    sourceSelfPortrait?: Portrait;
     cycle: number;
     createdAt: string;
+    signal?: AbortSignal;
   }): Promise<Portrait | undefined>;
 }
 
@@ -74,7 +85,18 @@ export interface AdaptationSystem {
     selfPortrait: Portrait;
     socialPortrait?: Portrait;
     cycle: number;
+    signal?: AbortSignal;
   }): Promise<SelfConcept>;
+}
+
+export interface RelationshipAdaptationSystem {
+  adapt(input: {
+    readonly manifest: IndividualManifest;
+    readonly state: IndividualState;
+    readonly evidence?: SocialFeedbackEvidence;
+    readonly cycle: number;
+    readonly signal?: AbortSignal;
+  }): Promise<Readonly<Record<string, PeerModel>>>;
 }
 
 export interface Clock {
@@ -83,4 +105,12 @@ export interface Clock {
 
 export interface IdGenerator {
   create(parts: readonly (string | number)[]): string;
+}
+
+export interface CycleProgressSink {
+  report(event: {
+    readonly individualId: string;
+    readonly cycle: number;
+    readonly phase: "idle" | "observing" | "drawing" | "reflecting";
+  }): void | Promise<void>;
 }

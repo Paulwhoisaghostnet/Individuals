@@ -1,54 +1,76 @@
-import { readFileSync, existsSync } from "node:fs";
-import { resolve } from "node:path";
 import { SocietyRuntime } from "../software/individual/runtime/societyRuntime";
 
-function loadEnv(): void {
-  const envPath = resolve(process.cwd(), ".env");
-  if (!existsSync(envPath)) return;
-  const content = readFileSync(envPath, "utf-8");
-  for (const line of content.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const eqIdx = trimmed.indexOf("=");
-    if (eqIdx > 0) {
-      const key = trimmed.slice(0, eqIdx).trim();
-      const val = trimmed.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, "");
-      if (!process.env[key]) {
-        process.env[key] = val;
-      }
-    }
+const parsePositiveInteger = (
+  value: string | undefined,
+  fallback: number,
+  field: string,
+): number => {
+  if (value === undefined || value.trim() === "") return fallback;
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 1_000) {
+    throw new Error(`${field} must be an integer of at least 1000 milliseconds.`);
   }
-}
+  return parsed;
+};
 
-async function main() {
-  loadEnv();
-  console.log("=================================================");
-  console.log("   INDIVIDUALS — Continuous Society Runtime Demo ");
-  console.log("=================================================\n");
+const main = async (): Promise<void> => {
+  const intervalMs = parsePositiveInteger(
+    process.env.INDIVIDUALS_DEMO_CYCLE_INTERVAL_MS,
+    5_000,
+    "INDIVIDUALS_DEMO_CYCLE_INTERVAL_MS",
+  );
+  const dataDir = process.env.INDIVIDUALS_DEMO_DATA_DIR ?? ".data/demo-individuals";
+  const runtime = new SocietyRuntime({ dataDir, cycleIntervalOverrideMs: intervalMs });
 
-  if (process.env.LLM_API_KEY) {
-    console.log(`[LLM Active] Connected to model: ${process.env.LLM_MODEL ?? "gpt-4o-mini"} at ${process.env.LLM_API_BASE ?? "https://api.openai.com/v1"}\n`);
-  } else {
-    console.log("[LLM Inactive] No LLM_API_KEY found; operating with Procedural Cognition Fallback.\n");
-  }
+  process.stdout.write(
+    `Individuals society demo\n` +
+      `mode: ${process.env.LLM_API_KEY || process.env.LLM_API_KEY_FILE ? "provider-backed with procedural fallback" : "procedural"}\n` +
+      `cadence: ${intervalMs} ms\n` +
+      `state: ${dataDir}\n\n`,
+  );
 
-  // Set 15-second cycle cadence interval override for continuous live exhibition demo
-  const runtime = new SocietyRuntime({
-    dataDir: ".data/demo-individuals",
-    cycleIntervalOverrideMs: 15_000,
-  });
-
-  console.log("Starting continuous background runtime for Iris, Morrow, and Sable (15s cadence)...\n");
   await runtime.start();
+  let stopping: Promise<void> | undefined;
+  let lastEventKey = "";
+  const reporter = setInterval(() => {
+    const event = runtime.getHealthMonitor().getRecentEvents(1)[0];
+    if (!event) return;
+    const key = `${event.timestamp}:${event.individualId}:${event.type}:${event.cycle ?? 0}`;
+    if (key === lastEventKey) return;
+    lastEventKey = key;
+    process.stdout.write(
+      `[${event.timestamp}] ${event.individualId} ${event.type}` +
+        `${event.cycle === undefined ? "" : ` cycle=${event.cycle}`}\n`,
+    );
+  }, 1_000);
 
-  // Keep process running and log background events live
-  setInterval(async () => {
-    const events = runtime.getHealthMonitor().getRecentEvents(3);
-    const lastEvent = events[events.length - 1];
-    if (lastEvent) {
-      console.log(`[${lastEvent.timestamp}] ${lastEvent.individualId.toUpperCase()} -> ${lastEvent.type} (cycle ${lastEvent.cycle ?? 0}, latency ${lastEvent.latencyMs ?? 0}ms)`);
-    }
-  }, 5000);
-}
+  const stop = (): Promise<void> => {
+    stopping ??= (async () => {
+      clearInterval(reporter);
+      await runtime.stop({ drain: true, timeoutMs: 30_000 });
+    })();
+    return stopping;
+  };
+  const onSignal = (): void => {
+    process.off("SIGINT", onSignal);
+    process.off("SIGTERM", onSignal);
+    void stop().then(
+      () => {
+        process.stdout.write("Individuals society demo stopped.\n");
+        process.exitCode = 0;
+      },
+      () => {
+        process.stderr.write("Individuals society demo did not stop cleanly.\n");
+        process.exitCode = 1;
+      },
+    );
+  };
+  process.on("SIGINT", onSignal);
+  process.on("SIGTERM", onSignal);
+};
 
-main().catch(console.error);
+void main().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : "Unknown startup failure.";
+  process.stderr.write(`Individuals society demo failed: ${message}\n`);
+  process.exitCode = 1;
+});

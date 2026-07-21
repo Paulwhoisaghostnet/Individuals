@@ -1,11 +1,28 @@
+import { useDialogFocus } from "./useDialogFocus";
+
 interface AboutProps {
   readonly onClose: () => void;
+  readonly returnFocus?: HTMLElement | null;
 }
 
-export function About({ onClose }: AboutProps) {
+export function About({ onClose, returnFocus }: AboutProps) {
+  const dialogRef = useDialogFocus<HTMLElement>(returnFocus);
   return (
-    <section className="about" role="dialog" aria-modal="true" aria-labelledby="about-title">
-      <button className="text-control about__close" type="button" onClick={onClose} autoFocus>
+    <section
+      ref={dialogRef}
+      className="about"
+      id="about-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="about-title"
+      tabIndex={-1}
+    >
+      <button
+        className="text-control about__close"
+        type="button"
+        onClick={onClose}
+        data-dialog-initial-focus
+      >
         close <span aria-hidden="true">×</span>
       </button>
       <div className="about__body">

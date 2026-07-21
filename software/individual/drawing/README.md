@@ -8,18 +8,23 @@ omit, repeat, glitch, or misproportion anatomy according to the Individual's
 limitations, but a purely non-representational composition is not a valid self or
 peer portrait.
 
-This branch will contain:
+The prototype implements:
 
 - procedural mark, layer, mask, typography, and composition primitives;
 - self-portrait and peer-portrait rendering pipelines;
 - physical-form registration for anatomy, face, posture, surface, and invariant features;
-- optional image-model adapters behind a provider-neutral interface;
+- a provider-neutral boundary where a reviewed image-model adapter may be added;
 - palette, resolution, aspect-ratio, and format enforcement;
 - deterministic seeds and artifact provenance;
 - export paths for digital canvases and physical display targets.
 
 Drawing must not silently bypass the constraints in the identity package, even
 when the selected model or renderer is capable of more.
+
+Peer and social renderers treat descriptor strings as private evidence rather
+than display copy. Free-form feature labels, style names, and interpreted color
+strings never become SVG text or paint; public typography and palette values come
+only from the observing Individual's authored manifest.
 
 ## Artistic ability scope
 

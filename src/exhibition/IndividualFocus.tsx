@@ -1,10 +1,13 @@
 import { PortraitCanvas } from "./PortraitCanvas";
+import { localPortraitProvenance } from "./portrait/provenance";
+import type { ArtworkDisplayMode, RuntimeIndividualView } from "./runtime/types";
 import type { ExhibitionIndividual, PerceptionTuningMap } from "./types";
 
 interface IndividualFocusProps {
   readonly individual: ExhibitionIndividual;
   readonly people: readonly ExhibitionIndividual[];
-  readonly cycle: number;
+  readonly runtime?: RuntimeIndividualView;
+  readonly artworkMode: ArtworkDisplayMode;
   readonly onClose: () => void;
   readonly onSelect: (individualId: string) => void;
   readonly tuningMap: PerceptionTuningMap;
@@ -22,21 +25,38 @@ const skillLabels = {
 export function IndividualFocus({
   individual,
   people,
-  cycle,
+  runtime,
+  artworkMode,
   onClose,
   onSelect,
   tuningMap,
 }: IndividualFocusProps) {
   const peers = people.filter((peer) => peer.id !== individual.id);
+  const cycle = runtime?.cycle ?? 0;
+  const embodiment = runtime?.embodiment;
+  const selfProvenance = !runtime?.portraits.self
+    ? localPortraitProvenance(artworkMode, "self-portrait")
+    : undefined;
+  const socialProvenance = !runtime?.portraits.social
+    ? localPortraitProvenance(artworkMode, "social portrait")
+    : undefined;
 
   return (
-    <section className="focus" role="dialog" aria-modal="true" aria-labelledby="focus-title">
+    <section className="focus" aria-labelledby="focus-title">
       <div className="focus__portrait">
-        <PortraitCanvas individual={individual} cycle={cycle} mode="self" />
-        <div className="focus__portrait-label">
-          <span>self-portrait</span>
-          <span>cycle {String(cycle).padStart(3, "0")}</span>
-        </div>
+        <PortraitCanvas
+          individual={individual}
+          cycle={cycle}
+          mode="self"
+          artwork={runtime?.portraits.self}
+        />
+        {selfProvenance && <span className="portrait-provenance">{selfProvenance}</span>}
+        {!runtime?.portraits.self && (
+          <div className="focus__portrait-label">
+            <span>self-portrait</span>
+            <span>cycle {String(cycle).padStart(3, "0")}</span>
+          </div>
+        )}
       </div>
 
       <div className="focus__context">
@@ -65,13 +85,34 @@ export function IndividualFocus({
           </div>
           <div>
             <dt>Body perceived</dt>
-            <dd>{individual.physicalIdentity.current}</dd>
+            <dd>{embodiment?.description ?? individual.physicalIdentity.current}</dd>
           </div>
           <div>
             <dt>Peers return</dt>
             <dd>{individual.socialView}</dd>
           </div>
         </dl>
+
+        <div className="body-distance" aria-label="Current distance from ideal body">
+          <div className="body-distance__heading">
+            <span>{embodiment ? "live body coherence" : "authored starting distance"}</span>
+            {embodiment && <output>{Math.round(embodiment.similarity * 100)}%</output>}
+          </div>
+          {embodiment && (
+            <span className="body-distance__track" aria-hidden="true">
+              <span style={{ width: `${Math.round(embodiment.similarity * 100)}%` }} />
+            </span>
+          )}
+          <p>
+            {(embodiment?.perceivedDifferences ?? individual.physicalIdentity.currentDifferences).join(" / ")}
+          </p>
+          {embodiment?.nextBodilyAdjustment && (
+            <p className="body-distance__adjustment">
+              <span>next bodily adjustment</span>
+              {embodiment.nextBodilyAdjustment}
+            </p>
+          )}
+        </div>
 
         <div className="embodied-register" aria-label="Physical identity register">
           <p>
@@ -132,7 +173,7 @@ export function IndividualFocus({
                 <span className="artistic-skill__track" aria-hidden="true">
                   <span style={{ width: `${Math.round(value * 100)}%` }} />
                 </span>
-                <output>{Math.round(value * 100)}</output>
+                <output>{Math.round(value * 100)}%</output>
               </div>
             ))}
           </div>
@@ -154,11 +195,13 @@ export function IndividualFocus({
             individual={individual}
             cycle={cycle}
             mode="social"
+            artwork={runtime?.portraits.social}
             socialPerceptions={peers.map((peer) => ({
               observer: peer,
               tuning: tuningMap[peer.id],
             }))}
           />
+          {socialProvenance && <span className="portrait-provenance">{socialProvenance}</span>}
         </div>
       </div>
 
@@ -168,24 +211,33 @@ export function IndividualFocus({
           <span>before compositing</span>
         </div>
         <div className="peer-readings__grid">
-          {peers.map((peer) => (
-            <div className="peer-reading" key={peer.id}>
-              <div className="peer-reading__art">
-                <PortraitCanvas
-                  individual={individual}
-                  observedBy={peer}
-                  perceptionTuning={tuningMap[peer.id]}
-                  cycle={cycle}
-                  mode="peer"
-                  compact
-                />
+          {peers.map((peer) => {
+            const peerArtwork = runtime?.portraits.peers.find(
+              ({ artistId }) => artistId === peer.id,
+            )?.artwork;
+            const peerProvenance = !peerArtwork
+              ? localPortraitProvenance(artworkMode, "peer drawing")
+              : undefined;
+            return (
+              <div className="peer-reading" key={peer.id}>
+                <div className="peer-reading__art">
+                  <PortraitCanvas
+                    individual={individual}
+                    observedBy={peer}
+                    perceptionTuning={tuningMap[peer.id]}
+                    cycle={cycle}
+                    mode="peer"
+                    artwork={peerArtwork}
+                  />
+                  {peerProvenance && <span className="portrait-provenance">{peerProvenance}</span>}
+                </div>
+                <p>
+                  <span>{peerArtwork ? "live drawing" : "study"} by {peer.name}</span>
+                  {peer.perceptionModel.name} → {peer.artisticAbility.name}
+                </p>
               </div>
-              <p>
-                <span>drawn by {peer.name}</span>
-                {peer.perceptionModel.name} → {peer.artisticAbility.name}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

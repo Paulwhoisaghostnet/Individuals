@@ -35,4 +35,24 @@ describe("EventStreamBridge (Streaming Exhibition)", () => {
     unsubscribe();
     expect(bridge.subscriberCount).toBe(0);
   });
+
+  it("enforces subscriber and event byte bounds", () => {
+    const bridge = new EventStreamBridge(1, 1_024);
+    const release = bridge.subscribe(() => undefined);
+    expect(() => bridge.subscribe(() => undefined)).toThrow(/capacity/);
+    expect(() => bridge.formatSseMessage("oversized", "x".repeat(1_025))).toThrow(/byte limit/);
+    release();
+    expect(() => bridge.subscribe(() => undefined)).not.toThrow();
+  });
+
+  it("prefixes every line ending so a string cannot inject SSE fields", () => {
+    const bridge = new EventStreamBridge();
+    expect(bridge.formatSseMessage("safe", "first\revent: injected\ndata: forged")).toBe(
+      "event: safe\ndata: first\ndata: event: injected\ndata: data: forged\n\n",
+    );
+    expect(() => bridge.formatSseMessage("safe", undefined)).toThrow(/not serializable/);
+    const cyclic: { self?: unknown } = {};
+    cyclic.self = cyclic;
+    expect(() => bridge.formatSseMessage("safe", cyclic)).toThrow(/not serializable/);
+  });
 });
