@@ -446,7 +446,7 @@
         ["In-memory persistence", "done", "core/persistence/inMemory.ts"],
         ["Static Docker / Nginx deployment", "done", "Dockerfile · compose.production.yml"],
         ["Production cognition / perception / drawing / feedback adapters", "done", "proceduralCognition · proceduralPerception · generativeDrawing · proceduralCompositor"],
-        ["Durable persistence & semantic memory", "todo", "contracts only"],
+        ["Durable persistence & semantic memory", "done", "fileRepository.ts · fileMemoryStore.ts"],
         ["Continuous runtime, streaming, recovery, observability", "todo", "runtime/ README only"],
         ["Physical & distributed installation", "todo", "hardware/ framework only"],
       ];
@@ -470,7 +470,7 @@
           ],
         },
         {
-          id: "p2", no: "02", title: "Closed identity loop", status: "partial",
+          id: "p2", no: "02", title: "Closed identity loop", status: "done",
           summary: "Turn the orchestrated-but-stubbed engine into a genuinely adaptive closed society of three distinct Individuals completing the full loop.",
           milestones: [
             { id: "p2-1", code: "2.1", title: "Deterministic reference adapters", status: "done",
@@ -482,7 +482,7 @@
             { id: "p2-3", code: "2.3", title: "Social feedback & adaptation", status: "done",
               detail: "Composite received peer portraits, then adapt later self-portraits from the ideal↔social difference without erasing continuity.",
               verify: "Across N cycles perceivedSimilarity responds to feedback while non-negotiable features and origin narrative persist; a reflection memory is written every cycle and influences the next intent." },
-            { id: "p2-4", code: "2.4", title: "Model-backed cognition (provider-neutral)", status: "todo",
+            { id: "p2-4", code: "2.4", title: "Model-backed cognition (provider-neutral)", status: "done",
               detail: "LLM-backed cognition behind the existing contract: authored instructions treating the ideal form as bodily ground truth, memory assembly with a token budget, validated structured parsing, and retry/timeout/refusal handling. Chain-of-thought is never stored or displayed.",
               verify: "With the provider disabled, the system falls back to the deterministic adapter and keeps running; structured outputs always validate or are safely rejected; a refusal or timeout degrades gracefully." },
           ],
@@ -505,7 +505,7 @@
             { id: "p3-1", code: "3.1", title: "Continuous runtime", status: "todo",
               detail: "A durable background process schedules cycles on each Individual's cadence, saving state atomically before acknowledgement.",
               verify: "The runtime survives process restart and resumes from the last saved snapshot; a forced failure in one Individual leaves peers uncorrupted and cycling." },
-            { id: "p3-2", code: "3.2", title: "Durable persistence & memory", status: "todo",
+            { id: "p3-2", code: "3.2", title: "Durable persistence & memory", status: "done",
               detail: "Replace the in-memory store with durable snapshots and a semantic memory archive behind the existing repository/memory contracts.",
               verify: "Kill and restart: identities, memories, and history are intact; a snapshot + identity package fully reconstructs an Individual." },
             { id: "p3-3", code: "3.3", title: "Streaming exhibition", status: "todo",
