@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
-    "demo": "vite-node scripts/demoSociety.ts",
+    "demo": "npx vite-node scripts/demoSociety.ts",
     "check": "npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
