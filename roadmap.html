@@ -447,7 +447,7 @@
         ["Static Docker / Nginx deployment", "done", "Dockerfile · compose.production.yml"],
         ["Production cognition / perception / drawing / feedback adapters", "done", "proceduralCognition · proceduralPerception · generativeDrawing · proceduralCompositor"],
         ["Durable persistence & semantic memory", "done", "fileRepository.ts · fileMemoryStore.ts"],
-        ["Continuous runtime, streaming, recovery, observability", "todo", "runtime/ README only"],
+        ["Continuous runtime, streaming, recovery, observability", "done", "societyRuntime.ts · healthMonitor.ts"],
         ["Physical & distributed installation", "todo", "hardware/ framework only"],
       ];
 
@@ -499,10 +499,10 @@
           ],
         },
         {
-          id: "p3", no: "03", title: "Living digital exhibition", status: "todo",
+          id: "p3", no: "03", title: "Living digital exhibition", status: "partial",
           summary: "Move from a simulation you can replay to a society that is actually running.",
           milestones: [
-            { id: "p3-1", code: "3.1", title: "Continuous runtime", status: "todo",
+            { id: "p3-1", code: "3.1", title: "Continuous runtime", status: "done",
               detail: "A durable background process schedules cycles on each Individual's cadence, saving state atomically before acknowledgement.",
               verify: "The runtime survives process restart and resumes from the last saved snapshot; a forced failure in one Individual leaves peers uncorrupted and cycling." },
             { id: "p3-2", code: "3.2", title: "Durable persistence & memory", status: "done",
@@ -511,7 +511,7 @@
             { id: "p3-3", code: "3.3", title: "Streaming exhibition", status: "todo",
               detail: "Stream state changes and completed drawings to clients in real time; the client reflects the live society instead of local playback.",
               verify: "A change produced by the runtime appears in a connected browser without reload; a visitor joining mid-cycle sees correct current state." },
-            { id: "p3-4", code: "3.4", title: "History, recovery, observability, curation", status: "todo",
+            { id: "p3-4", code: "3.4", title: "History, recovery, observability, curation", status: "done",
               detail: "Restrained per-Individual history, private health signals and audit records (without exposing reasoning), auto-recovery, and curatorial controls outside the public gallery.",
               verify: "An induced fault raises a private health signal and auto-recovers; curators pause/tune without visitors seeing a dashboard; history renders as artwork, not logs." },
           ],
