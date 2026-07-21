@@ -52,6 +52,9 @@ function App() {
         .then((snapshots: any[]) => {
           if (Array.isArray(snapshots) && snapshots.length > 0) {
             const iris = snapshots.find((s) => s.manifest?.id === "iris") ?? snapshots[0];
+            if (iris?.state?.cycle && typeof iris.state.cycle === "number") {
+              setCycle(iris.state.cycle);
+            }
             if (iris?.state?.lastReflection?.summary) {
               setLiveReflection(`Groq LLM Reflection: ${iris.state.lastReflection.summary}`);
             }
@@ -63,7 +66,7 @@ function App() {
     };
 
     fetchLive();
-    const interval = setInterval(fetchLive, 4000);
+    const interval = setInterval(fetchLive, 3000);
     return () => clearInterval(interval);
   }, []);
 
