@@ -40,9 +40,26 @@ function App() {
   const [isPaused, setIsPaused] = useState(getInitialPaused);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isTunerOpen, setIsTunerOpen] = useState(false);
+  const [liveReflection, setLiveReflection] = useState<string | null>(null);
   const { tuningMap, setControl, resetIndividual, resetAll } = usePerceptionTuning(individuals);
   const selected = individuals.find((individual) => individual.id === selectedId);
   const event = useMemo(() => createCycleEvent(individuals, cycle), [cycle]);
+
+  useEffect(() => {
+    fetch("/api/society/snapshots")
+      .then((res) => res.json())
+      .then((snapshots: any[]) => {
+        if (Array.isArray(snapshots) && snapshots.length > 0) {
+          const iris = snapshots.find((s) => s.manifest?.id === "iris") ?? snapshots[0];
+          if (iris?.state?.lastReflection?.summary) {
+            setLiveReflection(`Groq LLM Reflection: ${iris.state.lastReflection.summary}`);
+          }
+        }
+      })
+      .catch(() => {
+        // Fallback to local cycle sentence if server endpoint unconfigured
+      });
+  }, []);
 
   useEffect(() => {
     try {
@@ -145,7 +162,7 @@ function App() {
           <span>03 Individuals present</span>
         </div>
         <p className="cycle-bar__event" aria-live="polite">
-          {event.sentence}
+          {liveReflection ?? event.sentence}
         </p>
         <div className="cycle-bar__controls">
           <button className="text-control" type="button" onClick={() => setCycle((value) => value + 1)}>
