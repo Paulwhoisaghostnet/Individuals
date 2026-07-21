@@ -46,19 +46,25 @@ function App() {
   const event = useMemo(() => createCycleEvent(individuals, cycle), [cycle]);
 
   useEffect(() => {
-    fetch("/api/society/snapshots")
-      .then((res) => res.json())
-      .then((snapshots: any[]) => {
-        if (Array.isArray(snapshots) && snapshots.length > 0) {
-          const iris = snapshots.find((s) => s.manifest?.id === "iris") ?? snapshots[0];
-          if (iris?.state?.lastReflection?.summary) {
-            setLiveReflection(`Groq LLM Reflection: ${iris.state.lastReflection.summary}`);
+    const fetchLive = () => {
+      fetch("/api/society/snapshots")
+        .then((res) => res.json())
+        .then((snapshots: any[]) => {
+          if (Array.isArray(snapshots) && snapshots.length > 0) {
+            const iris = snapshots.find((s) => s.manifest?.id === "iris") ?? snapshots[0];
+            if (iris?.state?.lastReflection?.summary) {
+              setLiveReflection(`Groq LLM Reflection: ${iris.state.lastReflection.summary}`);
+            }
           }
-        }
-      })
-      .catch(() => {
-        // Fallback to local cycle sentence if server endpoint unconfigured
-      });
+        })
+        .catch(() => {
+          // Fallback to local cycle sentence if server endpoint unconfigured
+        });
+    };
+
+    fetchLive();
+    const interval = setInterval(fetchLive, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
