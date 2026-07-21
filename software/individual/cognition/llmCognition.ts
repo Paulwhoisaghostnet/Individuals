@@ -21,6 +21,42 @@ import {
   isValidReflection,
 } from "./prompts";
 
+// Providers frequently quote numeric JSON values ("0.02" instead of 0.02),
+// which the strict validators reject. Repair coerces numeric strings back to
+// numbers for known numeric fields only, so free-text fields stay untouched.
+const NUMERIC_FIELD_KEYS = new Set([
+  "magnitude",
+  "direction",
+  "similarityDelta",
+  "selfIdealDistance",
+  "predictedIdealDistance",
+  "socialIdealDistance",
+  "selfSocialDistance",
+]);
+
+const NUMERIC_STRING = /^-?\d+(\.\d+)?$/;
+
+export const repairNumericFields = (data: unknown): unknown => {
+  if (Array.isArray(data)) {
+    return data.map((item) => repairNumericFields(item));
+  }
+  if (!data || typeof data !== "object") {
+    return data;
+  }
+  return Object.fromEntries(
+    Object.entries(data as Record<string, unknown>).map(([key, value]) => {
+      if (
+        NUMERIC_FIELD_KEYS.has(key) &&
+        typeof value === "string" &&
+        NUMERIC_STRING.test(value.trim())
+      ) {
+        return [key, Number(value.trim())];
+      }
+      return [key, repairNumericFields(value)];
+    }),
+  );
+};
+
 const cleanText = (value: string, maximum: number): string =>
   value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, maximum);
 
@@ -105,6 +141,7 @@ export class LlmCognitionSystem implements CognitionSystem {
         systemPrompt: INTENT_SYSTEM_PROMPT,
         userPrompt: buildIntentUserPrompt(input),
         validator: isValidIntent,
+        repair: repairNumericFields,
         timeoutMs: 10_000,
         signal: input.signal,
       });
@@ -138,6 +175,7 @@ export class LlmCognitionSystem implements CognitionSystem {
         systemPrompt: REFLECTION_SYSTEM_PROMPT,
         userPrompt: buildReflectionUserPrompt(input),
         validator: isValidReflection,
+        repair: repairNumericFields,
         timeoutMs: 10_000,
         signal: input.signal,
       });
