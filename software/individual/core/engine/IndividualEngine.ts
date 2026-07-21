@@ -127,11 +127,29 @@ export class IndividualEngine {
     });
 
     const completedAt = this.dependencies.clock.now();
+    const nextRelationships = { ...(snapshot.state.relationships ?? {}) };
+    if (reflection.relationshipUpdates) {
+      for (const [peerId, update] of Object.entries(reflection.relationshipUpdates)) {
+        const existing = nextRelationships[peerId] ?? {
+          peerId,
+          perceivedDistortions: [],
+          perceivedReliability: 0.5,
+          perceivedTrend: "",
+          expectedReaction: "",
+        };
+        nextRelationships[peerId] = {
+          ...existing,
+          ...update,
+        };
+      }
+    }
+
     const nextState = {
       ...snapshot.state,
       status: "idle" as const,
       cycle,
       selfConcept,
+      relationships: nextRelationships,
       currentSelfPortrait: selfPortrait,
       latestSocialPortrait: socialPortrait ?? snapshot.state.latestSocialPortrait,
       lastReflection: reflection,

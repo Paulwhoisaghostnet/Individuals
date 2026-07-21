@@ -55,6 +55,14 @@ export const createTemplateManifest = (
           "my face does not yet hold its intended calm",
         ],
       },
+      socialDisposition: {
+        selfIntegrity: 0.7,
+        socialPermeability: 0.5,
+        needForRecognition: 0.6,
+        resistance: 0.3,
+        curiosity: 0.7,
+        trustByPeer: {},
+      },
     },
     perception: {
       modelId: "template-lens",

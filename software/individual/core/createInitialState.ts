@@ -13,6 +13,7 @@ export const createInitialState = (
     confidence: 0.5,
     physicalSelf: manifest.identity.initialPhysicalSelf,
   },
+  relationships: {},
   createdAt,
   updatedAt: createdAt,
 });

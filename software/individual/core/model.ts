@@ -33,6 +33,23 @@ export interface EmbodiedSelfConcept {
   readonly perceivedDifferences: readonly string[];
 }
 
+export interface SocialDisposition {
+  readonly selfIntegrity: number;
+  readonly socialPermeability: number;
+  readonly needForRecognition: number;
+  readonly resistance: number;
+  readonly curiosity: number;
+  readonly trustByPeer: Readonly<Record<string, number>>;
+}
+
+export interface PeerModel {
+  readonly peerId: string;
+  readonly perceivedDistortions: readonly string[];
+  readonly perceivedReliability: number;
+  readonly perceivedTrend: string;
+  readonly expectedReaction: string;
+}
+
 export interface IdentityDefinition {
   readonly origin: string;
   readonly privateNarrative: string;
@@ -40,6 +57,7 @@ export interface IdentityDefinition {
   readonly idealSelf: IdealSelf;
   readonly idealPhysicalForm: PhysicalForm;
   readonly initialPhysicalSelf: EmbodiedSelfConcept;
+  readonly socialDisposition: SocialDisposition;
 }
 
 export interface CapabilityProfile {
@@ -154,13 +172,21 @@ export interface IdentityReflection {
     readonly perceivedDifferences: readonly string[];
     readonly nextBodilyAdjustment: string;
   };
+  readonly intendedSignals?: readonly string[];
+  readonly perceivedPeerSignals?: Readonly<Record<string, readonly string[]>>;
+  readonly recurringPatterns?: readonly string[];
+  readonly acceptedFeedback?: readonly string[];
+  readonly rejectedFeedback?: readonly string[];
+  readonly unresolvedQuestions?: readonly string[];
+  readonly relationshipUpdates?: Readonly<Record<string, Partial<PeerModel>>>;
+  readonly publicFragment?: string;
 }
 
 export interface MemoryEntry {
   readonly id: string;
   readonly individualId: string;
   readonly cycle: number;
-  readonly kind: "experience" | "reflection" | "relationship";
+  readonly kind: "experience" | "reflection" | "relationship" | "summary";
   readonly content: string;
   readonly createdAt: string;
   readonly relatedIndividualIds: readonly string[];
@@ -171,9 +197,11 @@ export interface IndividualState {
   readonly status: IndividualStatus;
   readonly cycle: number;
   readonly selfConcept: SelfConcept;
+  readonly relationships: Readonly<Record<string, PeerModel>>;
   readonly currentSelfPortrait?: Portrait;
   readonly latestSocialPortrait?: Portrait;
   readonly lastReflection?: IdentityReflection;
+  readonly longTermSummary?: string;
   readonly createdAt: string;
   readonly updatedAt: string;
 }

@@ -59,6 +59,21 @@ export const defineIndividualManifest = <T extends IndividualManifest>(manifest:
   }
   manifest.identity.traits.forEach(assertTrait);
 
+  const disp = manifest.identity.socialDisposition;
+  if (!disp) {
+    throw new Error('Individual manifest field "identity.socialDisposition" is required.');
+  }
+  assertUnitInterval(disp.selfIntegrity, "identity.socialDisposition.selfIntegrity");
+  assertUnitInterval(disp.socialPermeability, "identity.socialDisposition.socialPermeability");
+  assertUnitInterval(disp.needForRecognition, "identity.socialDisposition.needForRecognition");
+  assertUnitInterval(disp.resistance, "identity.socialDisposition.resistance");
+  assertUnitInterval(disp.curiosity, "identity.socialDisposition.curiosity");
+  if (disp.trustByPeer) {
+    for (const [peerId, trust] of Object.entries(disp.trustByPeer)) {
+      assertUnitInterval(trust, `identity.socialDisposition.trustByPeer.${peerId}`);
+    }
+  }
+
   if (manifest.cadence.minimumCycleIntervalMs < 0) {
     throw new Error("minimumCycleIntervalMs cannot be negative.");
   }

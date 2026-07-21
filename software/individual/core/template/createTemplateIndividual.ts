@@ -1,6 +1,7 @@
 import { IndividualEngine } from "../engine/IndividualEngine";
 import type { IndividualManifest } from "../model";
 import type { IndividualRepository, MemoryStore } from "../persistence/contracts";
+import type { CognitionSystem } from "../systems/contracts";
 import { InMemoryIndividualRepository, InMemoryMemoryStore } from "../persistence/inMemory";
 import { createTemplateManifest } from "./manifest";
 import {
@@ -17,6 +18,7 @@ export interface CreateTemplateIndividualOptions {
   readonly manifest?: IndividualManifest;
   readonly repository?: IndividualRepository;
   readonly memory?: MemoryStore;
+  readonly cognition?: CognitionSystem;
 }
 
 export const createTemplateIndividual = (
@@ -25,7 +27,7 @@ export const createTemplateIndividual = (
   const ids = new StableIdGenerator();
 
   return new IndividualEngine(options.manifest ?? createTemplateManifest(), {
-    cognition: new TemplateCognitionSystem(),
+    cognition: options.cognition ?? new TemplateCognitionSystem(),
     perception: new TemplatePerceptionSystem(),
     drawing: new TemplateDrawingSystem(ids),
     feedback: new TemplateFeedbackCompositor(ids),

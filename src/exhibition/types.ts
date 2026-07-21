@@ -63,6 +63,15 @@ export interface ArtisticAbility {
   readonly limitations: readonly string[];
 }
 
+export interface SocialDisposition {
+  readonly selfIntegrity: number;
+  readonly socialPermeability: number;
+  readonly needForRecognition: number;
+  readonly resistance: number;
+  readonly curiosity: number;
+  readonly trustByPeer: Readonly<Record<string, number>>;
+}
+
 export interface ExhibitionIndividual {
   readonly id: string;
   readonly number: string;
@@ -72,6 +81,7 @@ export interface ExhibitionIndividual {
   readonly artisticAbility: ArtisticAbility;
   readonly perceptionModel: PerceptionModel;
   readonly physicalIdentity: PhysicalIdentity;
+  readonly socialDisposition: SocialDisposition;
   readonly statement: string;
   readonly idealSelf: string;
   readonly selfView: string;

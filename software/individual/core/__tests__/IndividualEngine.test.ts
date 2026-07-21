@@ -159,4 +159,70 @@ describe("IndividualEngine", () => {
       }),
     ).toThrow('drawing.ability.skill.anatomicalCoherence" must be between 0 and 1.');
   });
+
+  it("rejects social disposition values out of range", () => {
+    const manifest = createTemplateManifest();
+
+    expect(() =>
+      createTemplateIndividual({
+        manifest: {
+          ...manifest,
+          identity: {
+            ...manifest.identity,
+            socialDisposition: {
+              ...manifest.identity.socialDisposition,
+              selfIntegrity: 1.5,
+            },
+          },
+        },
+      }),
+    ).toThrow('identity.socialDisposition.selfIntegrity" must be between 0 and 1.');
+  });
+
+  it("updates peer relationships when cognition produces relationship updates", async () => {
+    const repository = new InMemoryIndividualRepository();
+    const memory = new InMemoryMemoryStore();
+    const manifest = createTemplateManifest({ id: "iris", displayName: "Iris" });
+
+    const individual = createTemplateIndividual({
+      manifest,
+      repository,
+      memory,
+      cognition: {
+        formIntent: async () => ({
+          statement: "Intent",
+          desiredQualities: [],
+          visualInstructions: [],
+          bodilyInstructions: [],
+        }),
+        reflect: async () => ({
+          summary: "Reflecting on social image",
+          tensions: [],
+          nextIntention: "Next",
+          memory: "Remembering change",
+          physicalAssessment: {
+            similarityDelta: 0.05,
+            retainedFeatures: [],
+            perceivedDifferences: [],
+            nextBodilyAdjustment: "Adjust",
+          },
+          relationshipUpdates: {
+            "peer-a": {
+              perceivedDistortions: ["exaggerates shoulders"],
+              perceivedReliability: 0.8,
+            },
+          },
+        }),
+      },
+    });
+
+    const cycle = await individual.runCycle({
+      peerSelfPortraits: [makePortrait()],
+      receivedPeerPortraits: [],
+    });
+
+    expect(cycle.state.relationships["peer-a"]).toBeDefined();
+    expect(cycle.state.relationships["peer-a"].perceivedDistortions).toEqual(["exaggerates shoulders"]);
+    expect(cycle.state.relationships["peer-a"].perceivedReliability).toBe(0.8);
+  });
 });
