@@ -138,7 +138,14 @@ outside the memory/journal allowance.
 docker compose -f compose.production.yml ps
 docker compose -f compose.production.yml logs --tail=200 individuals-runtime
 docker compose -f compose.production.yml restart individuals-web
+docker compose -f compose.production.yml exec individuals-runtime npm run export:timeline
+docker compose -f compose.production.yml cp individuals-runtime:/var/lib/individuals/exports/timeline.html ./individuals-timeline.html
 ```
+
+The timeline command exports only validated retained portraits by default. Private
+memory is not read. Review the explicit acknowledgement and handling rules in
+[`software/individual/timeline/README.md`](../../software/individual/timeline/README.md)
+before using its private-memory option.
 
 Runtime telemetry and container logs are bounded. A provider fallback is a degraded
 cognition event, not a reason to recycle the process. Repeated cycle faults,

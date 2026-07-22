@@ -41,6 +41,19 @@ identity. A recoverable journal protects the snapshot/memory commit boundary.
 `.data/` is ignored by both Git and container build contexts. Production uses a
 dedicated volume and must be backed up independently of application images.
 
+## Offline curatorial exports
+
+The retained portrait timeline is an explicit offline boundary, not a public API
+route. It accepts only fully validated snapshots and the shared inert public-SVG
+subset, embeds no live markup or remote resources, and writes atomically with
+owner-only permissions outside snapshot, memory, journal, and quarantine paths.
+
+Private memory is neither read nor exported by default. Crossing that boundary
+requires the CLI's exact acknowledgement phrase and produces a prominently marked
+sensitive document. Local processing and restrictive permissions do not make that
+portable file public-safe; copying, uploading, or distributing it remains an
+explicit curator responsibility.
+
 ## External providers
 
 Provider base URLs and keys are server-only configuration. Calls are bounded by

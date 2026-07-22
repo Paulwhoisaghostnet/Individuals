@@ -6,6 +6,7 @@ import type {
   SignedBodyAdjustment,
 } from "../core/model";
 import type { CognitionSystem } from "../core/systems/contracts";
+import { FIGURE_DIMENSIONS as CORE_FIGURE_DIMENSIONS } from "../core/figureGeometry";
 import { intentPromptSections, reflectionPromptSections } from "./promptContext";
 import { composeBoundedPrompt } from "./promptBudget";
 
@@ -19,15 +20,17 @@ RULES:
 2. Produce concrete instructions about anatomy, face, posture, surface, stature, movement, and identifying features.
 3. Continue from prior reflection and current perceived differences; do not reset identity each cycle.
 4. Preserve non-negotiable identifying features.
-5. Never reveal hidden reasoning. Output only valid JSON matching the schema.
+5. Use one of these body dimensions: ${CORE_FIGURE_DIMENSIONS.join(", ")}.
+6. Use direction -1 or 1 and magnitude between 0 and 0.25. Emit them as unquoted JSON numbers.
+7. Never reveal hidden reasoning. Output only valid JSON matching the schema.
 
-JSON SCHEMA FOR INTENT:
+JSON OUTPUT SHAPE FOR INTENT (numeric values are examples):
 {
   "statement": "concise intention",
   "desiredQualities": ["string"],
   "visualInstructions": ["string"],
   "bodilyInstructions": ["string"],
-  "bodyAdjustments": [{"dimension":"FigureDimension","direction":-1|1,"magnitude":"0..0.25","basis":"ideal|social|self"}]
+  "bodyAdjustments": [{"dimension":"openness","direction":1,"magnitude":0.05,"basis":"ideal"}]
 }`;
 
 export const REFLECTION_SYSTEM_PROMPT = `You are the cognition engine for an Individual in the artwork "Individuals".
@@ -39,21 +42,23 @@ RULES:
 3. Accept or reject evidence according to trust, confidence, self-integrity, permeability, and resistance.
 4. Preserve every non-negotiable feature.
 5. Coherence is unresolved tension, not a completion score. similarityDelta must be finite and between -0.08 and +0.08; never claim perfect convergence.
-6. Never reveal hidden reasoning. Output only valid JSON matching the schema.
+6. Use one of these body dimensions: ${CORE_FIGURE_DIMENSIONS.join(", ")}.
+7. Use direction -1 or 1, magnitude between 0 and 0.25, and geometry distances between 0 and 1. Emit every numeric field as an unquoted JSON number.
+8. Never reveal hidden reasoning. Output only valid JSON matching the schema.
 
-JSON SCHEMA FOR REFLECTION:
+JSON OUTPUT SHAPE FOR REFLECTION (numeric values are examples):
 {
   "summary": "string",
   "tensions": ["string"],
   "nextIntention": "concrete intention for the next portrait",
   "memory": "concise memory sentence",
   "physicalAssessment": {
-    "similarityDelta": "number between -0.08 and +0.08",
+    "similarityDelta": 0.01,
     "retainedFeatures": ["string"],
     "perceivedDifferences": ["string"],
     "nextBodilyAdjustment": "string",
-    "nextBodyAdjustments": [{"dimension":"FigureDimension","direction":-1|1,"magnitude":"0..0.25","basis":"ideal|social|self"}],
-    "geometry": {"selfIdealDistance":"0..1","socialIdealDistance":"0..1 optional","selfSocialDistance":"0..1 optional","predictedIdealDistance":"0..1"}
+    "nextBodyAdjustments": [{"dimension":"openness","direction":1,"magnitude":0.05,"basis":"ideal"}],
+    "geometry": {"selfIdealDistance":0.2,"socialIdealDistance":0.3,"selfSocialDistance":0.1,"predictedIdealDistance":0.19}
   },
   "intendedSignals": ["string"],
   "perceivedPeerSignals": { "peerId": ["string"] },
@@ -98,19 +103,7 @@ const isStringArray = (value: unknown): value is string[] =>
 const isOptionalStringArray = (value: unknown): boolean =>
   value === undefined || isStringArray(value);
 
-const FIGURE_DIMENSIONS = new Set<FigureDimension>([
-  "headAspect",
-  "shoulderWidth",
-  "torsoWidth",
-  "torsoLength",
-  "armLength",
-  "legLength",
-  "openness",
-  "verticality",
-  "symmetry",
-  "centerX",
-  "postureLean",
-]);
+const FIGURE_DIMENSIONS = new Set<FigureDimension>(CORE_FIGURE_DIMENSIONS);
 
 const hasOnlyKeys = (
   value: Record<string, unknown>,

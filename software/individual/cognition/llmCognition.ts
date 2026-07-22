@@ -21,6 +21,49 @@ import {
   isValidReflection,
 } from "./prompts";
 
+const NUMERIC_FIELD_KEYS = new Set([
+  "direction",
+  "magnitude",
+  "similarityDelta",
+  "selfIdealDistance",
+  "socialIdealDistance",
+  "selfSocialDistance",
+  "predictedIdealDistance",
+]);
+const JSON_NUMBER_STRING = /^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/;
+const MAX_NUMERIC_REPAIR_DEPTH = 12;
+
+/**
+ * Repairs only provider-quoted numeric fields from the cognition output schemas.
+ * Strict schema and range validation still runs afterward and remains authoritative.
+ */
+export const repairNumericFields = (data: unknown): unknown => {
+  const repair = (value: unknown, depth: number): unknown => {
+    if (depth > MAX_NUMERIC_REPAIR_DEPTH) {
+      throw new Error("Provider JSON exceeds the numeric-repair depth boundary.");
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => repair(item, depth + 1));
+    }
+    if (!value || typeof value !== "object") return value;
+
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, item]) => {
+        if (NUMERIC_FIELD_KEYS.has(key) && typeof item === "string") {
+          const candidate = item.trim();
+          if (JSON_NUMBER_STRING.test(candidate)) {
+            const numeric = Number(candidate);
+            if (Number.isFinite(numeric)) return [key, numeric];
+          }
+        }
+        return [key, repair(item, depth + 1)];
+      }),
+    );
+  };
+
+  return repair(data, 0);
+};
+
 const cleanText = (value: string, maximum: number): string =>
   value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, maximum);
 
@@ -105,6 +148,7 @@ export class LlmCognitionSystem implements CognitionSystem {
         systemPrompt: INTENT_SYSTEM_PROMPT,
         userPrompt: buildIntentUserPrompt(input),
         validator: isValidIntent,
+        repair: repairNumericFields,
         timeoutMs: 10_000,
         signal: input.signal,
       });
@@ -138,6 +182,7 @@ export class LlmCognitionSystem implements CognitionSystem {
         systemPrompt: REFLECTION_SYSTEM_PROMPT,
         userPrompt: buildReflectionUserPrompt(input),
         validator: isValidReflection,
+        repair: repairNumericFields,
         timeoutMs: 10_000,
         signal: input.signal,
       });

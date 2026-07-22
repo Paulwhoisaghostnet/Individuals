@@ -8,7 +8,10 @@ ENV NODE_ENV=production \
 WORKDIR /app
 
 COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN test "$(node --version)" = "v22.23.1" \
+    && test "$(npm --version)" = "10.9.8" \
+    && npm ci --omit=dev \
+    && npm cache clean --force
 
 COPY --chown=node:node software ./software
 

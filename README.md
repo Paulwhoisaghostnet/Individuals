@@ -246,8 +246,9 @@ release-gated acceptance standards are in
 
 ## Development
 
-Requirements: Node.js 22.12 or newer and npm 10. Production composition requires
-Docker Compose 2.24.0 or newer because `.env` is intentionally optional.
+Requirements: Node.js 22.12 through 22.x and npm 10.9.4 through 11.x. Production
+uses Node.js 22.23.1 with npm 10.9.8. Production composition requires Docker
+Compose 2.24.0 or newer because `.env` is intentionally optional.
 
 ```sh
 git clone https://github.com/Paulwhoisaghostnet/Individuals.git
@@ -272,6 +273,7 @@ credentials are optional.
 | `npm run build` | Typecheck and build the production client. |
 | `npm run check` | Typecheck, test, and build without duplicate work. |
 | `npm run demo` | Run the accelerated society runtime demonstration. |
+| `npm run export:timeline -- --help` | Inspect the offline retained-portrait export options. |
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) before changing contracts or public data.
 

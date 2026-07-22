@@ -11,7 +11,10 @@ export interface LlmRequestOptions {
 export interface LlmClient {
   generateText(options: LlmRequestOptions): Promise<string>;
   generateJson<T>(
-    options: LlmRequestOptions & { validator?: (data: unknown) => data is T },
+    options: LlmRequestOptions & {
+      validator?: (data: unknown) => data is T;
+      repair?: (data: unknown) => unknown;
+    },
   ): Promise<T>;
 }
 
@@ -291,11 +294,14 @@ export class FetchLlmClient implements LlmClient {
   }
 
   async generateJson<T>(
-    options: LlmRequestOptions & { validator?: (data: unknown) => data is T },
+    options: LlmRequestOptions & {
+      validator?: (data: unknown) => data is T;
+      repair?: (data: unknown) => unknown;
+    },
   ): Promise<T> {
     const rawText = await this.generateText({
       ...options,
-      systemPrompt: `${options.systemPrompt}\n\nCRITICAL: Respond ONLY with valid JSON. Do not include markdown code blocks, explanations, or chain-of-thought text.`,
+      systemPrompt: `${options.systemPrompt}\n\nCRITICAL: Respond ONLY with valid JSON. Do not include markdown code blocks, explanations, or chain-of-thought text. All numeric values must be unquoted JSON numbers, never strings.`,
     });
 
     const cleaned = rawText
@@ -309,6 +315,14 @@ export class FetchLlmClient implements LlmClient {
       parsed = JSON.parse(cleaned);
     } catch {
       throw new LlmProviderError("invalid-response", false);
+    }
+
+    if (options.repair) {
+      try {
+        parsed = options.repair(parsed);
+      } catch {
+        throw new LlmProviderError("invalid-response", false);
+      }
     }
 
     if (options.validator && !options.validator(parsed)) {

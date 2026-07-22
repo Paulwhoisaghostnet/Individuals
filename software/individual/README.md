@@ -48,3 +48,11 @@ vendor SDK, camera driver, database client, HTTP server, or web UI.
 The first digital prototype may run several Individuals on shared hardware, but
 each must retain an independent identity package, state namespace, memory namespace,
 cycle lifecycle, and failure boundary.
+
+## Curatorial export
+
+`timeline/` provides a checked, offline export of the portrait history retained in
+current durable snapshots. It validates persistence and artwork through the same
+runtime boundaries, excludes private memory by default, and produces restrictive,
+standalone HTML without becoming part of the public exhibition API. See
+[`timeline/README.md`](timeline/README.md) for invocation and privacy rules.

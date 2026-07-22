@@ -1,7 +1,9 @@
 FROM node:22.23.1-alpine3.24 AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN test "$(node --version)" = "v22.23.1" \
+    && test "$(npm --version)" = "10.9.8" \
+    && npm ci
 COPY . .
 RUN npm run build
 

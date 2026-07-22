@@ -5,64 +5,12 @@ import type {
   PublicArtworkReference,
   PublicPortraitReferenceFactory,
 } from "../runtime/publicProjection";
+import {
+  MAX_PUBLIC_SVG_BYTES,
+  validatePublicSvg,
+} from "../security/publicSvg";
 
-const ALLOWED_ELEMENTS = new Set([
-  "svg",
-  "g",
-  "rect",
-  "ellipse",
-  "circle",
-  "path",
-  "polygon",
-  "text",
-]);
-
-export const MAX_PUBLIC_SVG_BYTES = 512 * 1024;
-
-const DANGEROUS_MARKUP = [
-  /<!DOCTYPE/i,
-  /<!ENTITY/i,
-  /<\?/,
-  /<!\[/,
-  /<script\b/i,
-  /<foreignObject\b/i,
-  /<(?:iframe|object|embed|audio|video|image|link|meta)\b/i,
-  /\son[a-z]+\s*=/i,
-  /javascript\s*:/i,
-  /data\s*:/i,
-  /@import/i,
-  /\sstyle\s*=/i,
-  /\shref\s*=/i,
-  /<\s*\/?\s*[A-Za-z][A-Za-z0-9._-]*:/,
-  /\s[A-Za-z_][A-Za-z0-9._-]*:[A-Za-z_][A-Za-z0-9._-]*\s*=/,
-  /url\s*\(/i,
-];
-
-export const validatePublicSvg = (content: string): string => {
-  if (Buffer.byteLength(content, "utf8") > MAX_PUBLIC_SVG_BYTES) {
-    throw new Error("Portrait SVG exceeds the 512 KiB public artifact limit.");
-  }
-  const trimmed = content.trim();
-  if (!trimmed.startsWith("<svg") || !trimmed.endsWith("</svg>")) {
-    throw new Error("Portrait artwork is not a complete SVG document.");
-  }
-  const namespaceDeclarations = trimmed.match(/\sxmlns\s*=/gi) ?? [];
-  if (
-    namespaceDeclarations.length !== 1 ||
-    !/^<svg\b[^>]*\sxmlns\s*=\s*(["'])http:\/\/www\.w3\.org\/2000\/svg\1/.test(trimmed)
-  ) {
-    throw new Error("Portrait SVG must use exactly the standard SVG namespace.");
-  }
-  for (const pattern of DANGEROUS_MARKUP) {
-    if (pattern.test(trimmed)) throw new Error("Portrait SVG contains unsafe active content.");
-  }
-  for (const match of trimmed.matchAll(/<\s*\/?\s*([A-Za-z][A-Za-z0-9._:-]*)\b/g)) {
-    if (!ALLOWED_ELEMENTS.has(match[1])) {
-      throw new Error(`Portrait SVG element "${match[1]}" is not allowlisted.`);
-    }
-  }
-  return trimmed;
-};
+export { MAX_PUBLIC_SVG_BYTES, validatePublicSvg } from "../security/publicSvg";
 
 export interface PortraitArtifact {
   readonly opaqueId: string;

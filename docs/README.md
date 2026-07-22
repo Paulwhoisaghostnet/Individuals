@@ -12,6 +12,8 @@
   acceptance criteria for the prototype.
 - [`testing/browser-release.md`](testing/browser-release.md) — required real-browser
   checks that unit tests and DOM serialization cannot prove.
+- [`reports/README-2026-07-21-rebuild.md`](reports/README-2026-07-21-rebuild.md) —
+  dated implementation report for the embodied runtime and exhibition rebuild.
 - [`../SECURITY.md`](../SECURITY.md) — supported code, private vulnerability
   reporting, and deployment responsibility.
 

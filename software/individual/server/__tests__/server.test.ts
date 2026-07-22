@@ -8,6 +8,7 @@ import type * as http from "node:http";
 import { ProceduralCognitionSystem } from "../../cognition/proceduralCognition";
 import { LlmCognitionSystem } from "../../cognition/llmCognition";
 import type { LlmClient, LlmRequestOptions } from "../../cognition/llmClient";
+import { INTENT_SYSTEM_PROMPT, REFLECTION_SYSTEM_PROMPT } from "../../cognition/prompts";
 import { IndividualEngine } from "../../core/engine/IndividualEngine";
 import type { Portrait } from "../../core/model";
 import { InMemoryIndividualRepository, InMemoryMemoryStore } from "../../core/persistence/inMemory";
@@ -299,46 +300,66 @@ describe("Individuals production HTTP boundaries", () => {
 
   it("never publishes provider-echoed private prose through state, DTOs, or SVG artifacts", async () => {
     const canary = "PRIVATE_PROMPT_CANARY_7fc93d";
+    const providerOperations: Array<"formIntent" | "reflect"> = [];
+    const fallback = new ProceduralCognitionSystem();
+    const fallbackFormIntent = vi.spyOn(fallback, "formIntent");
+    const fallbackReflect = vi.spyOn(fallback, "reflect");
     const client: LlmClient = {
       async generateText(): Promise<string> {
         throw new Error("unused");
       },
-      async generateJson<T>(options: LlmRequestOptions): Promise<T> {
-        if (options.systemPrompt.includes("JSON SCHEMA FOR INTENT")) {
-          return {
+      async generateJson<T>(
+        options: LlmRequestOptions & {
+          validator?: (data: unknown) => data is T;
+          repair?: (data: unknown) => unknown;
+        },
+      ): Promise<T> {
+        let response: unknown;
+        if (options.systemPrompt === INTENT_SYSTEM_PROMPT) {
+          providerOperations.push("formIntent");
+          response = {
             statement: canary,
             desiredQualities: [canary],
             visualInstructions: [canary],
             bodilyInstructions: [canary],
             bodyAdjustments: [],
-          } as T;
+          };
+        } else if (options.systemPrompt === REFLECTION_SYSTEM_PROMPT) {
+          providerOperations.push("reflect");
+          response = {
+            summary: canary,
+            tensions: [canary],
+            nextIntention: canary,
+            memory: canary,
+            intendedSignals: [canary],
+            recurringPatterns: [canary],
+            acceptedFeedback: [canary],
+            rejectedFeedback: [canary],
+            unresolvedQuestions: [canary],
+            publicFragment: canary,
+            physicalAssessment: {
+              similarityDelta: 0,
+              retainedFeatures: [canary],
+              perceivedDifferences: [canary],
+              nextBodilyAdjustment: canary,
+              nextBodyAdjustments: [],
+              geometry: { selfIdealDistance: 0.2, predictedIdealDistance: 0.2 },
+            },
+          };
+        } else {
+          throw new Error("Unexpected cognition prompt in privacy-boundary test.");
         }
-        return {
-          summary: canary,
-          tensions: [canary],
-          nextIntention: canary,
-          memory: canary,
-          intendedSignals: [canary],
-          recurringPatterns: [canary],
-          acceptedFeedback: [canary],
-          rejectedFeedback: [canary],
-          unresolvedQuestions: [canary],
-          publicFragment: canary,
-          physicalAssessment: {
-            similarityDelta: 0,
-            retainedFeatures: [canary],
-            perceivedDifferences: [canary],
-            nextBodilyAdjustment: canary,
-            nextBodyAdjustments: [],
-            geometry: { selfIdealDistance: 0.2, predictedIdealDistance: 0.2 },
-          },
-        } as T;
+        const repaired = options.repair ? options.repair(response) : response;
+        if (options.validator && !options.validator(repaired)) {
+          throw new Error("Cognition fixture failed its production validator.");
+        }
+        return repaired as T;
       },
     };
     const providerFactory: RuntimeEngineFactory = (manifest, context) => {
       const ids = new StableIdGenerator();
       return new IndividualEngine(manifest, {
-        cognition: new LlmCognitionSystem({ client }),
+        cognition: new LlmCognitionSystem({ client, fallbackSystem: fallback }),
         perception: new ProceduralPerceptionSystem(),
         drawing: new GenerativeDrawingSystem(ids),
         feedback: new ProceduralFeedbackCompositor(ids),
@@ -357,9 +378,13 @@ describe("Individuals production HTTP boundaries", () => {
       new PortraitArtifactStore(),
       providerFactory,
     );
-    await runtime.runSingleCycle("iris");
+    const result = await runtime.runSingleCycle("iris");
     const status = await runtime.getStatus("iris");
 
+    expect(result.status).toBe("completed");
+    expect(providerOperations).toEqual(["formIntent", "reflect"]);
+    expect(fallbackFormIntent).not.toHaveBeenCalled();
+    expect(fallbackReflect).not.toHaveBeenCalled();
     expect(status?.snapshot.state.lastReflection?.memory).toContain(canary);
     expect(status?.snapshot.state.lastReflection?.publicFragment).not.toContain(canary);
     expect(status?.snapshot.state.selfConcept.narrative).not.toContain(canary);

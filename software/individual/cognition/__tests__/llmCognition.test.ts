@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LlmCognitionSystem } from "../llmCognition";
+import { LlmCognitionSystem, repairNumericFields } from "../llmCognition";
 import type { LlmClient, LlmRequestOptions } from "../llmClient";
 import { createTemplateManifest } from "../../core/template/manifest";
 import { createInitialState } from "../../core/createInitialState";
@@ -25,18 +25,180 @@ class MockLlmClient implements LlmClient {
   }
 
   async generateJson<T>(
-    options: LlmRequestOptions & { validator?: (data: unknown) => data is T },
+    options: LlmRequestOptions & {
+      validator?: (data: unknown) => data is T;
+      repair?: (data: unknown) => unknown;
+    },
   ): Promise<T> {
     const res = this.responseGenerator(options);
     if (res instanceof Error) throw res;
-    if (options.validator && !options.validator(res)) {
-      throw new Error("Invalid mock response schema");
+    const repaired = options.repair ? options.repair(res) : res;
+    if (options.validator && !options.validator(repaired)) {
+      throw new LlmProviderError("invalid-response", false);
     }
-    return res as T;
+    return repaired as T;
   }
 }
 
 describe("LlmCognitionSystem", () => {
+  it("repairs only finite allowlisted numeric strings, including exponent notation", () => {
+    expect(
+      repairNumericFields({
+        direction: "-1",
+        magnitude: "2e-2",
+        similarityDelta: "-8E-2",
+        geometry: {
+          selfIdealDistance: "2e-1",
+          socialIdealDistance: "0.3",
+          selfSocialDistance: "1E-1",
+          predictedIdealDistance: "0.19",
+        },
+        statement: "2e-2",
+        unrecognizedNumber: "0.5",
+        nonFinite: { magnitude: "1e309" },
+      }),
+    ).toEqual({
+      direction: -1,
+      magnitude: 0.02,
+      similarityDelta: -0.08,
+      geometry: {
+        selfIdealDistance: 0.2,
+        socialIdealDistance: 0.3,
+        selfSocialDistance: 0.1,
+        predictedIdealDistance: 0.19,
+      },
+      statement: "2e-2",
+      unrecognizedNumber: "0.5",
+      nonFinite: { magnitude: "1e309" },
+    });
+  });
+
+  it("fails closed when numeric repair would traverse an excessive depth", () => {
+    let nested: unknown = { magnitude: "0.02" };
+    for (let depth = 0; depth < 14; depth += 1) nested = { nested };
+    expect(() => repairNumericFields(nested)).toThrow(/depth boundary/);
+  });
+
+  it("accepts quoted intent numbers after narrow repair", async () => {
+    const manifest = createTemplateManifest();
+    const baseState = createInitialState(manifest, "2026-01-01T00:00:00Z");
+    const state = {
+      ...baseState,
+      selfConcept: {
+        ...baseState.selfConcept,
+        nextBodyAdjustments: [
+          {
+            dimension: "openness" as const,
+            direction: 1 as const,
+            magnitude: 0.04,
+            basis: "ideal" as const,
+          },
+        ],
+      },
+    };
+    const cognition = new LlmCognitionSystem({
+      client: new MockLlmClient(() => ({
+        statement: "Quoted numeric intent accepted",
+        desiredQualities: [],
+        visualInstructions: [],
+        bodilyInstructions: [],
+        bodyAdjustments: [
+          { dimension: "openness", direction: "1", magnitude: "2e-2", basis: "ideal" },
+        ],
+      })),
+    });
+
+    const intent = await cognition.formIntent({ manifest, state, memories: [], cycle: 1 });
+
+    expect(intent.statement).toBe("Quoted numeric intent accepted");
+    expect(intent.bodyAdjustments).toEqual([
+      { dimension: "openness", direction: 1, magnitude: 0.02, basis: "ideal" },
+    ]);
+  });
+
+  it("accepts quoted reflection numbers after narrow repair", async () => {
+    const manifest = createTemplateManifest();
+    const state = createInitialState(manifest, "2026-01-01T00:00:00Z");
+    const cognition = new LlmCognitionSystem({
+      client: new MockLlmClient(() => ({
+        summary: "Quoted numeric reflection accepted",
+        tensions: [],
+        nextIntention: "Continue.",
+        memory: "Numbers arrived quoted.",
+        physicalAssessment: {
+          similarityDelta: "2e-2",
+          retainedFeatures: [],
+          perceivedDifferences: [],
+          nextBodilyAdjustment: "Open slightly.",
+          nextBodyAdjustments: [
+            { dimension: "openness", direction: "1", magnitude: "2e-2", basis: "ideal" },
+          ],
+          geometry: {
+            selfIdealDistance: "2e-1",
+            socialIdealDistance: "3e-1",
+            selfSocialDistance: "1e-1",
+            predictedIdealDistance: "1.9e-1",
+          },
+        },
+      })),
+    });
+
+    const reflection = await cognition.reflect({
+      manifest,
+      state,
+      intent: {
+        statement: "Intent",
+        desiredQualities: [],
+        visualInstructions: [],
+        bodilyInstructions: [],
+        bodyAdjustments: [],
+      },
+      selfPortrait: {
+        id: "self-1",
+        cycle: 1,
+        artistId: manifest.id,
+        subjectId: manifest.id,
+        role: "self",
+        createdAt: "2026-01-01T00:00:00Z",
+        artwork: { format: "svg", width: 800, height: 1000, content: "<svg/>" },
+        sourcePortraitIds: [],
+      },
+      cycle: 1,
+    });
+
+    expect(reflection.summary).toBe("Quoted numeric reflection accepted");
+  });
+
+  it.each([
+    ["out-of-range", "0.250001"],
+    ["non-finite", "1e309"],
+    ["non-numeric", "not-a-number"],
+  ])("falls back when a repaired intent magnitude is %s", async (_label, magnitude) => {
+    const failures: unknown[] = [];
+    const manifest = createTemplateManifest();
+    const state = createInitialState(manifest, "2026-01-01T00:00:00Z");
+    const cognition = new LlmCognitionSystem({
+      client: new MockLlmClient(() => ({
+        statement: "Invalid provider intent must not survive",
+        desiredQualities: [],
+        visualInstructions: [],
+        bodilyInstructions: [],
+        bodyAdjustments: [
+          { dimension: "openness", direction: "1", magnitude, basis: "ideal" },
+        ],
+      })),
+      onProviderFailure: (event) => {
+        failures.push(event);
+      },
+    });
+
+    const intent = await cognition.formIntent({ manifest, state, memories: [], cycle: 1 });
+
+    expect(intent.statement).not.toBe("Invalid provider intent must not survive");
+    expect(failures).toHaveLength(1);
+    expect(failures[0]).toMatchObject({ error: { category: "invalid-response" } });
+  });
+
   it("uses valid LLM structured output when provider succeeds", async () => {
     const mockClient = new MockLlmClient(() => ({
       statement: "LLM generated intent",

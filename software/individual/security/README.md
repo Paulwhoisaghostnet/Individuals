@@ -12,6 +12,11 @@ The repository currently supplies:
 - authenticated management actions and audit records;
 - backup, restore, update, rollback, and device-decommissioning guidance.
 
+The inert public-SVG contract is centralized in `publicSvg.ts`. Both HTTP portrait
+artifacts and offline curatorial exports use this exact structural allowlist; a
+consumer must not introduce a second, weaker SVG sanitizer or embed persisted
+artwork without crossing this boundary.
+
 No secret, live credential, private key, device password, or production identity
 archive may be committed to this repository.
 

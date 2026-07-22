@@ -195,4 +195,71 @@ describe("FetchLlmClient secret handling", () => {
     ).rejects.toMatchObject({ category: "configuration" });
     expect(fetchMock).toHaveBeenCalledOnce();
   });
+
+  it("applies an optional JSON repair after parsing and before strict validation", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(
+          JSON.stringify({
+            choices: [{ message: { content: '{"magnitude":"2e-2"}' } }],
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+    const client = new FetchLlmClient({
+      baseUrl: "http://127.0.0.1:1234/v1",
+      apiKey: "key",
+    });
+
+    const result = await client.generateJson<{ readonly magnitude: number }>({
+      systemPrompt: "system",
+      userPrompt: "user",
+      repair: (data) => {
+        expect(data).toEqual({ magnitude: "2e-2" });
+        return { magnitude: 0.02 };
+      },
+      validator: (data): data is { readonly magnitude: number } =>
+        typeof data === "object" &&
+        data !== null &&
+        (data as { magnitude?: unknown }).magnitude === 0.02,
+    });
+
+    expect(result).toEqual({ magnitude: 0.02 });
+  });
+
+  it("fails closed when JSON repair throws or still leaves an invalid schema", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(
+          JSON.stringify({ choices: [{ message: { content: '{"magnitude":"not-numeric"}' } }] }),
+          { status: 200 },
+        ),
+      ),
+    );
+    const client = new FetchLlmClient({
+      baseUrl: "http://127.0.0.1:1234/v1",
+      apiKey: "key",
+    });
+
+    await expect(client.generateJson({
+      systemPrompt: "system",
+      userPrompt: "user",
+      repair: () => {
+        throw new Error("raw repair detail must not escape");
+      },
+    })).rejects.toMatchObject({ category: "invalid-response" });
+
+    await expect(client.generateJson<{ readonly magnitude: number }>({
+      systemPrompt: "system",
+      userPrompt: "user",
+      repair: (data) => data,
+      validator: (data): data is { readonly magnitude: number } =>
+        typeof data === "object" &&
+        data !== null &&
+        typeof (data as { magnitude?: unknown }).magnitude === "number",
+    })).rejects.toMatchObject({ category: "invalid-response" });
+  });
 });

@@ -5,6 +5,8 @@ import type { ArtworkDescriptor, Portrait, SocialFeedbackEvidence } from "../../
 import { defaultRenderingDescriptor } from "../../drawing/figureDescriptor";
 import { createTemplateManifest } from "../../core/template/manifest";
 import {
+  INTENT_SYSTEM_PROMPT,
+  REFLECTION_SYSTEM_PROMPT,
   buildIntentUserPrompt,
   buildReflectionUserPrompt,
   isValidIntent,
@@ -54,6 +56,14 @@ const parseBoundedSections = (
   });
 
 describe("cognition prompts", () => {
+  it("shows provider numeric fields as JSON numbers rather than quoted ranges", () => {
+    expect(INTENT_SYSTEM_PROMPT).toContain('"direction":1,"magnitude":0.05');
+    expect(REFLECTION_SYSTEM_PROMPT).toContain('"similarityDelta": 0.01');
+    expect(REFLECTION_SYSTEM_PROMPT).toContain('"selfIdealDistance":0.2');
+    expect(INTENT_SYSTEM_PROMPT).not.toContain('"magnitude":"');
+    expect(REFLECTION_SYSTEM_PROMPT).not.toContain('"similarityDelta": "');
+  });
+
   it("provides numeric social evidence to reflection without artwork markup", () => {
     const manifest = createTemplateManifest({ id: "iris", displayName: "Iris" });
     const state = createInitialState(manifest, "2026-01-01T00:00:00Z");
